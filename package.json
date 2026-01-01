@@ -1,0 +1,44 @@
+{
+  "name": "taffy-js",
+  "version": "0.2.0",
+  "description": "WebAssembly bindings for Taffy layout library",
+  "keywords": [
+    "layout",
+    "flexbox",
+    "css-grid",
+    "grid",
+    "ui",
+    "wasm",
+    "webassembly"
+  ],
+  "homepage": "https://github.com/ByteLandTechnology/taffy-js#readme",
+  "bugs": {
+    "url": "https://github.com/ByteLandTechnology/taffy-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ByteLandTechnology/taffy-js.git"
+  },
+  "license": "MIT",
+  "author": "ByteLandTechnology <github@byteland.app>",
+  "type": "module",
+  "main": "pkg/taffy_js.js",
+  "types": "pkg/taffy_js.d.ts",
+  "files": [
+    "pkg"
+  ],
+  "scripts": {
+    "build": "wasm-pack build --release --target web",
+    "build:dev": "wasm-pack build --dev --target web",
+    "test": "wasm-pack test --node"
+  },
+  "devDependencies": {
+    "wasm-pack": "^0.13.1"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "overrides": {
+    "axios": "^1.7.9"
+  }
+}
