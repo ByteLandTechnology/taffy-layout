@@ -37,6 +37,8 @@
     "@commitlint/cli": "^20.3.0",
     "@commitlint/config-conventional": "^20.3.0",
     "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
     "wasm-pack": "^0.13.1"
   },
   "engines": {
@@ -49,5 +51,8 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx,json,md,yaml,yml}": "prettier --write"
   }
 }
