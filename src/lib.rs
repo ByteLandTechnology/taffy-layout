@@ -2,6 +2,12 @@
 //!
 //! This library provides WebAssembly bindings for the Taffy layout library,
 //! allowing it to be used in JavaScript/TypeScript environments.
+//!
+//! ## Logging
+//!
+//! Debug logging is available when the `debug` feature is enabled. Logs are
+//! output to the browser console via `web_sys::console`. This is useful for
+//! debugging layout issues in development.
 
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -13,6 +19,53 @@ use taffy::{
     prelude::*,
 };
 
+// ============================================================================
+// Logging macros
+// ============================================================================
+
+/// Debug logging macro that outputs to the browser console.
+/// Only active when the `debug` feature is enabled.
+#[cfg(feature = "debug")]
+macro_rules! log_debug {
+    ($($arg:tt)*) => {
+        web_sys::console::debug_1(&format!($($arg)*).into());
+    };
+}
+
+#[cfg(not(feature = "debug"))]
+macro_rules! log_debug {
+    ($($arg:tt)*) => {};
+}
+
+/// Info logging macro that outputs to the browser console.
+#[cfg(feature = "debug")]
+macro_rules! log_info {
+    ($($arg:tt)*) => {
+        web_sys::console::info_1(&format!($($arg)*).into());
+    };
+}
+
+#[cfg(not(feature = "debug"))]
+macro_rules! log_info {
+    ($($arg:tt)*) => {};
+}
+
+/// Warning logging macro that outputs to the browser console.
+/// Always active for important warnings.
+macro_rules! log_warn {
+    ($($arg:tt)*) => {
+        web_sys::console::warn_1(&format!($($arg)*).into());
+    };
+}
+
+/// Error logging macro that outputs to the browser console.
+/// Always active for error reporting.
+macro_rules! log_error {
+    ($($arg:tt)*) => {
+        web_sys::console::error_1(&format!($($arg)*).into());
+    };
+}
+
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global allocator
 #[cfg(feature = "wee_alloc")]
@@ -22,6 +75,21 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 // ============================================================================
 // Type definitions
 // ============================================================================
+
+#[derive(Clone, Default)]
+pub struct NodeContext {
+    pub measure_func: Option<js_sys::Function>,
+}
+
+impl std::fmt::Debug for NodeContext {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NodeContext")
+         .field("measure_func", &self.measure_func.is_some())
+         .finish()
+    }
+}
+
+/// Represents a length value in CSS.
 
 /// Represents a length value in CSS.
 ///
@@ -208,6 +276,8 @@ pub enum AlignItems {
 #[wasm_bindgen]
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum AlignSelf {
+    /// Auto
+    Auto,
     /// items are aligned at the start of the cross axis.
     Start,
     /// Items are aligned at the end of the cross axis.
@@ -284,6 +354,29 @@ pub enum GridAutoFlow {
     RowDense,
     /// Items are placed by filling each column, attempting to fill holes earlier in the grid.
     ColumnDense,
+}
+
+/// Start and End are used for logical positioning (e.g. paddingStart).
+#[wasm_bindgen]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+pub enum Edge {
+    Left,
+    Right,
+    Top,
+    Bottom,
+    Start,
+    End,
+    Horizontal,
+    Vertical,
+    All,
+}
+
+#[wasm_bindgen]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+pub enum Gutter {
+    Column,
+    Row,
+    All,
 }
 
 /// Style values for a node.
@@ -611,15 +704,16 @@ fn convert_style(style: &Style) -> taffy_style::Style {
     }
 
     if let Some(align_self) = style.align_self {
-        taffy_style.align_self = Some(match align_self {
-            AlignSelf::Start => taffy_style::AlignItems::Start,
-            AlignSelf::End => taffy_style::AlignItems::End,
-            AlignSelf::FlexStart => taffy_style::AlignItems::FlexStart,
-            AlignSelf::FlexEnd => taffy_style::AlignItems::FlexEnd,
-            AlignSelf::Center => taffy_style::AlignItems::Center,
-            AlignSelf::Baseline => taffy_style::AlignItems::Baseline,
-            AlignSelf::Stretch => taffy_style::AlignItems::Stretch,
-        });
+        taffy_style.align_self = match align_self {
+            AlignSelf::Auto => None,
+            AlignSelf::Start => Some(taffy::style::AlignItems::Start),
+            AlignSelf::End => Some(taffy::style::AlignItems::End),
+            AlignSelf::FlexStart => Some(taffy::style::AlignItems::FlexStart),
+            AlignSelf::FlexEnd => Some(taffy::style::AlignItems::FlexEnd),
+            AlignSelf::Center => Some(taffy::style::AlignItems::Center),
+            AlignSelf::Baseline => Some(taffy::style::AlignItems::Baseline),
+            AlignSelf::Stretch => Some(taffy::style::AlignItems::Stretch),
+        };
     }
 
     if let Some(ac) = style.align_content {
@@ -745,9 +839,60 @@ fn to_available_space(space: &AvailableSpace) -> TaffySize<taffy_style::Availabl
 // Taffy wrapper
 // ============================================================================
 
+use std::collections::HashMap;
+
 thread_local! {
-    static TAFFY: RefCell<TaffyTree<()>> = RefCell::new(TaffyTree::new());
+    static TAFFY: RefCell<TaffyTree<NodeContext>> = RefCell::new(TaffyTree::new());
     static NEXT_NODE_ID: RefCell<u32> = RefCell::new(0);
+    /// Maps node ID to its allocation epoch (a unique identifier for each allocation)
+    static NODE_EPOCHS: RefCell<HashMap<u64, u64>> = RefCell::new(HashMap::new());
+    /// Counter for generating unique allocation epochs
+    static EPOCH_COUNTER: RefCell<u64> = RefCell::new(0);
+}
+
+/// Get the next unique epoch
+fn next_epoch() -> u64 {
+    EPOCH_COUNTER.with(|counter| {
+        let mut c = counter.borrow_mut();
+        *c += 1;
+        *c
+    })
+}
+
+/// Get the current epoch for a node ID (None if not valid)
+fn get_node_epoch(id: u64) -> Option<u64> {
+    NODE_EPOCHS.with(|epochs| epochs.borrow().get(&id).copied())
+}
+
+/// Register a new node with a fresh epoch, returns the epoch
+fn register_node_with_epoch(id: u64) -> u64 {
+    let epoch = next_epoch();
+    NODE_EPOCHS.with(|epochs| epochs.borrow_mut().insert(id, epoch));
+    epoch
+}
+
+/// Unregister a node, but only if the epoch matches
+fn unregister_node_if_epoch_matches(id: u64, expected_epoch: u64) -> bool {
+    NODE_EPOCHS.with(|epochs| {
+        let mut map = epochs.borrow_mut();
+        if let Some(&current_epoch) = map.get(&id) {
+            if current_epoch == expected_epoch {
+                map.remove(&id);
+                return true;
+            }
+        }
+        false
+    })
+}
+
+/// Check if a node is valid with the given epoch
+fn is_node_valid_with_epoch(id: u64, epoch: u64) -> bool {
+    get_node_epoch(id) == Some(epoch)
+}
+
+/// Clear all node epochs
+fn clear_node_epochs() {
+    NODE_EPOCHS.with(|epochs| epochs.borrow_mut().clear());
 }
 
 /// Creates a new leaf node with the specified style.
@@ -764,17 +909,25 @@ thread_local! {
 ///
 /// Returns a `JsValue` error if the style cannot be deserialized or if node creation fails.
 #[wasm_bindgen]
-pub fn new_leaf(style: JsValue) -> Result<u32, JsValue> {
+pub fn new_leaf(style: JsValue) -> Result<u64, JsValue> {
+    log_debug!("[taffy] new_leaf: creating new leaf node");
     TAFFY.with(|taffy| {
-        let style: Style = serde_wasm_bindgen::from_value(style)?;
+        let style: Style = serde_wasm_bindgen::from_value(style).map_err(|e| {
+            log_error!("[taffy] new_leaf: failed to deserialize style: {:?}", e);
+            e
+        })?;
         let taffy_style = convert_style(&style);
 
         let mut taffy_ref = taffy.borrow_mut();
         let node_id = taffy_ref.new_leaf(taffy_style)
-            .map_err(|e| JsValue::from_str(&format!("Failed to create leaf: {}", e)))?;
+            .map_err(|e| {
+                log_error!("[taffy] new_leaf: failed to create leaf: {}", e);
+                JsValue::from_str(&format!("Failed to create leaf: {}", e))
+            })?;
 
         let id: u64 = node_id.into();
-        Ok(id as u32)
+        log_debug!("[taffy] new_leaf: created node with id={}", id);
+        Ok(id)
     })
 }
 
@@ -793,21 +946,29 @@ pub fn new_leaf(style: JsValue) -> Result<u32, JsValue> {
 ///
 /// Returns a `JsValue` error if the style cannot be deserialized or if node creation fails.
 #[wasm_bindgen]
-pub fn new_with_children(style: JsValue, children: &[u32]) -> Result<u32, JsValue> {
+pub fn new_with_children(style: JsValue, children: &[u64]) -> Result<u64, JsValue> {
+    log_debug!("[taffy] new_with_children: creating node with {} children", children.len());
     TAFFY.with(|taffy| {
-        let style: Style = serde_wasm_bindgen::from_value(style)?;
+        let style: Style = serde_wasm_bindgen::from_value(style).map_err(|e| {
+            log_error!("[taffy] new_with_children: failed to deserialize style: {:?}", e);
+            e
+        })?;
         let taffy_style = convert_style(&style);
 
         let child_ids: Vec<taffy::NodeId> = children.iter()
-            .map(|id| taffy::NodeId::from(*id as u64))
+            .map(|id| taffy::NodeId::from(*id))
             .collect();
 
         let mut taffy_ref = taffy.borrow_mut();
         let node_id = taffy_ref.new_with_children(taffy_style, &child_ids)
-            .map_err(|e| JsValue::from_str(&format!("Failed to create node: {}", e)))?;
+            .map_err(|e| {
+                log_error!("[taffy] new_with_children: failed to create node: {}", e);
+                JsValue::from_str(&format!("Failed to create node: {}", e))
+            })?;
 
         let id: u64 = node_id.into();
-        Ok(id as u32)
+        log_debug!("[taffy] new_with_children: created node id={} with children={:?}", id, children);
+        Ok(id)
     })
 }
 
@@ -822,14 +983,19 @@ pub fn new_with_children(style: JsValue, children: &[u32]) -> Result<u32, JsValu
 ///
 /// Returns a `JsValue` error if the operation fails (e.g., recursive hierarchy).
 #[wasm_bindgen]
-pub fn add_child(parent: u32, child: u32) -> Result<(), JsValue> {
+pub fn add_child(parent: u64, child: u64) -> Result<(), JsValue> {
+    log_debug!("[taffy] add_child: parent={}, child={}", parent, child);
     TAFFY.with(|taffy| {
         let mut taffy_ref = taffy.borrow_mut();
-        let parent_id = taffy::NodeId::from(parent as u64);
-        let child_id = taffy::NodeId::from(child as u64);
+        let parent_id = taffy::NodeId::from(parent);
+        let child_id = taffy::NodeId::from(child);
 
         taffy_ref.add_child(parent_id, child_id)
-            .map_err(|e| JsValue::from_str(&format!("Failed to add child: {}", e)))?;
+            .map_err(|e| {
+                log_error!("[taffy] add_child: failed to add child {} to parent {}: {}", child, parent, e);
+                JsValue::from_str(&format!("Failed to add child: {}", e))
+            })?;
+        log_debug!("[taffy] add_child: successfully added child {} to parent {}", child, parent);
         Ok(())
     })
 }
@@ -845,14 +1011,19 @@ pub fn add_child(parent: u32, child: u32) -> Result<(), JsValue> {
 ///
 /// Returns a `JsValue` error if the child is not found in the parent.
 #[wasm_bindgen]
-pub fn remove_child(parent: u32, child: u32) -> Result<(), JsValue> {
+pub fn remove_child(parent: u64, child: u64) -> Result<(), JsValue> {
+    log_debug!("[taffy] remove_child: parent={}, child={}", parent, child);
     TAFFY.with(|taffy| {
         let mut taffy_ref = taffy.borrow_mut();
-        let parent_id = taffy::NodeId::from(parent as u64);
-        let child_id = taffy::NodeId::from(child as u64);
+        let parent_id = taffy::NodeId::from(parent);
+        let child_id = taffy::NodeId::from(child);
 
         taffy_ref.remove_child(parent_id, child_id)
-            .map_err(|e| JsValue::from_str(&format!("Failed to remove child: {}", e)))?;
+            .map_err(|e| {
+                log_error!("[taffy] remove_child: failed to remove child {} from parent {}: {}", child, parent, e);
+                JsValue::from_str(&format!("Failed to remove child: {}", e))
+            })?;
+        log_debug!("[taffy] remove_child: successfully removed child {} from parent {}", child, parent);
         Ok(())
     })
 }
@@ -868,17 +1039,22 @@ pub fn remove_child(parent: u32, child: u32) -> Result<(), JsValue> {
 ///
 /// Returns a `JsValue` error if the operation fails.
 #[wasm_bindgen]
-pub fn set_children(parent: u32, children: &[u32]) -> Result<(), JsValue> {
+pub fn set_children(parent: u64, children: &[u64]) -> Result<(), JsValue> {
+    log_debug!("[taffy] set_children: parent={}, children={:?}", parent, children);
     TAFFY.with(|taffy| {
         let mut taffy_ref = taffy.borrow_mut();
-        let parent_id = taffy::NodeId::from(parent as u64);
+        let parent_id = taffy::NodeId::from(parent);
 
         let child_ids: Vec<taffy::NodeId> = children.iter()
-            .map(|id| taffy::NodeId::from(*id as u64))
+            .map(|id| taffy::NodeId::from(*id))
             .collect();
 
         taffy_ref.set_children(parent_id, &child_ids)
-            .map_err(|e| JsValue::from_str(&format!("Failed to set children: {}", e)))?;
+            .map_err(|e| {
+                log_error!("[taffy] set_children: failed to set children for parent {}: {}", parent, e);
+                JsValue::from_str(&format!("Failed to set children: {}", e))
+            })?;
+        log_debug!("[taffy] set_children: successfully set {} children for parent {}", children.len(), parent);
         Ok(())
     })
 }
@@ -893,13 +1069,18 @@ pub fn set_children(parent: u32, children: &[u32]) -> Result<(), JsValue> {
 ///
 /// Returns a `JsValue` error if the node does not exist or cannot be removed.
 #[wasm_bindgen]
-pub fn remove_node(node: u32) -> Result<(), JsValue> {
+pub fn remove_node(node: u64) -> Result<(), JsValue> {
+    log_debug!("[taffy] remove_node: node={}", node);
     TAFFY.with(|taffy| {
         let mut taffy_ref = taffy.borrow_mut();
-        let node_id = taffy::NodeId::from(node as u64);
+        let node_id = taffy::NodeId::from(node);
 
         taffy_ref.remove(node_id)
-            .map_err(|e| JsValue::from_str(&format!("Failed to remove node: {}", e)))?;
+            .map_err(|e| {
+                log_error!("[taffy] remove_node: failed to remove node {}: {}", node, e);
+                JsValue::from_str(&format!("Failed to remove node: {}", e))
+            })?;
+        log_debug!("[taffy] remove_node: successfully removed node {}", node);
         Ok(())
     })
 }
@@ -918,17 +1099,17 @@ pub fn remove_node(node: u32) -> Result<(), JsValue> {
 ///
 /// Returns a `JsValue` error if the node does not exist.
 #[wasm_bindgen]
-pub fn get_children(parent: u32) -> Result<Box<[u32]>, JsValue> {
+pub fn get_children(parent: u64) -> Result<Box<[u64]>, JsValue> {
     TAFFY.with(|taffy| {
         let taffy_ref = taffy.borrow();
-        let parent_id = taffy::NodeId::from(parent as u64);
+        let parent_id = taffy::NodeId::from(parent);
 
         let children = taffy_ref.children(parent_id)
             .map_err(|e| JsValue::from_str(&format!("Failed to get children: {}", e)))?;
 
         Ok(children.iter().map(|id: &taffy::NodeId| {
             let val: u64 = (*id).into();
-            val as u32
+            val
         }).collect())
     })
 }
@@ -947,14 +1128,14 @@ pub fn get_children(parent: u32) -> Result<Box<[u32]>, JsValue> {
 ///
 /// Returns a `JsValue` error if internal tree access fails.
 #[wasm_bindgen]
-pub fn get_parent(node: u32) -> Result<Option<u32>, JsValue> {
+pub fn get_parent(node: u64) -> Result<Option<u64>, JsValue> {
     TAFFY.with(|taffy| {
         let taffy_ref = taffy.borrow();
-        let node_id = taffy::NodeId::from(node as u64);
+        let node_id = taffy::NodeId::from(node);
 
         Ok(taffy_ref.parent(node_id).map(|id| {
             let val: u64 = id.into();
-            val as u32
+            val
         }))
     })
 }
@@ -970,16 +1151,24 @@ pub fn get_parent(node: u32) -> Result<Option<u32>, JsValue> {
 ///
 /// Returns a `JsValue` error if the style cannot be deserialized or if the node does not exist.
 #[wasm_bindgen]
-pub fn set_style(node: u32, style: JsValue) -> Result<(), JsValue> {
+pub fn set_style(node: u64, style: JsValue) -> Result<(), JsValue> {
+    log_debug!("[taffy] set_style: node={}", node);
     TAFFY.with(|taffy| {
-        let style: Style = serde_wasm_bindgen::from_value(style)?;
+        let style: Style = serde_wasm_bindgen::from_value(style).map_err(|e| {
+            log_error!("[taffy] set_style: failed to deserialize style for node {}: {:?}", node, e);
+            e
+        })?;
         let taffy_style = convert_style(&style);
 
         let mut taffy_ref = taffy.borrow_mut();
-        let node_id = taffy::NodeId::from(node as u64);
+        let node_id = taffy::NodeId::from(node);
 
         taffy_ref.set_style(node_id, taffy_style)
-            .map_err(|e| JsValue::from_str(&format!("Failed to set style: {}", e)))?;
+            .map_err(|e| {
+                log_error!("[taffy] set_style: failed to set style for node {}: {}", node, e);
+                JsValue::from_str(&format!("Failed to set style: {}", e))
+            })?;
+        log_debug!("[taffy] set_style: successfully set style for node {}", node);
         Ok(())
     })
 }
@@ -995,16 +1184,67 @@ pub fn set_style(node: u32, style: JsValue) -> Result<(), JsValue> {
 ///
 /// Returns a `JsValue` error if the layout computation fails.
 #[wasm_bindgen]
-pub fn compute_layout(root: u32, available_space: JsValue) -> Result<(), JsValue> {
+pub fn compute_layout(root: u64, available_space: JsValue) -> Result<(), JsValue> {
+    log_debug!("[taffy] compute_layout: root={}", root);
     TAFFY.with(|taffy| {
-        let space: AvailableSpace = serde_wasm_bindgen::from_value(available_space)?;
-        let taffy_space = to_available_space(&space);
+        let taffy_space = if available_space.is_undefined() || available_space.is_null() {
+            log_debug!("[taffy] compute_layout: using MaxContent for available space");
+            taffy::Size {
+                width: taffy::style::AvailableSpace::MaxContent,
+                height: taffy::style::AvailableSpace::MaxContent,
+            }
+        } else {
+            let space: AvailableSpace = serde_wasm_bindgen::from_value(available_space).map_err(|e| {
+                log_error!("[taffy] compute_layout: failed to deserialize available_space: {:?}", e);
+                e
+            })?;
+            log_debug!("[taffy] compute_layout: available_space=({:?}, {:?})", space.width, space.height);
+            to_available_space(&space)
+        };
 
-        let mut taffy_ref = taffy.borrow_mut();
-        let root_id = taffy::NodeId::from(root as u64);
+        let mut taffy_ref = taffy.try_borrow_mut()
+            .map_err(|_| {
+                log_error!("[taffy] compute_layout: failed to borrow TAFFY mutably - possible reentrant call");
+                JsValue::from_str("Failed to borrow TAFFY mutably (compute_layout)")
+            })?;
+        let root_id = taffy::NodeId::from(root);
 
-        taffy_ref.compute_layout(root_id, taffy_space)
-            .map_err(|e| JsValue::from_str(&format!("Failed to compute layout: {}", e)))?;
+        taffy_ref.compute_layout_with_measure(
+            root_id, 
+            taffy_space,
+            |_known_dimensions, available_space, _node_id, node_context, _style| -> TaffySize<f32> {
+                if let Some(ctx) = node_context {
+                    if let Some(func) = &ctx.measure_func {
+                         let width = match available_space.width {
+                             taffy::style::AvailableSpace::Definite(w) => w,
+                             taffy::style::AvailableSpace::MinContent => 0.0,
+                             taffy::style::AvailableSpace::MaxContent => f32::MAX,
+                         };
+
+                         let this = JsValue::NULL;
+                         let width_val = JsValue::from_f64(width as f64);
+                         
+                         // We need to catch panics/errors from JS
+                         match func.call1(&this, &width_val) {
+                             Ok(res) => {
+                                 if let Ok(size) = serde_wasm_bindgen::from_value::<Size>(res) {
+                                      return TaffySize { width: size.width, height: size.height };
+                                 }
+                             },
+                             Err(e) => {
+                                 log_warn!("[taffy] compute_layout: measure function call failed: {:?}", e);
+                             },
+                         }
+                    }
+                }
+                 TaffySize::ZERO
+            }
+        )
+            .map_err(|e| {
+                log_error!("[taffy] compute_layout: layout computation failed: {}", e);
+                JsValue::from_str(&format!("Failed to compute layout: {}", e))
+            })?;
+        log_info!("[taffy] compute_layout: successfully computed layout for root={}", root);
         Ok(())
     })
 }
@@ -1023,10 +1263,10 @@ pub fn compute_layout(root: u32, available_space: JsValue) -> Result<(), JsValue
 ///
 /// Returns a `JsValue` error if the node does not exist or layout information is unavailable.
 #[wasm_bindgen]
-pub fn get_layout(node: u32) -> Result<JsValue, JsValue> {
+pub fn get_layout(node: u64) -> Result<JsValue, JsValue> {
     TAFFY.with(|taffy| {
         let taffy_ref = taffy.borrow();
-        let node_id = taffy::NodeId::from(node as u64);
+        let node_id = taffy::NodeId::from(node);
 
         let layout = taffy_ref.layout(node_id)
             .map_err(|e| JsValue::from_str(&format!("Failed to get layout: {}", e)))?;
@@ -1047,10 +1287,10 @@ pub fn get_layout(node: u32) -> Result<JsValue, JsValue> {
 ///
 /// Returns a `JsValue` error if the node does not exist.
 #[wasm_bindgen]
-pub fn mark_dirty(node: u32) -> Result<(), JsValue> {
+pub fn mark_dirty(node: u64) -> Result<(), JsValue> {
     TAFFY.with(|taffy| {
         let mut taffy_ref = taffy.borrow_mut();
-        let node_id = taffy::NodeId::from(node as u64);
+        let node_id = taffy::NodeId::from(node);
 
         taffy_ref.mark_dirty(node_id)
             .map_err(|e| JsValue::from_str(&format!("Failed to mark dirty: {}", e)))?;
@@ -1058,21 +1298,35 @@ pub fn mark_dirty(node: u32) -> Result<(), JsValue> {
     })
 }
 
-/// Clear all nodes
+/// Clear all nodes from the layout tree.
+///
+/// This removes all nodes and resets the tree to an empty state.
+/// Any existing node IDs become invalid after this call.
 #[wasm_bindgen]
 pub fn clear() -> Result<(), JsValue> {
+    log_info!("[taffy] clear: clearing all nodes");
+    clear_node_epochs();
     TAFFY.with(|taffy| {
+        #[allow(unused_variables)]
+        let count = taffy.borrow().total_node_count();
         taffy.borrow_mut().clear();
+        log_debug!("[taffy] clear: removed {} nodes", count);
         Ok(())
     })
 }
 
-/// Get the total number of nodes
+/// Get the total number of nodes currently in the layout tree.
+///
+/// # Returns
+///
+/// The total count of all nodes in the tree.
 #[wasm_bindgen]
 pub fn node_count() -> u32 {
-    TAFFY.with(|taffy| {
+    let count = TAFFY.with(|taffy| {
         taffy.borrow().total_node_count() as u32
-    })
+    });
+    log_debug!("[taffy] node_count: {}", count);
+    count
 }
 
 /// Helper function to create a dimension
@@ -1103,11 +1357,16 @@ pub fn auto() -> Dimension {
 // Utility functions
 // ============================================================================
 
-/// Initialize console error panic hook
+/// Initialize the WASM module.
+///
+/// This function is automatically called when the WASM module is loaded.
+/// It sets up the console error panic hook for better error messages in development.
 #[wasm_bindgen(start)]
 pub fn init() {
     #[cfg(feature = "console_error_panic_hook")]
     console_error_panic_hook::set_once();
+    
+    log_info!("[taffy] Taffy WASM module initialized");
 }
 
 // ============================================================================
@@ -1116,7 +1375,31 @@ pub fn init() {
 
 #[wasm_bindgen]
 pub struct TaffyNode {
-    pub id: u32,
+    pub id: u64,
+    // Internal epoch for validating node ownership - not exposed to JS
+    epoch: u64,
+}
+
+impl Drop for TaffyNode {
+    fn drop(&mut self) {
+        // Best effort cleanup. We must not panic in Drop.
+        // Check if our epoch matches the current epoch for this node ID.
+        // If not, the node was already removed and recreated, so we shouldn't remove it.
+        if !is_node_valid_with_epoch(self.id, self.epoch) {
+            return;
+        }
+        
+        TAFFY.with(|taffy| {
+            if let Ok(mut taffy_ref) = taffy.try_borrow_mut() {
+                let node_id = taffy::NodeId::from(self.id);
+                // Ignore errors - node may have already been removed
+                let _ = taffy_ref.remove(node_id);
+                // Only unregister if our epoch still matches
+                unregister_node_if_epoch_matches(self.id, self.epoch);
+            }
+            // If we can't borrow, we just leak the node. This is better than panicking.
+        });
+    }
 }
 
 #[wasm_bindgen]
@@ -1124,11 +1407,28 @@ impl TaffyNode {
     #[wasm_bindgen(constructor)]
     pub fn new(style: JsValue) -> Result<TaffyNode, JsValue> {
         let id = new_leaf(style)?;
-        Ok(TaffyNode { id })
+        // Register this node with a unique epoch
+        let epoch = register_node_with_epoch(id);
+        Ok(TaffyNode { id, epoch })
     }
 
     pub fn free(self) -> Result<(), JsValue> {
-        remove_node(self.id)
+        // Only remove if our epoch is still valid
+        if is_node_valid_with_epoch(self.id, self.epoch) {
+            unregister_node_if_epoch_matches(self.id, self.epoch);
+            let result = TAFFY.with(|taffy| {
+                let mut taffy_ref = taffy.borrow_mut();
+                let node_id = taffy::NodeId::from(self.id);
+                taffy_ref.remove(node_id)
+                    .map_err(|e| JsValue::from_str(&format!("Failed to remove node: {}", e)))
+            });
+            // Prevent Drop from running after we've already removed the node
+            std::mem::forget(self);
+            result?;
+        } else {
+            std::mem::forget(self);
+        }
+        Ok(())
     }
 
     pub fn set_style(&self, style: JsValue) -> Result<(), JsValue> {
@@ -1142,30 +1442,361 @@ impl TaffyNode {
         Err(JsValue::from_str("getting style is not yet supported"))
     }
     
+    #[wasm_bindgen(js_name = computeLayout)]
     pub fn compute_layout(&self, available_space: JsValue) -> Result<(), JsValue> {
         compute_layout(self.id, available_space)
     }
     
+    /* dispose removed in favor of Drop */
+
+    #[wasm_bindgen(js_name = getLayout)]
     pub fn get_layout(&self) -> Result<Layout, JsValue> {
         TAFFY.with(|taffy| {
-            let taffy_ref = taffy.borrow();
-            let node_id = taffy::NodeId::from(self.id as u64);
-            let layout = taffy_ref.layout(node_id)
-                .map_err(|e| JsValue::from_str(&format!("Failed to get layout: {}", e)))?;
-            Ok(Layout::from(*layout))
+             let taffy_ref = taffy.borrow();
+             let node_id = taffy::NodeId::from(self.id);
+             let layout = taffy_ref.layout(node_id)
+                 .map_err(|e| JsValue::from_str(&format!("Failed to get layout: {}", e)))?;
+             Ok(Layout::from(*layout))
         })
     }
     
+    #[wasm_bindgen(js_name = markDirty)]
+    pub fn mark_dirty(&self) -> Result<(), JsValue> {
+        TAFFY.with(|taffy| {
+            let mut taffy_ref = taffy.borrow_mut();
+            let node_id = taffy::NodeId::from(self.id);
+            taffy_ref.mark_dirty(node_id)
+                .map_err(|e| JsValue::from_str(&format!("Failed to mark dirty: {}", e)))?;
+            Ok(())
+        })
+    }
+
+    #[wasm_bindgen(js_name = addChild)]
     pub fn add_child(&self, child: &TaffyNode) -> Result<(), JsValue> {
         add_child(self.id, child.id)
     }
+
+    #[wasm_bindgen(js_name = insertChild)]
+    pub fn insert_child(&self, child: &TaffyNode, index: usize) -> Result<(), JsValue> {
+         TAFFY.with(|taffy| {
+            let mut taffy_ref = taffy.borrow_mut();
+            let parent_id = taffy::NodeId::from(self.id);
+            let child_id = taffy::NodeId::from(child.id);
+
+            taffy_ref.insert_child_at_index(parent_id, index, child_id)
+                .map_err(|e| JsValue::from_str(&format!("Failed to insert child: {}", e)))?;
+            Ok(())
+        })
+    }
     
+    #[wasm_bindgen(js_name = removeChild)]
     pub fn remove_child(&self, child: &TaffyNode) -> Result<(), JsValue> {
         remove_child(self.id, child.id)
     }
     
-    pub fn set_children(&self, children: &[u32]) -> Result<(), JsValue> {
+    #[wasm_bindgen(js_name = setChildren)]
+    pub fn set_children(&self, children: &[u64]) -> Result<(), JsValue> {
         // Note: this takes raw IDs because handling array of TaffyNode objects from JS is tricky in wasm-bindgen
         set_children(self.id, children)
+    }
+
+    #[wasm_bindgen(js_name = setDisplay)]
+    pub fn set_display(&self, display: Display) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            s.display = match display {
+                Display::None => taffy::style::Display::None,
+                Display::Flex => taffy::style::Display::Flex,
+                Display::Grid => taffy::style::Display::Grid,
+                Display::Block => taffy::style::Display::Block,
+            };
+        })
+    }
+
+    #[wasm_bindgen(js_name = setPositionType)]
+    pub fn set_position_type(&self, position: Position) -> Result<(), JsValue> {
+         self.update_style(|s| {
+            s.position = match position {
+                Position::Static => taffy::style::Position::Relative, // Taffy treats Static as Relative usually
+                Position::Relative => taffy::style::Position::Relative,
+                Position::Absolute => taffy::style::Position::Absolute,
+            };
+        })
+    }
+
+    #[wasm_bindgen(js_name = setFlexDirection)]
+    pub fn set_flex_direction(&self, direction: FlexDirection) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            s.flex_direction = match direction {
+                FlexDirection::Row => taffy::style::FlexDirection::Row,
+                FlexDirection::Column => taffy::style::FlexDirection::Column,
+                FlexDirection::RowReverse => taffy::style::FlexDirection::RowReverse,
+                FlexDirection::ColumnReverse => taffy::style::FlexDirection::ColumnReverse,
+            };
+        })
+    }
+
+    #[wasm_bindgen(js_name = setFlexWrap)]
+    pub fn set_flex_wrap(&self, wrap: FlexWrap) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            s.flex_wrap = match wrap {
+                FlexWrap::NoWrap => taffy::style::FlexWrap::NoWrap,
+                FlexWrap::Wrap => taffy::style::FlexWrap::Wrap,
+                FlexWrap::WrapReverse => taffy::style::FlexWrap::WrapReverse,
+            };
+        })
+    }
+
+    #[wasm_bindgen(js_name = setAlignItems)]
+    pub fn set_align_items(&self, align: AlignItems) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            s.align_items = Some(match align {
+                AlignItems::Start => taffy::style::AlignItems::Start,
+                AlignItems::End => taffy::style::AlignItems::End,
+                AlignItems::FlexStart => taffy::style::AlignItems::FlexStart,
+                AlignItems::FlexEnd => taffy::style::AlignItems::FlexEnd,
+                AlignItems::Center => taffy::style::AlignItems::Center,
+                AlignItems::Baseline => taffy::style::AlignItems::Baseline,
+                AlignItems::Stretch => taffy::style::AlignItems::Stretch,
+            });
+        })
+    }
+
+    #[wasm_bindgen(js_name = setAlignSelf)]
+    pub fn set_align_self(&self, align: AlignSelf) -> Result<(), JsValue> {
+        self.update_style(|s| {
+             s.align_self = match align {
+                AlignSelf::Auto => None,
+                AlignSelf::Start => Some(taffy::style::AlignItems::Start),
+                AlignSelf::End => Some(taffy::style::AlignItems::End),
+                AlignSelf::FlexStart => Some(taffy::style::AlignItems::FlexStart),
+                AlignSelf::FlexEnd => Some(taffy::style::AlignItems::FlexEnd),
+                AlignSelf::Center => Some(taffy::style::AlignItems::Center),
+                AlignSelf::Baseline => Some(taffy::style::AlignItems::Baseline),
+                AlignSelf::Stretch => Some(taffy::style::AlignItems::Stretch),
+            };
+        })
+    }
+
+    #[wasm_bindgen(js_name = setJustifyContent)]
+    pub fn set_justify_content(&self, justify: JustifyContent) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            s.justify_content = Some(match justify {
+                JustifyContent::Start => taffy::style::JustifyContent::Start,
+                JustifyContent::End => taffy::style::JustifyContent::End,
+                JustifyContent::FlexStart => taffy::style::JustifyContent::FlexStart,
+                JustifyContent::FlexEnd => taffy::style::JustifyContent::FlexEnd,
+                JustifyContent::Center => taffy::style::JustifyContent::Center,
+                JustifyContent::SpaceBetween => taffy::style::JustifyContent::SpaceBetween,
+                JustifyContent::SpaceAround => taffy::style::JustifyContent::SpaceAround,
+                JustifyContent::SpaceEvenly => taffy::style::JustifyContent::SpaceEvenly,
+            });
+        })
+    }
+
+    #[wasm_bindgen(js_name = setFlexGrow)]
+    pub fn set_flex_grow(&self, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| s.flex_grow = value)
+    }
+
+    #[wasm_bindgen(js_name = setFlexShrink)]
+    pub fn set_flex_shrink(&self, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| s.flex_shrink = value)
+    }
+
+    #[wasm_bindgen(js_name = setFlexBasis)]
+    pub fn set_flex_basis(&self, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| s.flex_basis = taffy::style::Dimension::length(value))
+    }
+
+    #[wasm_bindgen(js_name = setFlexBasisPercent)]
+    pub fn set_flex_basis_percent(&self, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| s.flex_basis = taffy::style::Dimension::percent(value / 100.0))
+    }
+    
+    #[wasm_bindgen(js_name = setFlexBasisAuto)]
+    pub fn set_flex_basis_auto(&self) -> Result<(), JsValue> {
+        self.update_style(|s| s.flex_basis = taffy::style::Dimension::auto())
+    }
+
+    // Width
+    #[wasm_bindgen(js_name = setWidth)]
+    pub fn set_width(&self, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| s.size.width = taffy::style::Dimension::length(value))
+    }
+    #[wasm_bindgen(js_name = setWidthPercent)]
+    pub fn set_width_percent(&self, value: f32) -> Result<(), JsValue> {
+         self.update_style(|s| s.size.width = taffy::style::Dimension::percent(value / 100.0))
+    }
+    #[wasm_bindgen(js_name = setWidthAuto)]
+    pub fn set_width_auto(&self) -> Result<(), JsValue> {
+         self.update_style(|s| s.size.width = taffy::style::Dimension::auto())
+    }
+
+    // Height
+    #[wasm_bindgen(js_name = setHeight)]
+    pub fn set_height(&self, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| s.size.height = taffy::style::Dimension::length(value))
+    }
+    #[wasm_bindgen(js_name = setHeightPercent)]
+    pub fn set_height_percent(&self, value: f32) -> Result<(), JsValue> {
+         self.update_style(|s| s.size.height = taffy::style::Dimension::percent(value / 100.0))
+    }
+    #[wasm_bindgen(js_name = setHeightAuto)]
+    pub fn set_height_auto(&self) -> Result<(), JsValue> {
+         self.update_style(|s| s.size.height = taffy::style::Dimension::auto())
+    }
+
+    // Min Width
+    #[wasm_bindgen(js_name = setMinWidth)]
+    pub fn set_min_width(&self, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| s.min_size.width = taffy::style::Dimension::length(value))
+    }
+    #[wasm_bindgen(js_name = setMinWidthPercent)]
+    pub fn set_min_width_percent(&self, value: f32) -> Result<(), JsValue> {
+         self.update_style(|s| s.min_size.width = taffy::style::Dimension::percent(value / 100.0))
+    }
+
+    // Min Height
+    #[wasm_bindgen(js_name = setMinHeight)]
+    pub fn set_min_height(&self, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| s.min_size.height = taffy::style::Dimension::length(value))
+    }
+    #[wasm_bindgen(js_name = setMinHeightPercent)]
+    pub fn set_min_height_percent(&self, value: f32) -> Result<(), JsValue> {
+         self.update_style(|s| s.min_size.height = taffy::style::Dimension::percent(value / 100.0))
+    }
+    
+    // Margin
+    #[wasm_bindgen(js_name = setMargin)]
+    pub fn set_margin(&self, edge: Edge, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            let val = taffy::style::LengthPercentageAuto::length(value);
+            match edge {
+                 Edge::Left => s.margin.left = val,
+                 Edge::Right => s.margin.right = val,
+                 Edge::Top => s.margin.top = val,
+                 Edge::Bottom => s.margin.bottom = val,
+                 Edge::Start => s.margin.left = val, 
+                 Edge::End => s.margin.right = val,
+                 Edge::Horizontal => { s.margin.left = val; s.margin.right = val; },
+                 Edge::Vertical => { s.margin.top = val; s.margin.bottom = val; },
+                 Edge::All => { s.margin.left = val; s.margin.right = val; s.margin.top = val; s.margin.bottom = val; },
+            }
+        })
+    }
+    
+    #[wasm_bindgen(js_name = setMarginAuto)]
+    pub fn set_margin_auto(&self, edge: Edge) -> Result<(), JsValue> {
+         self.update_style(|s| {
+            let val = taffy::style::LengthPercentageAuto::auto();
+            match edge {
+                 Edge::Left => s.margin.left = val,
+                 Edge::Right => s.margin.right = val,
+                 Edge::Top => s.margin.top = val,
+                 Edge::Bottom => s.margin.bottom = val,
+                 Edge::Start => s.margin.left = val,
+                 Edge::End => s.margin.right = val,
+                 Edge::Horizontal => { s.margin.left = val; s.margin.right = val; },
+                 Edge::Vertical => { s.margin.top = val; s.margin.bottom = val; },
+                 Edge::All => { s.margin = taffy::geometry::Rect { left: val, right: val, top: val, bottom: val }; },
+            }
+        })
+    }
+    
+    // Padding
+    #[wasm_bindgen(js_name = setPadding)]
+    pub fn set_padding(&self, edge: Edge, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            let val = taffy::style::LengthPercentage::length(value);
+             match edge {
+                 Edge::Left => s.padding.left = val,
+                 Edge::Right => s.padding.right = val,
+                 Edge::Top => s.padding.top = val,
+                 Edge::Bottom => s.padding.bottom = val,
+                 Edge::Start => s.padding.left = val,
+                 Edge::End => s.padding.right = val,
+                 Edge::Horizontal => { s.padding.left = val; s.padding.right = val; },
+                 Edge::Vertical => { s.padding.top = val; s.padding.bottom = val; },
+                 Edge::All => { s.padding.left = val; s.padding.right = val; s.padding.top = val; s.padding.bottom = val; },
+            }
+        })
+    }
+    
+    // Border
+    #[wasm_bindgen(js_name = setBorder)]
+    pub fn set_border(&self, edge: Edge, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            let val = taffy::style::LengthPercentage::length(value);
+             match edge {
+                 Edge::Left => s.border.left = val,
+                 Edge::Right => s.border.right = val,
+                 Edge::Top => s.border.top = val,
+                 Edge::Bottom => s.border.bottom = val,
+                 Edge::Start => s.border.left = val,
+                 Edge::End => s.border.right = val,
+                 Edge::Horizontal => { s.border.left = val; s.border.right = val; },
+                 Edge::Vertical => { s.border.top = val; s.border.bottom = val; },
+                 Edge::All => { s.border.left = val; s.border.right = val; s.border.top = val; s.border.bottom = val; },
+            }
+        })
+    }
+    
+    // Gap
+    #[wasm_bindgen(js_name = setGap)]
+    pub fn set_gap(&self, gutter: Gutter, value: f32) -> Result<(), JsValue> {
+        self.update_style(|s| {
+            let val = taffy::style::LengthPercentage::length(value);
+            match gutter {
+                Gutter::Column => s.gap.width = val,
+                Gutter::Row => s.gap.height = val,
+                Gutter::All => { s.gap.width = val; s.gap.height = val; },
+            }
+        })
+    }
+
+    #[wasm_bindgen(js_name = setMeasureFunc)]
+    pub fn set_measure_func(&self, js_func: js_sys::Function) -> Result<(), JsValue> {
+        TAFFY.with(|taffy| {
+            let mut taffy_ref = taffy.borrow_mut();
+            let node_id = taffy::NodeId::from(self.id);
+            
+            // Set context with function
+            // We use set_node_context which overwrites. If we had other data we'd need to be careful.
+            // But since NodeContext only has measure_func, this is fine.
+            let context = NodeContext { measure_func: Some(js_func) };
+            
+            // Taffy 0.9 way to set context. 
+            // set_node_context returns Result in some versions, check compatibility.
+            // Assuming it aligns with getting it.
+            let _ = taffy_ref.set_node_context(node_id, Some(context));
+            
+            taffy_ref.mark_dirty(node_id)
+                 .map_err(|e| JsValue::from_str(&format!("Failed to set measure func: {}", e)))?;
+            Ok(())
+        })
+    }
+
+    // Helper
+    fn update_style<F>(&self, f: F) -> Result<(), JsValue> 
+    where F: FnOnce(&mut taffy::style::Style) {
+        // Check if node is valid with our epoch BEFORE trying to borrow TAFFY
+        if !is_node_valid_with_epoch(self.id, self.epoch) {
+            return Err(JsValue::from_str("Node does not exist (already removed or recreated)"));
+        }
+        
+        TAFFY.with(|taffy| {
+            let mut taffy_ref = taffy.try_borrow_mut()
+                .map_err(|_| JsValue::from_str("Failed to borrow TAFFY mutably (update_style)"))?;
+            let node_id = taffy::NodeId::from(self.id);
+            
+            // Node should be valid at this point since we checked above
+            let mut style = taffy_ref.style(node_id)
+                .map_err(|e| JsValue::from_str(&format!("Node not found: {}", e)))?.clone();
+            
+            f(&mut style);
+            
+            taffy_ref.set_style(node_id, style).map_err(|e| JsValue::from_str(&format!("Failed to set style: {}", e)))?;
+            Ok(())
+        })
     }
 }
