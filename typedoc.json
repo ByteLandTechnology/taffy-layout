@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["./pkg/taffy_js.d.ts"],
+  "entryPoints": ["./pkg/taffy_wasm.d.ts"],
   "out": "./docs",
   "plugin": ["typedoc-plugin-markdown"],
   "name": "Taffy-JS API Documentation",

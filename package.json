@@ -1,6 +1,6 @@
 {
   "name": "taffy-js",
-  "version": "0.2.0",
+  "version": "0.2.5",
   "description": "WebAssembly bindings for Taffy layout library",
   "keywords": [
     "layout",
@@ -22,15 +22,29 @@
   "license": "MIT",
   "author": "ByteLandTechnology <github@byteland.app>",
   "type": "module",
-  "main": "pkg/taffy_js.js",
-  "types": "pkg/taffy_js.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./wasm": {
+      "types": "./pkg/taffy_wasm.d.ts",
+      "import": "./pkg/taffy_wasm.js"
+    }
+  },
   "files": [
+    "dist",
     "pkg"
   ],
   "scripts": {
-    "build": "wasm-pack build --release --target web && npx tsx scripts/patch-dts.ts && npm run docs",
-    "build:dev": "wasm-pack build --dev --target web && npx tsx scripts/patch-dts.ts",
-    "docs": "typedoc",
+    "build": "npm run build:wasm && npm run build:ts && npm run docs",
+    "build:wasm": "wasm-pack build --release --target web && npm run patch-dts",
+    "build:ts": "tsc",
+    "build:dev": "wasm-pack build --dev --target web && npm run patch-dts && npm run build:ts",
+    "docs": "typedoc && prettier --write docs",
+    "patch-dts": "npx tsx scripts/patch-dts.ts",
     "test": "wasm-pack test --node",
     "prepare": "husky"
   },
@@ -44,6 +58,7 @@
     "tsx": "^4.0.0",
     "typedoc": "^0.28.15",
     "typedoc-plugin-markdown": "^4.9.0",
+    "typescript": "^5.7.0",
     "wasm-pack": "^0.13.1"
   },
   "engines": {
@@ -58,6 +73,7 @@
     ]
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx,json,md,yaml,yml}": "prettier --write"
+    "*.{js,ts,jsx,tsx,json,md,yaml,yml}": "prettier --write",
+    "*.rs": "cargo fmt --"
   }
 }

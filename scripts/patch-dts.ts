@@ -121,7 +121,7 @@ function patchDtsFile(dtsPath: string, classDocs: ClassDoc[]): void {
 function main(): void {
   const projectRoot = join(import.meta.dirname, "..");
   const srcDir = join(projectRoot, "src");
-  const dtsPath = join(projectRoot, "pkg", "taffy_js.d.ts");
+  const dtsPath = join(projectRoot, "pkg", "taffy_wasm.d.ts");
 
   const allClassDocs: ClassDoc[] = [];
 

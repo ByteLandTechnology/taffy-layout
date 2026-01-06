@@ -23,7 +23,8 @@ npm install taffy-js
 ## 🚀 Quick Start
 
 ```javascript
-import init, {
+import {
+  loadTaffy,
   TaffyTree,
   Style,
   Display,
@@ -33,7 +34,7 @@ import init, {
 
 async function main() {
   // Initialize WebAssembly module
-  await init();
+  await loadTaffy();
 
   // Create a layout tree
   const tree = new TaffyTree();

@@ -25,9 +25,9 @@
 //! @example
 //!
 //! ```typescript
-//! import init, { TaffyTree, Style, Display, FlexDirection } from 'taffy-js';
+//! import { loadTaffy, TaffyTree, Style, Display, FlexDirection } from 'taffy-js';
 //!
-//! await init();
+//! await loadTaffy();
 //!
 //! const tree = new TaffyTree();
 //! const style = new Style();
