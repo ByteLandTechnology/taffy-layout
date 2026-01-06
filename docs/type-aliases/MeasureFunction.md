@@ -26,7 +26,7 @@ custom sizing based on their content (e.g., text nodes that need text measuremen
 | Parameter         | Type                                                                     | Description                                                                                                           |
 | ----------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
 | `knownDimensions` | [`Size`](../interfaces/Size.md)\<`number` \| `null`\>                    | Dimensions already determined by constraints. Each dimension is `number` if known, or `null` if needs to be measured. |
-| `availableSpace`  | [`Size`](../interfaces/Size.md)\<[`AvailableSpace`](AvailableSpace.md)\> | The available space constraints for the node. Can be definite pixels, MinContent, or MaxContent.                      |
+| `availableSpace`  | [`Size`](../interfaces/Size.md)\<[`AvailableSpace`](AvailableSpace.md)\> | The available space constraints for the node. Can be definite pixels, "minContent", or "maxContent".                  |
 | `node`            | `bigint`                                                                 | The node ID (`bigint`) of the node being measured                                                                     |
 | `context`         | `any`                                                                    | User-provided context attached to the node via `newLeafWithContext()`                                                 |
 | `style`           | [`Style`](../classes/Style.md)                                           | The node's current Style configuration                                                                                |
@@ -35,10 +35,9 @@ custom sizing based on their content (e.g., text nodes that need text measuremen
 
 [`Size`](../interfaces/Size.md)\<`number`\>
 
-The measured size of the content in pixels
+- The measured size of the content in pixels
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+## Example
 
 ```typescript
 import init, {
@@ -80,9 +79,7 @@ const measureText: MeasureFunction = (
 
 tree.computeLayoutWithMeasure(
   textNode,
-  { width: { Definite: 200 }, height: "MaxContent" },
+  { width: 200, height: "maxContent" },
   measureText,
 );
 ```
-
-</details>

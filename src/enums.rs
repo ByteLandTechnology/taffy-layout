@@ -28,24 +28,14 @@ use wasm_bindgen::prelude::*;
 /// Controls the layout algorithm type for an element. This corresponds to the CSS `display` property
 /// and determines how an element and its children are laid out.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { Display } from 'taffy-js';
 ///
 /// style.display = Display.Flex;  // Enable flexbox layout
 /// style.display = Display.Grid;  // Enable grid layout
 /// style.display = Display.None;  // Hide element from layout
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `Block` | 0 | Block-level layout, element takes full width |
-/// | `Flex` | 1 | Flexbox layout, one-dimensional layout model |
-/// | `Grid` | 2 | CSS Grid layout, two-dimensional layout model |
-/// | `None` | 3 | Element is hidden and does not participate in layout |
 #[wasm_bindgen(js_name = Display)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsDisplay {
@@ -103,21 +93,13 @@ impl TryFrom<u32> for JsDisplay {
 /// Controls how an element is positioned within its parent container.
 /// This corresponds to the CSS `position` property.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { Position } from 'taffy-js';
 ///
 /// style.position = Position.Relative;  // Normal document flow
 /// style.position = Position.Absolute;  // Removed from flow, uses inset values
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `Relative` | 0 | Element stays in normal document flow |
-/// | `Absolute` | 1 | Element is removed from flow and positioned via inset properties |
 #[wasm_bindgen(js_name = Position)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsPosition {
@@ -165,23 +147,13 @@ impl TryFrom<u32> for JsPosition {
 /// Defines the main axis direction for flex item layout. This corresponds to the CSS
 /// `flex-direction` property and determines how flex items are placed within the container.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { FlexDirection } from 'taffy-js';
 ///
 /// style.flexDirection = FlexDirection.Row;     // Horizontal, left to right
 /// style.flexDirection = FlexDirection.Column;  // Vertical, top to bottom
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `Row` | 0 | Horizontal direction, left to right (LTR) |
-/// | `Column` | 1 | Vertical direction, top to bottom |
-/// | `RowReverse` | 2 | Horizontal direction, right to left |
-/// | `ColumnReverse` | 3 | Vertical direction, bottom to top |
 #[wasm_bindgen(js_name = FlexDirection)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsFlexDirection {
@@ -226,22 +198,13 @@ impl From<taffy::style::FlexDirection> for JsFlexDirection {
 /// Controls whether flex items wrap onto multiple lines when they overflow the container.
 /// This corresponds to the CSS `flex-wrap` property.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { FlexWrap } from 'taffy-js';
 ///
 /// style.flexWrap = FlexWrap.NoWrap;  // All items on single line
 /// style.flexWrap = FlexWrap.Wrap;    // Items wrap to new lines
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `NoWrap` | 0 | All items forced onto single line |
-/// | `Wrap` | 1 | Items wrap to next line when needed |
-/// | `WrapReverse` | 2 | Items wrap in reverse order |
 #[wasm_bindgen(js_name = FlexWrap)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsFlexWrap {
@@ -282,26 +245,13 @@ impl From<taffy::style::FlexWrap> for JsFlexWrap {
 /// Defines the default alignment for all flex/grid items along the cross axis.
 /// This corresponds to the CSS `align-items` property.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { AlignItems } from 'taffy-js';
 ///
 /// style.alignItems = AlignItems.Center;   // Center items on cross axis
 /// style.alignItems = AlignItems.Stretch;  // Stretch items to fill container
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `Start` | 0 | Align to cross axis start |
-/// | `End` | 1 | Align to cross axis end |
-/// | `FlexStart` | 2 | Align to flex container start |
-/// | `FlexEnd` | 3 | Align to flex container end |
-/// | `Center` | 4 | Center along cross axis |
-/// | `Baseline` | 5 | Align to text baseline |
-/// | `Stretch` | 6 | Stretch to fill cross axis |
 #[wasm_bindgen(js_name = AlignItems)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsAlignItems {
@@ -374,27 +324,13 @@ impl TryFrom<u32> for JsAlignItems {
 /// Overrides the parent's `align-items` value for a specific child element.
 /// This corresponds to the CSS `align-self` property.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { AlignSelf } from 'taffy-js';
 ///
 /// style.alignSelf = AlignSelf.Auto;    // Use parent's align-items
 /// style.alignSelf = AlignSelf.Center;  // Override to center this item
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `Auto` | 0 | Inherit parent's `align-items` value |
-/// | `Start` | 1 | Align to cross axis start |
-/// | `End` | 2 | Align to cross axis end |
-/// | `FlexStart` | 3 | Align to flex container start |
-/// | `FlexEnd` | 4 | Align to flex container end |
-/// | `Center` | 5 | Center along cross axis |
-/// | `Baseline` | 6 | Align to text baseline |
-/// | `Stretch` | 7 | Stretch to fill cross axis |
 #[wasm_bindgen(js_name = AlignSelf)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsAlignSelf {
@@ -473,28 +409,13 @@ impl TryFrom<u32> for JsAlignSelf {
 ///
 /// **Note**: This property only has effect when `flex-wrap` is set to `Wrap` or `WrapReverse`.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { AlignContent, FlexWrap } from 'taffy-js';
 ///
 /// style.flexWrap = FlexWrap.Wrap;
 /// style.alignContent = AlignContent.SpaceBetween;  // Distribute lines evenly
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `Start` | 0 | Lines packed to start |
-/// | `End` | 1 | Lines packed to end |
-/// | `FlexStart` | 2 | Lines packed to flex start |
-/// | `FlexEnd` | 3 | Lines packed to flex end |
-/// | `Center` | 4 | Lines centered |
-/// | `Stretch` | 5 | Lines stretched to fill |
-/// | `SpaceBetween` | 6 | First/last lines flush, rest evenly distributed |
-/// | `SpaceAround` | 7 | Equal space around each line |
-/// | `SpaceEvenly` | 8 | Equal space between all lines |
 #[wasm_bindgen(js_name = AlignContent)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsAlignContent {
@@ -577,28 +498,13 @@ impl TryFrom<u32> for JsAlignContent {
 /// Defines how flex items are aligned and spaced along the main axis.
 /// This corresponds to the CSS `justify-content` property.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { JustifyContent } from 'taffy-js';
 ///
 /// style.justifyContent = JustifyContent.Center;        // Center items
 /// style.justifyContent = JustifyContent.SpaceBetween;  // Distribute evenly
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `Start` | 0 | Items packed to start |
-/// | `End` | 1 | Items packed to end |
-/// | `FlexStart` | 2 | Items packed to flex start |
-/// | `FlexEnd` | 3 | Items packed to flex end |
-/// | `Center` | 4 | Items centered |
-/// | `Stretch` | 5 | Items stretched |
-/// | `SpaceBetween` | 6 | First/last at edges, rest distributed |
-/// | `SpaceAround` | 7 | Equal space around each item |
-/// | `SpaceEvenly` | 8 | Equal space between all items |
 #[wasm_bindgen(js_name = JustifyContent)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsJustifyContent {
@@ -681,22 +587,12 @@ impl TryFrom<u32> for JsJustifyContent {
 /// Defines how content that exceeds the container boundaries is handled.
 /// This corresponds to the CSS `overflow` property.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { Overflow } from 'taffy-js';
 ///
 /// style.overflow = { x: Overflow.Hidden, y: Overflow.Scroll };
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `Visible` | 0 | Content is not clipped |
-/// | `Hidden` | 1 | Content is clipped without scrollbars |
-/// | `Scroll` | 2 | Always show scrollbars |
-/// | `Auto` | 3 | Show scrollbars when needed (maps to Scroll internally) |
 #[wasm_bindgen(js_name = Overflow)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsOverflow {
@@ -741,21 +637,13 @@ impl From<taffy::style::Overflow> for JsOverflow {
 /// Controls how the total width and height of an element is calculated.
 /// This corresponds to the CSS `box-sizing` property.
 ///
-/// # JavaScript Usage
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// import { BoxSizing } from 'taffy-js';
 ///
 /// style.boxSizing = BoxSizing.BorderBox;   // Size includes padding and border
 /// style.boxSizing = BoxSizing.ContentBox;  // Size is content only
 /// ```
-///
-/// # Variants
-///
-/// | Variant | Value | Description |
-/// |---------|-------|-------------|
-/// | `BorderBox` | 0 | Width/height includes content, padding, and border |
-/// | `ContentBox` | 1 | Width/height includes only content |
 #[wasm_bindgen(js_name = BoxSizing)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsBoxSizing {

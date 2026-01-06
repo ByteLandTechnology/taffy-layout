@@ -17,9 +17,8 @@
 //! - [`map_void_result`]: For results with no return value
 //! - [`map_bool_result`]: For results containing boolean values
 //!
-//! ## JavaScript Usage
-//!
-//! ```javascript
+//! @example
+//! ```typescript
 //! try {
 //!   const nodeId = tree.newLeaf(style);
 //!   console.log('Created node:', nodeId);
@@ -42,16 +41,18 @@ use wasm_bindgen::prelude::*;
 /// This class wraps the native [`taffy::TaffyError`] type and exposes it to JavaScript
 /// with a readable error message. It is thrown as a JavaScript exception on failure.
 ///
-/// # JavaScript Interface
-///
+/// @example
 /// ```typescript
-/// class TaffyError {
-///   readonly message: string;  // Human-readable error description
+/// try {
+///  tree.remove(node);
+/// } catch (e) {
+///   if (e instanceof TaffyError) {
+///      console.error(e.message);
+///   }
 /// }
 /// ```
 ///
-/// # Error Types
-///
+/// @remarks
 /// The underlying Taffy errors include:
 /// - `InvalidInputNode`: Node ID doesn't exist in the tree
 /// - `InvalidParentNode`: Specified parent node doesn't exist
@@ -66,9 +67,10 @@ pub struct JsTaffyError {
 impl JsTaffyError {
     /// Gets the human-readable error message
     ///
-    /// # Returns
+    /// @returns - A string describing what went wrong.
     ///
-    /// A string describing what went wrong. Examples:
+    /// @remarks
+    /// Examples:
     /// - "Node with id 1234 is not present in the Taffy tree"
     /// - "Index 5 is out of bounds for node with 3 children"
     #[wasm_bindgen(getter)]
@@ -92,13 +94,9 @@ impl From<TaffyError> for JsTaffyError {
 /// This function converts a `TaffyError` to a `JsValue` that can be thrown
 /// as a JavaScript exception.
 ///
-/// # Arguments
+/// @param e - The Taffy error to convert
 ///
-/// - `e`: The Taffy error to convert
-///
-/// # Returns
-///
-/// A `JsValue` containing the error message
+/// @returns - A `JsValue` containing the error message
 pub(crate) fn to_js_error(e: TaffyError) -> JsValue {
     JsValue::from(JsTaffyError::from(e))
 }
@@ -108,17 +106,12 @@ pub(crate) fn to_js_error(e: TaffyError) -> JsValue {
 /// Specialized version that converts the `NodeId` to a `u64` (BigInt in JavaScript).
 /// Throws a JavaScript exception on error.
 ///
-/// # Arguments
+/// @param result - A result containing a `NodeId` on success
 ///
-/// - `result`: A result containing a `NodeId` on success
+/// @returns - A `u64` node ID on success, or throws `TaffyError` on failure
 ///
-/// # Returns
-///
-/// A `u64` node ID on success, or throws `TaffyError` on failure
-///
-/// # JavaScript Result
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// const nodeId = tree.newLeaf(style);  // Returns bigint or throws TaffyError
 /// ```
 pub(crate) fn map_node_result(result: Result<NodeId, TaffyError>) -> Result<u64, JsValue> {
@@ -133,17 +126,12 @@ pub(crate) fn map_node_result(result: Result<NodeId, TaffyError>) -> Result<u64,
 /// Specialized version for `Result<(), TaffyError>`.
 /// Returns nothing on success, or throws a JavaScript exception on failure.
 ///
-/// # Arguments
+/// @param result - A result with no success value
 ///
-/// - `result`: A result with no success value
+/// @returns - Nothing on success, or throws `TaffyError` on failure
 ///
-/// # Returns
-///
-/// Nothing on success, or throws `TaffyError` on failure
-///
-/// # JavaScript Result
-///
-/// ```javascript
+/// @example
+/// ```typescript
 /// tree.setStyle(nodeId, style);  // Returns void or throws TaffyError
 /// ```
 pub(crate) fn map_void_result(result: Result<(), TaffyError>) -> Result<(), JsValue> {
@@ -155,13 +143,9 @@ pub(crate) fn map_void_result(result: Result<(), TaffyError>) -> Result<(), JsVa
 /// Specialized version for `Result<bool, TaffyError>`.
 /// Returns the boolean on success, or throws a JavaScript exception on failure.
 ///
-/// # Arguments
+/// @param result - A result containing a boolean on success
 ///
-/// - `result`: A result containing a boolean on success
-///
-/// # Returns
-///
-/// A boolean on success, or throws `TaffyError` on failure
+/// @returns - A boolean on success, or throws `TaffyError` on failure
 pub(crate) fn map_bool_result(result: Result<bool, TaffyError>) -> Result<bool, JsValue> {
     result.map_err(to_js_error)
 }

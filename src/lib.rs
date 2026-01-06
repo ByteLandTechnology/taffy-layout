@@ -22,9 +22,9 @@
 //! - **[`types`]**: Data transfer objects and TypeScript type definitions
 //! - **[`utils`]**: Utility functions for serialization and logging
 //!
-//! ## Usage Example
+//! @example
 //!
-//! ```javascript
+//! ```typescript
 //! import init, { TaffyTree, Style, Display, FlexDirection } from 'taffy-js';
 //!
 //! await init();

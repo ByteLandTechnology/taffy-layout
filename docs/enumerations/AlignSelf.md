@@ -11,27 +11,14 @@ Cross-axis alignment enumeration for a single element
 Overrides the parent's `align-items` value for a specific child element.
 This corresponds to the CSS `align-self` property.
 
-# JavaScript Usage
+## Example
 
-```javascript
+```typescript
 import { AlignSelf } from "taffy-js";
 
 style.alignSelf = AlignSelf.Auto; // Use parent's align-items
 style.alignSelf = AlignSelf.Center; // Override to center this item
 ```
-
-# Variants
-
-| Variant     | Value | Description                          |
-| ----------- | ----- | ------------------------------------ |
-| `Auto`      | 0     | Inherit parent's `align-items` value |
-| `Start`     | 1     | Align to cross axis start            |
-| `End`       | 2     | Align to cross axis end              |
-| `FlexStart` | 3     | Align to flex container start        |
-| `FlexEnd`   | 4     | Align to flex container end          |
-| `Center`    | 5     | Center along cross axis              |
-| `Baseline`  | 6     | Align to text baseline               |
-| `Stretch`   | 7     | Stretch to fill cross axis           |
 
 ## Enumeration Members
 

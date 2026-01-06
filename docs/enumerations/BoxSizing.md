@@ -11,21 +11,14 @@ Box sizing enumeration
 Controls how the total width and height of an element is calculated.
 This corresponds to the CSS `box-sizing` property.
 
-# JavaScript Usage
+## Example
 
-```javascript
+```typescript
 import { BoxSizing } from "taffy-js";
 
 style.boxSizing = BoxSizing.BorderBox; // Size includes padding and border
 style.boxSizing = BoxSizing.ContentBox; // Size is content only
 ```
-
-# Variants
-
-| Variant      | Value | Description                                        |
-| ------------ | ----- | -------------------------------------------------- |
-| `BorderBox`  | 0     | Width/height includes content, padding, and border |
-| `ContentBox` | 1     | Width/height includes only content                 |
 
 ## Enumeration Members
 

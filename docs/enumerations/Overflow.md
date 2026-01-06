@@ -11,22 +11,13 @@ Overflow handling enumeration
 Defines how content that exceeds the container boundaries is handled.
 This corresponds to the CSS `overflow` property.
 
-# JavaScript Usage
+## Example
 
-```javascript
+```typescript
 import { Overflow } from "taffy-js";
 
 style.overflow = { x: Overflow.Hidden, y: Overflow.Scroll };
 ```
-
-# Variants
-
-| Variant   | Value | Description                                             |
-| --------- | ----- | ------------------------------------------------------- |
-| `Visible` | 0     | Content is not clipped                                  |
-| `Hidden`  | 1     | Content is clipped without scrollbars                   |
-| `Scroll`  | 2     | Always show scrollbars                                  |
-| `Auto`    | 3     | Show scrollbars when needed (maps to Scroll internally) |
 
 ## Enumeration Members
 

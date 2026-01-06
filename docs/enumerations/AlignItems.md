@@ -11,26 +11,14 @@ Cross-axis alignment enumeration for all children
 Defines the default alignment for all flex/grid items along the cross axis.
 This corresponds to the CSS `align-items` property.
 
-# JavaScript Usage
+## Example
 
-```javascript
+```typescript
 import { AlignItems } from "taffy-js";
 
 style.alignItems = AlignItems.Center; // Center items on cross axis
 style.alignItems = AlignItems.Stretch; // Stretch items to fill container
 ```
-
-# Variants
-
-| Variant     | Value | Description                   |
-| ----------- | ----- | ----------------------------- |
-| `Start`     | 0     | Align to cross axis start     |
-| `End`       | 1     | Align to cross axis end       |
-| `FlexStart` | 2     | Align to flex container start |
-| `FlexEnd`   | 3     | Align to flex container end   |
-| `Center`    | 4     | Center along cross axis       |
-| `Baseline`  | 5     | Align to text baseline        |
-| `Stretch`   | 6     | Stretch to fill cross axis    |
 
 ## Enumeration Members
 

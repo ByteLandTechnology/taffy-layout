@@ -11,23 +11,14 @@ Flex direction enumeration
 Defines the main axis direction for flex item layout. This corresponds to the CSS
 `flex-direction` property and determines how flex items are placed within the container.
 
-# JavaScript Usage
+## Example
 
-```javascript
+```typescript
 import { FlexDirection } from "taffy-js";
 
 style.flexDirection = FlexDirection.Row; // Horizontal, left to right
 style.flexDirection = FlexDirection.Column; // Vertical, top to bottom
 ```
-
-# Variants
-
-| Variant         | Value | Description                               |
-| --------------- | ----- | ----------------------------------------- |
-| `Row`           | 0     | Horizontal direction, left to right (LTR) |
-| `Column`        | 1     | Vertical direction, top to bottom         |
-| `RowReverse`    | 2     | Horizontal direction, right to left       |
-| `ColumnReverse` | 3     | Vertical direction, bottom to top         |
 
 ## Enumeration Members
 

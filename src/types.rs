@@ -32,9 +32,13 @@
 //! - `MeasureFunction` callback signature
 //! - Detailed grid layout info types
 
-use serde::{Deserialize, Serialize};
+use serde::de::{self, Visitor};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::fmt;
 use taffy::geometry::{Rect, Size};
-use taffy::style::{AvailableSpace, CompactLength, Dimension, LengthPercentage, LengthPercentageAuto};
+use taffy::style::{
+    AvailableSpace, CompactLength, Dimension, LengthPercentage, LengthPercentageAuto,
+};
 use wasm_bindgen::prelude::*;
 
 // =============================================================================
@@ -47,10 +51,9 @@ extern "C" {
     ///
     /// Used when calling `computeLayout()` or `computeLayoutWithMeasure()`.
     ///
-    /// # TypeScript
-    ///
+    /// @example
     /// ```typescript
-    /// type AvailableSpace = { Definite: number } | "MinContent" | "MaxContent";
+    /// type AvailableSpace = number | "minContent" | "maxContent";
     /// interface Size<T> { width: T; height: T; }
     /// ```
     #[wasm_bindgen(typescript_type = "Size<AvailableSpace>")]
@@ -128,14 +131,11 @@ const TS_APPEND_CONTENT: &'static str = r#"
  * This is passed to `computeLayout()` to define the container constraints.
  *
  * @remarks
- * - Use `{ Definite: number }` when you have a fixed container size
- * - Use `"MinContent"` to shrink-wrap to the minimum content size
- * - Use `"MaxContent"` to expand to fit all content without wrapping
+ * - Use `number` when you have a fixed container size
+ * - Use `"minContent"` to shrink-wrap to the minimum content size
+ * - Use `"maxContent"` to expand to fit all content without wrapping
  *
- *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import init, { TaffyTree, Style, type AvailableSpace, type Size } from 'taffy-js';
  *
@@ -145,22 +145,20 @@ const TS_APPEND_CONTENT: &'static str = r#"
  *
  * // Fixed size container with type annotation
  * const fixedSpace: Size<AvailableSpace> = {
- *   width: { Definite: 800 },
- *   height: { Definite: 600 }
+ *   width: 800,
+ *   height: 600
  * };
  * tree.computeLayout(root, fixedSpace);
  *
  * // Flexible width, fixed height
  * const flexibleSpace: Size<AvailableSpace> = {
- *   width: "MaxContent",
- *   height: { Definite: 400 }
+ *   width: "maxContent",
+ *   height: 400
  * };
  * tree.computeLayout(root, flexibleSpace);
  * ```
- *
- * </details>
  */
-export type AvailableSpace = { Definite: number } | "MinContent" | "MaxContent";
+export type AvailableSpace = number | "minContent" | "maxContent";
 
 /**
  * Generic size type with width and height.
@@ -173,10 +171,7 @@ export type AvailableSpace = { Definite: number } | "MinContent" | "MaxContent";
  * @property width - The horizontal dimension value
  * @property height - The vertical dimension value
  *
- *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import type { Size, Dimension, AvailableSpace } from 'taffy-js';
  *
@@ -189,12 +184,10 @@ export type AvailableSpace = { Definite: number } | "MinContent" | "MaxContent";
  * };
  *
  * const availableSize: Size<AvailableSpace> = {
- *   width: { Definite: 800 },
+ *   width: 800,
  *   height: "MaxContent"
  * };
  * ```
- *
- * </details>
  */
 export interface Size<T> {
   /** The horizontal dimension value */
@@ -212,16 +205,14 @@ export interface Size<T> {
  * @param knownDimensions - Dimensions already determined by constraints. Each dimension
  *                          is `number` if known, or `null` if needs to be measured.
  * @param availableSpace - The available space constraints for the node. Can be definite
- *                         pixels, MinContent, or MaxContent.
+ *                         pixels, "minContent", or "maxContent".
  * @param node - The node ID (`bigint`) of the node being measured
  * @param context - User-provided context attached to the node via `newLeafWithContext()`
  * @param style - The node's current Style configuration
- * @returns The measured size of the content in pixels
  *
+ * @returns - The measured size of the content in pixels
  *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import init, { TaffyTree, Style, type MeasureFunction, type Size } from 'taffy-js';
  *
@@ -256,12 +247,10 @@ export interface Size<T> {
  *
  * tree.computeLayoutWithMeasure(
  *   textNode,
- *   { width: { Definite: 200 }, height: "MaxContent" },
+ *   { width: 200, height: "maxContent" },
  *   measureText
  * );
  * ```
- *
- * </details>
  */
 export type MeasureFunction = (
   knownDimensions: Size<number | null>,
@@ -277,14 +266,11 @@ export type MeasureFunction = (
  * Used for sizing properties like `width`, `height`, `flexBasis`, etc.
  *
  * @remarks
- * - `{ Length: number }`: Fixed size in pixels
- * - `{ Percent: number }`: Percentage of parent's size (0-100)
- * - `"Auto"`: Size determined by content or layout algorithm
+ * - `number`: Fixed size in pixels
+ * - `"{number}%"`: Percentage of parent's size (0-100)
+ * - `"auto"`: Size determined by content or layout algorithm
  *
- *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import { Style, type Dimension, type Size } from 'taffy-js';
  *
@@ -292,26 +278,24 @@ export type MeasureFunction = (
  *
  * // With explicit type annotations
  * const fixedSize: Size<Dimension> = {
- *   width: { Length: 200 },
- *   height: { Length: 100 }
+ *   width: 200,
+ *   height: 100
  * };
  *
  * const percentSize: Size<Dimension> = {
- *   width: { Percent: 50 },
- *   height: { Percent: 100 }
+ *   width: "50%",
+ *   height: "100%"
  * };
  *
  * const autoSize: Size<Dimension> = {
- *   width: "Auto",
- *   height: "Auto"
+ *   width: "auto",
+ *   height: "auto"
  * };
  *
  * style.size = fixedSize;
  * ```
- *
- * </details>
  */
-export type Dimension = { Length: number } | { Percent: number } | "Auto";
+export type Dimension = number | `${number}%` | "auto";
 
 /**
  * Length or percentage value (no auto support).
@@ -319,37 +303,32 @@ export type Dimension = { Length: number } | { Percent: number } | "Auto";
  * Used for properties that require explicit values, such as `padding`, `border`, and `gap`.
  *
  * @remarks
- * - `{ Length: number }`: Fixed size in pixels
- * - `{ Percent: number }`: Percentage of parent's size (0-100)
+ * - `number`: Fixed size in pixels
+ * - `"{number}%"`: Percentage of parent's size (0-100)
  *
- *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import { Style, type LengthPercentage, type Rect, type Size } from 'taffy-js';
  *
  * const style = new Style();
  *
  * const padding: Rect<LengthPercentage> = {
- *   left: { Length: 10 },
- *   right: { Length: 10 },
- *   top: { Length: 5 },
- *   bottom: { Length: 5 }
+ *   left: 10,
+ *   right: 10,
+ *   top: 5,
+ *   bottom: 5
  * };
  *
  * const gap: Size<LengthPercentage> = {
- *   width: { Percent: 5 },
- *   height: { Percent: 5 }
+ *   width: "5%",
+ *   height: "5%"
  * };
  *
  * style.padding = padding;
  * style.gap = gap;
  * ```
- *
- * </details>
  */
-export type LengthPercentage = { Length: number } | { Percent: number };
+export type LengthPercentage = number | `${number}%`;
 
 /**
  * Length, percentage, or auto value.
@@ -357,14 +336,11 @@ export type LengthPercentage = { Length: number } | { Percent: number };
  * Used for properties that support auto values, such as `margin` and `inset`.
  *
  * @remarks
- * - `{ Length: number }`: Fixed size in pixels
- * - `{ Percent: number }`: Percentage of parent's size (0-100)
- * - `"Auto"`: Automatic value (behavior depends on property)
+ * - `number`: Fixed size in pixels
+ * - `"{number}%"`: Percentage of parent's size (0-100)
+ * - `"auto"`: Automatic value (behavior depends on property)
  *
- *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import { Style, type LengthPercentageAuto, type Rect } from 'taffy-js';
  *
@@ -372,18 +348,16 @@ export type LengthPercentage = { Length: number } | { Percent: number };
  *
  * // Auto margins for horizontal centering
  * const centerMargin: Rect<LengthPercentageAuto> = {
- *   left: "Auto",
- *   right: "Auto",
- *   top: { Length: 0 },
- *   bottom: { Length: 0 }
+ *   left: "auto",
+ *   right: "auto",
+ *   top: 0,
+ *   bottom: 0
  * };
  *
  * style.margin = centerMargin;
  * ```
- *
- * </details>
  */
-export type LengthPercentageAuto = { Length: number } | { Percent: number } | "Auto";
+export type LengthPercentageAuto = number | `${number}%` | "auto";
 
 /**
  * Point with x and y coordinates/values.
@@ -396,10 +370,7 @@ export type LengthPercentageAuto = { Length: number } | { Percent: number } | "A
  * @property x - The horizontal value
  * @property y - The vertical value
  *
- *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import { Style, Overflow, type Point } from 'taffy-js';
  *
@@ -412,8 +383,6 @@ export type LengthPercentageAuto = { Length: number } | { Percent: number } | "A
  *
  * style.overflow = overflow;
  * ```
- *
- * </details>
  */
 export interface Point<T> {
   /** The horizontal (x-axis) value */
@@ -434,10 +403,7 @@ export interface Point<T> {
  * @property top - The top side value
  * @property bottom - The bottom side value
  *
- *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import { Style, type Rect, type LengthPercentage, type LengthPercentageAuto } from 'taffy-js';
  *
@@ -445,25 +411,23 @@ export interface Point<T> {
  *
  * // Typed padding
  * const padding: Rect<LengthPercentage> = {
- *   left: { Length: 10 },
- *   right: { Length: 10 },
- *   top: { Length: 10 },
- *   bottom: { Length: 10 }
+ *   left: 10,
+ *   right: 10,
+ *   top: 10,
+ *   bottom: 10
  * };
  *
  * // Typed margin with auto
  * const margin: Rect<LengthPercentageAuto> = {
- *   left: "Auto",
- *   right: "Auto",
- *   top: { Length: 10 },
- *   bottom: { Length: 30 }
+ *   left: "auto",
+ *   right: "auto",
+ *   top: 10,
+ *   bottom: 30
  * };
  *
  * style.padding = padding;
  * style.margin = margin;
  * ```
- *
- * </details>
  */
 export interface Rect<T> {
   /** The left side value */
@@ -485,10 +449,7 @@ export interface Rect<T> {
  * @remarks
  * This is only available when the `detailed_layout_info` feature is enabled.
  *
- *
- * <details>
- * <summary><strong>TypeScript Example</strong></summary>
- *
+ * @example
  * ```typescript
  * import type { DetailedLayoutInfo, DetailedGridInfo } from 'taffy-js';
  *
@@ -500,10 +461,8 @@ export interface Rect<T> {
  *   console.log('Columns:', grid.columns.sizes);
  * }
  * ```
- *
- * </details>
  */
-export type DetailedLayoutInfo = { Grid: DetailedGridInfo } | "None";
+export type DetailedLayoutInfo = DetailedGridInfo | null;
 
 /**
  * Detailed information about a grid layout.
@@ -576,23 +535,21 @@ export interface DetailedGridItemsInfo {
 
 /// Data Transfer Object for CSS dimension values
 ///
+/// @remarks
 /// This enum represents a dimension value that can be:
 /// - A fixed length in pixels
 /// - A percentage of the parent's size
 /// - Auto (size determined by content or layout algorithm)
 ///
-/// # JSON Representation
-///
+/// @example
 /// ```json
-/// { "Length": 100 }
-/// { "Percent": 50 }
-/// "Auto"
+/// 100.0
+/// "50%"
+/// "auto"
 /// ```
-///
-/// # Conversion
-///
+/// @notes
 /// This DTO converts bidirectionally with [`taffy::style::Dimension`].
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub enum DimensionDto {
     /// Fixed length in pixels
     Length(f32),
@@ -600,6 +557,71 @@ pub enum DimensionDto {
     Percent(f32),
     /// Automatic sizing
     Auto,
+}
+
+impl Serialize for DimensionDto {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            DimensionDto::Length(l) => serializer.serialize_f32(*l),
+            DimensionDto::Percent(p) => {
+                let s = format!("{}%", p);
+                serializer.serialize_str(&s)
+            }
+            DimensionDto::Auto => serializer.serialize_str("auto"),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for DimensionDto {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct DimensionVisitor;
+
+        impl<'de> Visitor<'de> for DimensionVisitor {
+            type Value = DimensionDto;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a number, a percentage string ending in '%', or 'auto'")
+            }
+
+            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E> {
+                Ok(DimensionDto::Length(value as f32))
+            }
+
+            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E> {
+                Ok(DimensionDto::Length(value as f32))
+            }
+
+            fn visit_f64<E>(self, value: f64) -> Result<Self::Value, E> {
+                Ok(DimensionDto::Length(value as f32))
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                if value == "auto" {
+                    Ok(DimensionDto::Auto)
+                } else if value.ends_with('%') {
+                    // Try parsing the number part
+                    let num_str = &value[..value.len() - 1];
+                    match num_str.parse::<f32>() {
+                        Ok(p) => Ok(DimensionDto::Percent(p)),
+                        Err(_) => Err(E::custom("Invalid percentage value")),
+                    }
+                } else {
+                    Err(E::custom("Expected 'auto' or a string ending with '%'"))
+                }
+            }
+        }
+
+        deserializer.deserialize_any(DimensionVisitor)
+    }
 }
 
 impl From<DimensionDto> for Dimension {
@@ -635,18 +657,79 @@ impl From<Dimension> for DimensionDto {
 /// Similar to [`DimensionDto`] but does not support "Auto".
 /// Used for properties like padding and border that require explicit values.
 ///
-/// # JSON Representation
-///
+/// @example
 /// ```json
-/// { "Length": 10 }
-/// { "Percent": 25 }
+/// 10.0
+/// "25%"
 /// ```
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub enum LengthPercentageDto {
     /// Fixed length in pixels
     Length(f32),
     /// Percentage of parent dimension (0-100)
     Percent(f32),
+}
+
+impl Serialize for LengthPercentageDto {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            LengthPercentageDto::Length(l) => serializer.serialize_f32(*l),
+            LengthPercentageDto::Percent(p) => {
+                let s = format!("{}%", p);
+                serializer.serialize_str(&s)
+            }
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for LengthPercentageDto {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct LengthPercentageVisitor;
+
+        impl<'de> Visitor<'de> for LengthPercentageVisitor {
+            type Value = LengthPercentageDto;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a number or a percentage string ending in '%'")
+            }
+
+            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E> {
+                Ok(LengthPercentageDto::Length(value as f32))
+            }
+
+            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E> {
+                Ok(LengthPercentageDto::Length(value as f32))
+            }
+
+            fn visit_f64<E>(self, value: f64) -> Result<Self::Value, E> {
+                Ok(LengthPercentageDto::Length(value as f32))
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                if value.ends_with('%') {
+                    // Try parsing the number part
+                    let num_str = &value[..value.len() - 1];
+                    match num_str.parse::<f32>() {
+                        Ok(p) => Ok(LengthPercentageDto::Percent(p)),
+                        Err(_) => Err(E::custom("Invalid percentage value")),
+                    }
+                } else {
+                    Err(E::custom("Expected a string ending with '%'"))
+                }
+            }
+        }
+
+        deserializer.deserialize_any(LengthPercentageVisitor)
+    }
 }
 
 impl From<LengthPercentageDto> for LengthPercentage {
@@ -677,14 +760,13 @@ impl From<LengthPercentage> for LengthPercentageDto {
 ///
 /// Used for properties like margin and inset that support "Auto".
 ///
-/// # JSON Representation
-///
+/// @example
 /// ```json
-/// { "Length": 10 }
-/// { "Percent": 25 }
-/// "Auto"
+/// 10.0
+/// "25%"
+/// "auto"
 /// ```
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub enum LengthPercentageAutoDto {
     /// Fixed length in pixels
     Length(f32),
@@ -692,6 +774,71 @@ pub enum LengthPercentageAutoDto {
     Percent(f32),
     /// Automatic value (e.g., auto margins for centering)
     Auto,
+}
+
+impl Serialize for LengthPercentageAutoDto {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            LengthPercentageAutoDto::Length(l) => serializer.serialize_f32(*l),
+            LengthPercentageAutoDto::Percent(p) => {
+                let s = format!("{}%", p);
+                serializer.serialize_str(&s)
+            }
+            LengthPercentageAutoDto::Auto => serializer.serialize_str("auto"),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for LengthPercentageAutoDto {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct LengthPercentageAutoVisitor;
+
+        impl<'de> Visitor<'de> for LengthPercentageAutoVisitor {
+            type Value = LengthPercentageAutoDto;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a number, a percentage string ending in '%', or 'auto'")
+            }
+
+            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E> {
+                Ok(LengthPercentageAutoDto::Length(value as f32))
+            }
+
+            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E> {
+                Ok(LengthPercentageAutoDto::Length(value as f32))
+            }
+
+            fn visit_f64<E>(self, value: f64) -> Result<Self::Value, E> {
+                Ok(LengthPercentageAutoDto::Length(value as f32))
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                if value == "auto" {
+                    Ok(LengthPercentageAutoDto::Auto)
+                } else if value.ends_with('%') {
+                    // Try parsing the number part
+                    let num_str = &value[..value.len() - 1];
+                    match num_str.parse::<f32>() {
+                        Ok(p) => Ok(LengthPercentageAutoDto::Percent(p)),
+                        Err(_) => Err(E::custom("Invalid percentage value")),
+                    }
+                } else {
+                    Err(E::custom("Expected 'auto' or a string ending with '%'"))
+                }
+            }
+        }
+
+        deserializer.deserialize_any(LengthPercentageAutoVisitor)
+    }
 }
 
 impl From<LengthPercentageAutoDto> for LengthPercentageAuto {
@@ -727,12 +874,9 @@ impl From<LengthPercentageAuto> for LengthPercentageAutoDto {
 ///
 /// A generic container for width and height values.
 ///
-/// # Type Parameters
+/// @typeParam T - The type of each dimension (e.g., `DimensionDto`, `LengthPercentageDto`)
 ///
-/// - `T`: The type of each dimension (e.g., `DimensionDto`, `LengthPercentageDto`)
-///
-/// # JSON Representation
-///
+/// @example
 /// ```json
 /// { "width": { "Length": 100 }, "height": { "Length": 50 } }
 /// ```
@@ -766,12 +910,9 @@ where
 /// A generic container for left, right, top, and bottom values.
 /// Used for margin, padding, border, and inset properties.
 ///
-/// # Type Parameters
+/// @typeParam T - The type of each side (e.g., `LengthPercentageDto`, `LengthPercentageAutoDto`)
 ///
-/// - `T`: The type of each side (e.g., `LengthPercentageDto`, `LengthPercentageAutoDto`)
-///
-/// # JSON Representation
-///
+/// @example
 /// ```json
 /// { "left": { "Length": 10 }, "right": { "Length": 10 }, "top": { "Length": 5 }, "bottom": { "Length": 5 } }
 /// ```
@@ -811,11 +952,10 @@ where
 /// Used when calling `computeLayout()` to specify how much space
 /// is available for the layout.
 ///
-/// # JSON Representation
-///
+/// @example
 /// ```json
-/// { "width": { "Definite": 800 }, "height": { "Definite": 600 } }
-/// { "width": "MaxContent", "height": { "Definite": 400 } }
+/// { "width": 800, "height": 600 }
+/// { "width": "maxContent", "height": 400 }
 /// ```
 #[derive(Deserialize, Debug, Clone)]
 pub struct AvailableSizeDto {
@@ -827,12 +967,12 @@ pub struct AvailableSizeDto {
 
 /// Single dimension available space constraint
 ///
-/// # Variants
-///
-/// - `Definite(f32)`: A specific size in pixels
-/// - `MinContent`: Minimize size to fit content
-/// - `MaxContent`: Maximize size without breaking content
-#[derive(Deserialize, Debug, Clone)]
+/// @example
+/// ```json
+/// "maxContent"
+/// 800
+/// ```
+#[derive(Debug, Clone)]
 pub enum AvailableSpaceDto {
     /// A specific size in pixels
     Definite(f32),
@@ -840,6 +980,48 @@ pub enum AvailableSpaceDto {
     MinContent,
     /// Maximize to fit content without wrapping
     MaxContent,
+}
+
+impl<'de> Deserialize<'de> for AvailableSpaceDto {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct AvailableSpaceVisitor;
+
+        impl<'de> Visitor<'de> for AvailableSpaceVisitor {
+            type Value = AvailableSpaceDto;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a number, 'minContent', or 'maxContent'")
+            }
+
+            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E> {
+                Ok(AvailableSpaceDto::Definite(value as f32))
+            }
+
+            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E> {
+                Ok(AvailableSpaceDto::Definite(value as f32))
+            }
+
+            fn visit_f64<E>(self, value: f64) -> Result<Self::Value, E> {
+                Ok(AvailableSpaceDto::Definite(value as f32))
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                match value {
+                    "minContent" => Ok(AvailableSpaceDto::MinContent),
+                    "maxContent" => Ok(AvailableSpaceDto::MaxContent),
+                    _ => Err(E::unknown_variant(value, &["minContent", "maxContent"])),
+                }
+            }
+        }
+
+        deserializer.deserialize_any(AvailableSpaceVisitor)
+    }
 }
 
 impl From<AvailableSizeDto> for Size<AvailableSpace> {
@@ -859,4 +1041,35 @@ impl From<AvailableSpaceDto> for AvailableSpace {
             AvailableSpaceDto::MaxContent => AvailableSpace::MaxContent,
         }
     }
+}
+
+// =============================================================================
+// Detailed Layout Info DTOs
+// =============================================================================
+
+/// DTO for detailed grid layout info
+#[derive(Serialize)]
+pub struct DetailedGridInfoDto {
+    pub rows: DetailedGridTracksInfoDto,
+    pub columns: DetailedGridTracksInfoDto,
+    pub items: Vec<DetailedGridItemsInfoDto>,
+}
+
+/// DTO for grid track info (rows or columns)
+#[derive(Serialize)]
+pub struct DetailedGridTracksInfoDto {
+    pub negative_implicit_tracks: u16,
+    pub explicit_tracks: u16,
+    pub positive_implicit_tracks: u16,
+    pub gutters: Vec<f32>,
+    pub sizes: Vec<f32>,
+}
+
+/// DTO for grid item placement
+#[derive(Serialize)]
+pub struct DetailedGridItemsInfoDto {
+    pub row_start: u16,
+    pub row_end: u16,
+    pub column_start: u16,
+    pub column_end: u16,
 }

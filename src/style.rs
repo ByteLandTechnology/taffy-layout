@@ -11,10 +11,6 @@
 //!
 //! ## JavaScript Usage
 //!
-//!
-//! <details>
-//! <summary><strong>TypeScript Example</strong></summary>
-//!
 //! ```typescript
 //! import init, {
 //!   Style,
@@ -56,8 +52,6 @@
 //! const nodeId: bigint = tree.newLeaf(style);
 //! ```
 //!
-//! </details>
-//!
 //! ## Property Categories
 //!
 //! | Category | Properties |
@@ -77,7 +71,6 @@
 //! - **LengthPercentage**: `{ Length: number }` or `{ Percent: number }`
 //! - **LengthPercentageAuto**: Same as Dimension
 
-
 use crate::enums::*;
 use crate::types::*;
 use crate::utils::log;
@@ -94,8 +87,7 @@ use wasm_bindgen::prelude::*;
 /// This class holds all CSS layout properties for a node. Create an instance with
 /// `new Style()` and configure properties before passing to `TaffyTree.newLeaf()`.
 ///
-/// # Default Values
-///
+/// @defaultValue
 /// When created, all properties are set to their CSS default values:
 /// - `display`: `Display.Block`
 /// - `position`: `Position.Relative`
@@ -121,13 +113,10 @@ impl JsStyle {
 
     /// Creates a new Style instance with default values
     ///
-    /// # Returns
+    /// @returns - A new `Style` object with all properties set to CSS defaults
     ///
-    /// A new `Style` object with all properties set to CSS defaults
-    ///
-    /// # Example
-    ///
-    /// ```javascript
+    /// @example
+    /// ```typescript
     /// const style = new Style();
     /// console.log(style.display);  // Display.Block
     /// ```
@@ -146,13 +135,9 @@ impl JsStyle {
     ///
     /// Determines the layout algorithm used for this element and its children.
     ///
-    /// # Returns
+    /// @returns - The current [`Display`](JsDisplay) value
     ///
-    /// The current [`Display`](JsDisplay) value
-    ///
-    /// # Default
-    ///
-    /// `Display.Block`
+    /// @defaultValue - `Display.Block`
     #[wasm_bindgen(getter)]
     pub fn display(&self) -> JsDisplay {
         self.inner.display.into()
@@ -160,19 +145,14 @@ impl JsStyle {
 
     /// Sets the display mode
     ///
-    /// # Arguments
-    ///
-    /// - `val`: The new display mode
+    /// @param val - The new display mode
     ///
     ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
+    /// @example
     ///
     /// ```typescript
     /// style.display = Display.Flex;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_display(&mut self, val: JsDisplay) {
         self.inner.display = val.into();
@@ -182,13 +162,9 @@ impl JsStyle {
     ///
     /// Determines how the element is positioned within its parent.
     ///
-    /// # Returns
+    /// @returns - The current [`Position`](JsPosition) value
     ///
-    /// The current [`Position`](JsPosition) value
-    ///
-    /// # Default
-    ///
-    /// `Position.Relative`
+    /// @defaultValue - `Position.Relative`
     #[wasm_bindgen(getter)]
     pub fn position(&self) -> JsPosition {
         self.inner.position.into()
@@ -196,20 +172,15 @@ impl JsStyle {
 
     /// Sets the position mode
     ///
-    /// # Arguments
-    ///
-    /// - `val`: The new position mode
+    /// @param val - The new position mode
     ///
     ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
+    /// @example
     ///
     /// ```typescript
     /// style.position = Position.Absolute;
     /// style.inset = { left: { Length: 10 }, top: { Length: 10 }, right: "Auto", bottom: "Auto" };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_position(&mut self, val: JsPosition) {
         self.inner.position = val.into();
@@ -223,13 +194,9 @@ impl JsStyle {
     ///
     /// Defines the main axis direction for flex items.
     ///
-    /// # Returns
+    /// @returns - The current [`FlexDirection`](JsFlexDirection) value
     ///
-    /// The current [`FlexDirection`](JsFlexDirection) value
-    ///
-    /// # Default
-    ///
-    /// `FlexDirection.Row`
+    /// @defaultValue - `FlexDirection.Row`
     #[wasm_bindgen(getter, js_name = flexDirection)]
     pub fn flex_direction(&self) -> JsFlexDirection {
         self.inner.flex_direction.into()
@@ -237,19 +204,14 @@ impl JsStyle {
 
     /// Sets the flex direction
     ///
-    /// # Arguments
-    ///
-    /// - `val`: The new flex direction
+    /// @param val - The new flex direction
     ///
     ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
+    /// @example
     ///
     /// ```typescript
     /// style.flexDirection = FlexDirection.Column;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = flexDirection)]
     pub fn set_flex_direction(&mut self, val: JsFlexDirection) {
         self.inner.flex_direction = val.into();
@@ -259,13 +221,9 @@ impl JsStyle {
     ///
     /// Controls whether flex items wrap to new lines.
     ///
-    /// # Returns
+    /// @returns - The current [`FlexWrap`](JsFlexWrap) value
     ///
-    /// The current [`FlexWrap`](JsFlexWrap) value
-    ///
-    /// # Default
-    ///
-    /// `FlexWrap.NoWrap`
+    /// @defaultValue - `FlexWrap.NoWrap`
     #[wasm_bindgen(getter, js_name = flexWrap)]
     pub fn flex_wrap(&self) -> JsFlexWrap {
         self.inner.flex_wrap.into()
@@ -273,19 +231,14 @@ impl JsStyle {
 
     /// Sets the flex wrap mode
     ///
-    /// # Arguments
-    ///
-    /// - `val`: The new flex wrap mode
+    /// @param val - The new flex wrap mode
     ///
     ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
+    /// @example
     ///
     /// ```typescript
     /// style.flexWrap = FlexWrap.Wrap;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = flexWrap)]
     pub fn set_flex_wrap(&mut self, val: JsFlexWrap) {
         self.inner.flex_wrap = val.into();
@@ -296,9 +249,7 @@ impl JsStyle {
     /// Determines how much the item grows relative to siblings when
     /// there is extra space available.
     ///
-    /// # Returns
-    ///
-    /// The flex grow factor (default: 0)
+    /// @returns - The flex grow factor (default: 0)
     #[wasm_bindgen(getter, js_name = flexGrow)]
     pub fn flex_grow(&self) -> f32 {
         self.inner.flex_grow
@@ -306,19 +257,12 @@ impl JsStyle {
 
     /// Sets the flex grow factor
     ///
-    /// # Arguments
+    /// @param val - The new flex grow factor (must be >= 0)
     ///
-    /// - `val`: The new flex grow factor (must be >= 0)
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.flexGrow = 2;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = flexGrow)]
     pub fn set_flex_grow(&mut self, val: f32) {
         self.inner.flex_grow = val;
@@ -329,9 +273,7 @@ impl JsStyle {
     /// Determines how much the item shrinks relative to siblings when
     /// there is insufficient space.
     ///
-    /// # Returns
-    ///
-    /// The flex shrink factor (default: 1)
+    /// @returns - The flex shrink factor (default: 1)
     #[wasm_bindgen(getter, js_name = flexShrink)]
     pub fn flex_shrink(&self) -> f32 {
         self.inner.flex_shrink
@@ -339,19 +281,12 @@ impl JsStyle {
 
     /// Sets the flex shrink factor
     ///
-    /// # Arguments
+    /// @param val - The new flex shrink factor (must be >= 0)
     ///
-    /// - `val`: The new flex shrink factor (must be >= 0)
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.flexShrink = 2;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = flexShrink)]
     pub fn set_flex_shrink(&mut self, val: f32) {
         self.inner.flex_shrink = val;
@@ -365,9 +300,7 @@ impl JsStyle {
     ///
     /// Defines the default alignment for all children on the cross axis.
     ///
-    /// # Returns
-    ///
-    /// The current [`AlignItems`](JsAlignItems) value, or `undefined` if not set
+    /// @returns - The current [`AlignItems`](JsAlignItems) value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = alignItems)]
     pub fn align_items(&self) -> Option<JsAlignItems> {
         self.inner.align_items.map(JsAlignItems::from)
@@ -375,19 +308,13 @@ impl JsStyle {
 
     /// Sets the align-items property
     ///
-    /// # Arguments
+    /// @param val - The new align-items value, or `undefined` to use default
     ///
-    /// - `val`: The new align-items value, or `undefined` to use default
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
+    /// @example
     ///
     /// ```typescript
     /// style.alignItems = AlignItems.Center;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = alignItems)]
     pub fn set_align_items(&mut self, val: OneOptAlignItems) {
         let val: JsValue = val.unchecked_into();
@@ -403,9 +330,7 @@ impl JsStyle {
     ///
     /// Overrides the parent's align-items for this specific element.
     ///
-    /// # Returns
-    ///
-    /// The current [`AlignSelf`](JsAlignSelf) value (returns `Auto` if not set)
+    /// @returns - The current [`AlignSelf`](JsAlignSelf) value (returns `Auto` if not set)
     #[wasm_bindgen(getter, js_name = alignSelf)]
     pub fn align_self(&self) -> Option<JsAlignSelf> {
         match self.inner.align_self {
@@ -416,19 +341,12 @@ impl JsStyle {
 
     /// Sets the align-self property
     ///
-    /// # Arguments
+    /// @param val - The new align-self value, or `undefined`/`Auto` to inherit from parent
     ///
-    /// - `val`: The new align-self value, or `undefined`/`Auto` to inherit from parent
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.alignSelf = AlignSelf.Stretch;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = alignSelf)]
     pub fn set_align_self(&mut self, val: OneOptAlignSelf) {
         let val: JsValue = val.unchecked_into();
@@ -448,9 +366,7 @@ impl JsStyle {
     ///
     /// Controls distribution of space between lines in a multi-line flex container.
     ///
-    /// # Returns
-    ///
-    /// The current [`AlignContent`](JsAlignContent) value, or `undefined` if not set
+    /// @returns - The current [`AlignContent`](JsAlignContent) value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = alignContent)]
     pub fn align_content(&self) -> Option<JsAlignContent> {
         self.inner.align_content.map(JsAlignContent::from)
@@ -458,19 +374,12 @@ impl JsStyle {
 
     /// Sets the align-content property
     ///
-    /// # Arguments
+    /// @param val - The new align-content value, or `undefined` to use default
     ///
-    /// - `val`: The new align-content value, or `undefined` to use default
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.alignContent = AlignContent.SpaceBetween;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = alignContent)]
     pub fn set_align_content(&mut self, val: OneOptAlignContent) {
         let val: JsValue = val.unchecked_into();
@@ -486,9 +395,7 @@ impl JsStyle {
     ///
     /// Defines alignment and spacing of items along the main axis.
     ///
-    /// # Returns
-    ///
-    /// The current [`JustifyContent`](JsJustifyContent) value, or `undefined` if not set
+    /// @returns - The current [`JustifyContent`](JsJustifyContent) value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = justifyContent)]
     pub fn justify_content(&self) -> Option<JsJustifyContent> {
         self.inner.justify_content.map(JsJustifyContent::from)
@@ -496,19 +403,12 @@ impl JsStyle {
 
     /// Sets the justify-content property
     ///
-    /// # Arguments
+    /// @param val - The new justify-content value, or `undefined` to use default
     ///
-    /// - `val`: The new justify-content value, or `undefined` to use default
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.justifyContent = JustifyContent.Center;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = justifyContent)]
     pub fn set_justify_content(&mut self, val: OneOptJustifyContent) {
         let val: JsValue = val.unchecked_into();
@@ -528,9 +428,7 @@ impl JsStyle {
     ///
     /// The ratio of width to height. Used to maintain proportions.
     ///
-    /// # Returns
-    ///
-    /// The aspect ratio value, or `undefined` if not set
+    /// @returns - The aspect ratio value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = aspectRatio)]
     pub fn aspect_ratio(&self) -> Option<f32> {
         self.inner.aspect_ratio
@@ -538,19 +436,12 @@ impl JsStyle {
 
     /// Sets the aspect ratio
     ///
-    /// # Arguments
+    /// @param val - The new aspect ratio (width/height), or `undefined` to clear
     ///
-    /// - `val`: The new aspect ratio (width/height), or `undefined` to clear
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.aspectRatio = 16 / 9;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = aspectRatio)]
     pub fn set_aspect_ratio(&mut self, val: OnOptNumber) {
         let val: JsValue = val.unchecked_into();
@@ -565,9 +456,7 @@ impl JsStyle {
     ///
     /// Controls how content that exceeds the container is handled.
     ///
-    /// # Returns
-    ///
-    /// A `Point<Overflow>` with `x` and `y` overflow settings
+    /// @returns - A `Point<Overflow>` with `x` and `y` overflow settings
     #[wasm_bindgen(getter)]
     pub fn overflow(&self) -> JsPointOverflow {
         serialize(&self.inner.overflow).unchecked_into()
@@ -575,19 +464,12 @@ impl JsStyle {
 
     /// Sets the overflow behavior
     ///
-    /// # Arguments
+    /// @param val - An object with `x` and `y` overflow values
     ///
-    /// - `val`: An object with `x` and `y` overflow values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.overflow = { x: Overflow.Hidden, y: Overflow.Scroll };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_overflow(&mut self, val: JsPointOverflow) {
         let val: JsValue = val.unchecked_into();
@@ -600,13 +482,9 @@ impl JsStyle {
     ///
     /// Determines whether padding and border are included in dimensions.
     ///
-    /// # Returns
+    /// @returns - The current [`BoxSizing`](JsBoxSizing) value
     ///
-    /// The current [`BoxSizing`](JsBoxSizing) value
-    ///
-    /// # Default
-    ///
-    /// `BoxSizing.BorderBox`
+    /// @defaultValue `BoxSizing.BorderBox`
     #[wasm_bindgen(getter, js_name = boxSizing)]
     pub fn box_sizing(&self) -> JsBoxSizing {
         self.inner.box_sizing.into()
@@ -614,19 +492,12 @@ impl JsStyle {
 
     /// Sets the box sizing mode
     ///
-    /// # Arguments
+    /// @param val - The new box sizing mode
     ///
-    /// - `val`: The new box sizing mode
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.boxSizing = BoxSizing.ContentBox;
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = boxSizing)]
     pub fn set_box_sizing(&mut self, val: JsBoxSizing) {
         self.inner.box_sizing = val.into();
@@ -636,9 +507,7 @@ impl JsStyle {
     ///
     /// The initial size of a flex item before growing/shrinking.
     ///
-    /// # Returns
-    ///
-    /// A `Dimension` value (`{ Length: n }`, `{ Percent: n }`, or `"Auto"`)
+    /// @returns - A `Dimension` value (`{ Length: n }`, `{ Percent: n }`, or `"Auto"`)
     #[wasm_bindgen(getter, js_name = flexBasis)]
     pub fn flex_basis(&self) -> JsDimension {
         let d: DimensionDto = self.inner.flex_basis.into();
@@ -647,19 +516,12 @@ impl JsStyle {
 
     /// Sets the flex-basis
     ///
-    /// # Arguments
+    /// @param val - The initial size as a Dimension
     ///
-    /// - `val`: The initial size as a Dimension
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.flexBasis = { Length: 100 };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = flexBasis)]
     pub fn set_flex_basis(&mut self, val: JsDimension) {
         let val: JsValue = val.unchecked_into();
@@ -674,9 +536,7 @@ impl JsStyle {
 
     /// Gets the size (width and height)
     ///
-    /// # Returns
-    ///
-    /// A `Size<Dimension>` object with `width` and `height` properties
+    /// @returns - A `Size<Dimension>` object with `width` and `height` properties
     #[wasm_bindgen(getter)]
     pub fn size(&self) -> JsSizeDimension {
         let s: SizeDto<DimensionDto> = SizeDto {
@@ -688,19 +548,12 @@ impl JsStyle {
 
     /// Sets the size (width and height)
     ///
-    /// # Arguments
+    /// @param val - A Size object with Dimension values
     ///
-    /// - `val`: A Size object with Dimension values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.size = { width: { Length: 200 }, height: { Percent: 100 } };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_size(&mut self, val: JsSizeDimension) {
         let val: JsValue = val.unchecked_into();
@@ -720,9 +573,7 @@ impl JsStyle {
 
     /// Gets the minimum size constraints
     ///
-    /// # Returns
-    ///
-    /// A `Size<Dimension>` object with minimum width and height
+    /// @returns - A `Size<Dimension>` object with minimum width and height
     #[wasm_bindgen(getter, js_name = minSize)]
     pub fn min_size(&self) -> JsSizeDimension {
         let s: SizeDto<DimensionDto> = SizeDto {
@@ -734,19 +585,12 @@ impl JsStyle {
 
     /// Sets the minimum size constraints
     ///
-    /// # Arguments
+    /// @param val - A Size object with minimum Dimension values
     ///
-    /// - `val`: A Size object with minimum Dimension values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.minSize = { width: { Length: 100 }, height: "Auto" };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = minSize)]
     pub fn set_min_size(&mut self, val: JsSizeDimension) {
         let val: JsValue = val.unchecked_into();
@@ -757,9 +601,7 @@ impl JsStyle {
 
     /// Gets the maximum size constraints
     ///
-    /// # Returns
-    ///
-    /// A `Size<Dimension>` object with maximum width and height
+    /// @returns - A `Size<Dimension>` object with maximum width and height
     #[wasm_bindgen(getter, js_name = maxSize)]
     pub fn max_size(&self) -> JsSizeDimension {
         let s: SizeDto<DimensionDto> = SizeDto {
@@ -771,19 +613,12 @@ impl JsStyle {
 
     /// Sets the maximum size constraints
     ///
-    /// # Arguments
+    /// @param val - A Size object with maximum Dimension values
     ///
-    /// - `val`: A Size object with maximum Dimension values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.maxSize = { width: "MaxContent", height: { Length: 500 } };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter, js_name = maxSize)]
     pub fn set_max_size(&mut self, val: JsSizeDimension) {
         let val: JsValue = val.unchecked_into();
@@ -800,9 +635,7 @@ impl JsStyle {
     ///
     /// Outer spacing around the element.
     ///
-    /// # Returns
-    ///
-    /// A `Rect<LengthPercentageAuto>` with left, right, top, bottom margins
+    /// @returns - A `Rect<LengthPercentageAuto>` with left, right, top, bottom margins
     #[wasm_bindgen(getter)]
     pub fn margin(&self) -> JsRectLengthPercentageAuto {
         let m: RectDto<LengthPercentageAutoDto> = RectDto {
@@ -816,19 +649,12 @@ impl JsStyle {
 
     /// Sets the margin
     ///
-    /// # Arguments
+    /// @param val - A Rect object with LengthPercentageAuto values
     ///
-    /// - `val`: A Rect object with LengthPercentageAuto values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.margin = { left: { Length: 10 }, right: { Length: 10 }, top: { Length: 5 }, bottom: { Length: 5 } };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_margin(&mut self, val: JsRectLengthPercentageAuto) {
         let val: JsValue = val.unchecked_into();
@@ -841,9 +667,7 @@ impl JsStyle {
     ///
     /// Inner spacing between the element's border and content.
     ///
-    /// # Returns
-    ///
-    /// A `Rect<LengthPercentage>` with left, right, top, bottom padding
+    /// @returns - A `Rect<LengthPercentage>` with left, right, top, bottom padding
     #[wasm_bindgen(getter)]
     pub fn padding(&self) -> JsRectLengthPercentage {
         let m: RectDto<LengthPercentageDto> = RectDto {
@@ -857,19 +681,12 @@ impl JsStyle {
 
     /// Sets the padding
     ///
-    /// # Arguments
+    /// @param val - A Rect object with LengthPercentage values
     ///
-    /// - `val`: A Rect object with LengthPercentage values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.padding = { left: { Length: 20 }, right: { Length: 20 }, top: { Length: 10 }, bottom: { Length: 10 } };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_padding(&mut self, val: JsRectLengthPercentage) {
         let val: JsValue = val.unchecked_into();
@@ -882,9 +699,7 @@ impl JsStyle {
     ///
     /// Width of the element's border on each side.
     ///
-    /// # Returns
-    ///
-    /// A `Rect<LengthPercentage>` with left, right, top, bottom border widths
+    /// @returns - A `Rect<LengthPercentage>` with left, right, top, bottom border widths
     #[wasm_bindgen(getter)]
     pub fn border(&self) -> JsRectLengthPercentage {
         let m: RectDto<LengthPercentageDto> = RectDto {
@@ -898,19 +713,12 @@ impl JsStyle {
 
     /// Sets the border width
     ///
-    /// # Arguments
+    /// @param val - A Rect object with LengthPercentage values
     ///
-    /// - `val`: A Rect object with LengthPercentage values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.border = { left: { Length: 1 }, right: { Length: 1 }, top: { Length: 1 }, bottom: { Length: 1 } };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_border(&mut self, val: JsRectLengthPercentage) {
         let val: JsValue = val.unchecked_into();
@@ -923,9 +731,7 @@ impl JsStyle {
     ///
     /// Spacing between flex/grid items.
     ///
-    /// # Returns
-    ///
-    /// A `Size<LengthPercentage>` with column (width) and row (height) gaps
+    /// @returns - A `Size<LengthPercentage>` with column (width) and row (height) gaps
     #[wasm_bindgen(getter)]
     pub fn gap(&self) -> JsSizeLengthPercentage {
         let s: SizeDto<LengthPercentageDto> = SizeDto {
@@ -937,19 +743,12 @@ impl JsStyle {
 
     /// Sets the gap
     ///
-    /// # Arguments
+    /// @param val - A Size object with LengthPercentage gap values
     ///
-    /// - `val`: A Size object with LengthPercentage gap values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.gap = { width: { Length: 10 }, height: { Length: 10 } };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_gap(&mut self, val: JsSizeLengthPercentage) {
         let val: JsValue = val.unchecked_into();
@@ -962,9 +761,7 @@ impl JsStyle {
     ///
     /// Positioning offsets for absolutely positioned elements.
     ///
-    /// # Returns
-    ///
-    /// A `Rect<LengthPercentageAuto>` with left, right, top, bottom offsets
+    /// @returns - A `Rect<LengthPercentageAuto>` with left, right, top, bottom offsets
     #[wasm_bindgen(getter)]
     pub fn inset(&self) -> JsRectLengthPercentageAuto {
         let m: RectDto<LengthPercentageAutoDto> = RectDto {
@@ -978,20 +775,13 @@ impl JsStyle {
 
     /// Sets the inset
     ///
-    /// # Arguments
+    /// @param val - A Rect object with LengthPercentageAuto offset values
     ///
-    /// - `val`: A Rect object with LengthPercentageAuto offset values
-    ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// style.position = Position.Absolute;
     /// style.inset = { left: { Length: 0 }, top: { Length: 0 }, right: "Auto", bottom: "Auto" };
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(setter)]
     pub fn set_inset(&mut self, val: JsRectLengthPercentageAuto) {
         let val: JsValue = val.unchecked_into();

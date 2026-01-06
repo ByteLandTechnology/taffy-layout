@@ -11,15 +11,19 @@ Error class thrown when a Taffy operation fails, containing a human-readable err
 This class wraps the native [`taffy::TaffyError`] type and exposes it to JavaScript
 with a readable error message. It is thrown as a JavaScript exception on failure.
 
-**JavaScript Interface**
+## Example
 
 ```typescript
-class TaffyError {
-  readonly message: string; // Human-readable error description
+try {
+  tree.remove(node);
+} catch (e) {
+  if (e instanceof TaffyError) {
+    console.error(e.message);
+  }
 }
 ```
 
-**Error Types**
+## Remarks
 
 The underlying Taffy errors include:
 
@@ -29,9 +33,9 @@ The underlying Taffy errors include:
 
 ## Properties
 
-| Property                       | Modifier   | Type     | Description                                                                                                                                                                                                 |
-| ------------------------------ | ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="message"></a> `message` | `readonly` | `string` | Gets the human-readable error message # Returns A string describing what went wrong. Examples: - "Node with id 1234 is not present in the Taffy tree" - "Index 5 is out of bounds for node with 3 children" |
+| Property                       | Modifier   | Type     | Description                                                                                                                                                              |
+| ------------------------------ | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <a id="message"></a> `message` | `readonly` | `string` | Gets the human-readable error message **Remarks** Examples: - "Node with id 1234 is not present in the Taffy tree" - "Index 5 is out of bounds for node with 3 children" |
 
 ## Methods
 

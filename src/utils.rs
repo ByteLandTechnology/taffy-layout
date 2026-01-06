@@ -25,28 +25,27 @@ use wasm_bindgen::prelude::*;
 /// to its JavaScript representation. It's used internally to convert complex types
 /// like `Size`, `Rect`, and dimension values to JavaScript objects.
 ///
-/// # Type Parameters
+/// @typeParam T - Any type that implements `serde::Serialize`
 ///
-/// - `T`: Any type that implements `serde::Serialize`
+/// @param val - A reference to the value to serialize
 ///
-/// # Arguments
+/// @returns - A `JsValue` representing the serialized data, or `null` if serialization fails
 ///
-/// - `val`: A reference to the value to serialize
-///
-/// # Returns
-///
-/// A `JsValue` representing the serialized data, or `null` if serialization fails
-///
-/// # Example (Internal Usage)
-///
+/// @example
 /// ```rust,ignore
 /// let size = SizeDto { width: 100.0, height: 50.0 };
 /// let js_value = serialize(&size);
 /// // js_value is now { width: 100, height: 50 } in JavaScript
 /// ```
 ///
-/// # Performance Note
+/// @example
+/// ```typescript
+/// const size = { width: 100, height: 50 };
+/// const js_value = serialize(size);
+/// // js_value is now { width: 100, height: 50 } in JavaScript
+/// ```
 ///
+/// @performance
 /// This function allocates a new JavaScript object on each call. For hot paths,
 /// consider caching the result or using more direct conversion methods.
 pub fn serialize<T: Serialize + ?Sized>(val: &T) -> JsValue {
@@ -65,20 +64,16 @@ extern "C" {
     /// for debugging during development but should be removed or gated behind a
     /// feature flag in production builds.
     ///
-    /// # Arguments
+    /// @param s - The message to log
     ///
-    /// - `s`: The message to log
-    ///
-    /// # Example (Internal Usage)
-    ///
+    /// @example
     /// ```rust,ignore
     /// log("Debug: processing node 123");
     /// log(&format!("Error: {}", error_message));
     /// ```
     ///
-    /// # JavaScript Equivalent
-    ///
-    /// ```javascript
+    /// @example
+    /// ```typescript
     /// console.log(s);
     /// ```
     #[wasm_bindgen(js_namespace = console)]

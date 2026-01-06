@@ -13,28 +13,14 @@ in a multi-line flex container. This corresponds to the CSS `align-content` prop
 
 **Note**: This property only has effect when `flex-wrap` is set to `Wrap` or `WrapReverse`.
 
-# JavaScript Usage
+## Example
 
-```javascript
+```typescript
 import { AlignContent, FlexWrap } from "taffy-js";
 
 style.flexWrap = FlexWrap.Wrap;
 style.alignContent = AlignContent.SpaceBetween; // Distribute lines evenly
 ```
-
-# Variants
-
-| Variant        | Value | Description                                     |
-| -------------- | ----- | ----------------------------------------------- |
-| `Start`        | 0     | Lines packed to start                           |
-| `End`          | 1     | Lines packed to end                             |
-| `FlexStart`    | 2     | Lines packed to flex start                      |
-| `FlexEnd`      | 3     | Lines packed to flex end                        |
-| `Center`       | 4     | Lines centered                                  |
-| `Stretch`      | 5     | Lines stretched to fill                         |
-| `SpaceBetween` | 6     | First/last lines flush, rest evenly distributed |
-| `SpaceAround`  | 7     | Equal space around each line                    |
-| `SpaceEvenly`  | 8     | Equal space between all lines                   |
 
 ## Enumeration Members
 

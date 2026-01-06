@@ -7,14 +7,7 @@
 # Type Alias: Dimension
 
 ```ts
-type Dimension =
-  | {
-      Length: number;
-    }
-  | {
-      Percent: number;
-    }
-  | "Auto";
+type Dimension = number | `${number}%` | "auto";
 ```
 
 Dimension type supporting length, percentage, or auto values.
@@ -23,12 +16,11 @@ Used for sizing properties like `width`, `height`, `flexBasis`, etc.
 
 ## Remarks
 
-- `{ Length: number }`: Fixed size in pixels
-- `{ Percent: number }`: Percentage of parent's size (0-100)
-- `"Auto"`: Size determined by content or layout algorithm
+- `number`: Fixed size in pixels
+- `"{number}%"`: Percentage of parent's size (0-100)
+- `"auto"`: Size determined by content or layout algorithm
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+## Example
 
 ```typescript
 import { Style, type Dimension, type Size } from "taffy-js";
@@ -37,21 +29,19 @@ const style = new Style();
 
 // With explicit type annotations
 const fixedSize: Size<Dimension> = {
-  width: { Length: 200 },
-  height: { Length: 100 },
+  width: 200,
+  height: 100,
 };
 
 const percentSize: Size<Dimension> = {
-  width: { Percent: 50 },
-  height: { Percent: 100 },
+  width: "50%",
+  height: "100%",
 };
 
 const autoSize: Size<Dimension> = {
-  width: "Auto",
-  height: "Auto",
+  width: "auto",
+  height: "auto",
 };
 
 style.size = fixedSize;
 ```
-
-</details>

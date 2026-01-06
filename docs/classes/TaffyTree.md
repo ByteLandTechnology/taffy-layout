@@ -24,18 +24,15 @@ Creates a new empty TaffyTree
 The tree starts with no nodes. Use `newLeaf()` or `newWithChildren()`
 to add nodes.
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Returns
+
+`TaffyTree`
+
+#### Example
 
 ```typescript
 const tree: TaffyTree = new TaffyTree();
 ```
-
-</details>
-
-#### Returns
-
-`TaffyTree`
 
 ## Methods
 
@@ -72,20 +69,15 @@ The child is added as the last child of the parent.
 
 `void`
 
-`undefined`
-
 #### Throws
 
 `TaffyError` if the parent or child node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 tree.addChild(parentId, childId);
 ```
-
-</details>
 
 ---
 
@@ -107,20 +99,17 @@ Gets the number of children of a node
 
 `number`
 
-The number of direct children
+- The number of direct children
 
 #### Throws
 
 `TaffyError` if the node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const count: number = tree.childCount(parentId);
 ```
-
-</details>
 
 ---
 
@@ -142,20 +131,17 @@ Gets all children of a node
 
 `BigUint64Array`
 
-Array of child node IDs (`BigUint64Array`)
+- Array of child node IDs (`BigUint64Array`)
 
 #### Throws
 
 `TaffyError` if the parent node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const children: BigUint64Array = tree.children(parentId);
 ```
-
-</details>
 
 ---
 
@@ -170,19 +156,16 @@ Removes all nodes from the tree
 This clears the entire tree, removing all nodes and their relationships.
 Use this to reset the tree for reuse.
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Returns
+
+`void`
+
+#### Example
 
 ```typescript
 tree.clear();
 console.log(tree.totalNodeCount());
 ```
-
-</details>
-
-#### Returns
-
-`void`
 
 ---
 
@@ -199,20 +182,18 @@ to compute layouts for all nodes in the tree.
 
 #### Parameters
 
-| Parameter         | Type                                                                                     | Description                                       |
-| ----------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `node`            | `bigint`                                                                                 | The root node ID to compute layout for            |
-| `available_space` | [`Size`](../interfaces/Size.md)\<[`AvailableSpace`](../type-aliases/AvailableSpace.md)\> | The available space constraints # Available Space |
+| Parameter         | Type                                                                                     | Description                            |
+| ----------------- | ---------------------------------------------------------------------------------------- | -------------------------------------- |
+| `node`            | `bigint`                                                                                 | The root node ID to compute layout for |
+| `available_space` | [`Size`](../interfaces/Size.md)\<[`AvailableSpace`](../type-aliases/AvailableSpace.md)\> | The available space constraints        |
 
 #### Returns
 
 `void`
 
-`undefined`
-
 #### Examples
 
-```javascript
+```typescript
 // Fixed size container
 { width: { Definite: 800 }, height: { Definite: 600 } }
 
@@ -223,7 +204,7 @@ to compute layouts for all nodes in the tree.
 { width: "MinContent", height: "MinContent" }
 ```
 
-```javascript
+```typescript
 tree.computeLayout(rootId, {
   width: { Definite: 800 },
   height: { Definite: 600 },
@@ -253,17 +234,15 @@ called for each leaf node that needs measurement.
 
 #### Parameters
 
-| Parameter         | Type                                                                                     | Description                                                                                             |
-| ----------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `node`            | `bigint`                                                                                 | The root node ID to compute layout for                                                                  |
-| `available_space` | [`Size`](../interfaces/Size.md)\<[`AvailableSpace`](../type-aliases/AvailableSpace.md)\> | The available space constraints                                                                         |
-| `measure_func`    | [`MeasureFunction`](../type-aliases/MeasureFunction.md)                                  | A function that measures leaf node content # Measure Function Signature `( knownDimensions: Size<number | null>, // Already determined sizes availableSpace: Size<AvailableSpace>, // Space constraints node: bigint, // Current node ID context: any, // Node's attached context style: Style // Node's style ) => Size<number> // Measured size` |
+| Parameter         | Type                                                                                     | Description                                |
+| ----------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `node`            | `bigint`                                                                                 | The root node ID to compute layout for     |
+| `available_space` | [`Size`](../interfaces/Size.md)\<[`AvailableSpace`](../type-aliases/AvailableSpace.md)\> | The available space constraints            |
+| `measure_func`    | [`MeasureFunction`](../type-aliases/MeasureFunction.md)                                  | A function that measures leaf node content |
 
 #### Returns
 
 `void`
-
-`undefined`
 
 #### Throws
 
@@ -271,7 +250,7 @@ called for each leaf node that needs measurement.
 
 #### Example
 
-```javascript
+```typescript
 tree.computeLayoutWithMeasure(
   rootId,
   { width: { Definite: 800 }, height: "MaxContent" },
@@ -308,7 +287,7 @@ layout computation.
 
 `boolean`
 
-`boolean` - true if dirty, false otherwise
+- true if dirty, false otherwise
 
 #### Throws
 
@@ -316,7 +295,7 @@ layout computation.
 
 #### Example
 
-```javascript
+```typescript
 if (tree.dirty(nodeId)) {
   tree.computeLayout(rootId, availableSpace);
 }
@@ -336,20 +315,17 @@ When disabled, computed layout values retain their fractional precision.
 Use this when you need sub-pixel accuracy or when performing custom
 rounding.
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Returns
+
+`void`
+
+#### Example
 
 ```typescript
 tree.disableRounding();
 const layout = tree.getLayout(node);
 console.log(layout.x);
 ```
-
-</details>
-
-#### Returns
-
-`void`
 
 ---
 
@@ -365,18 +341,15 @@ When enabled (default), computed layout values like position and size
 are rounded to the nearest integer. This prevents sub-pixel rendering
 issues in most rendering contexts.
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Returns
+
+`void`
+
+#### Example
 
 ```typescript
 tree.enableRounding();
 ```
-
-</details>
-
-#### Returns
-
-`void`
 
 ---
 
@@ -411,20 +384,17 @@ Gets the child at a specific index
 
 `bigint`
 
-The child node ID (`bigint`)
+- The child node ID (`bigint`)
 
 #### Throws
 
 `TaffyError` if the parent node does not exist or index is out of bounds
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const firstChild: bigint = tree.getChildAtIndex(parentId, 0);
 ```
-
-</details>
 
 ---
 
@@ -449,17 +419,14 @@ when you need to access contexts for many nodes.
 
 `any`[]
 
-Array of context values (undefined for nodes without context)
+- Array of context values (undefined for nodes without context)
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const nodes = BigUint64Array.from([id1, id2]);
 const contexts = tree.getDisjointNodeContextMut(nodes);
 ```
-
-</details>
 
 ---
 
@@ -484,14 +451,13 @@ and size for a node.
 
 [`Layout`](Layout.md)
 
-The computed `Layout`
+- The computed `Layout`
 
 #### Throws
 
 `TaffyError` if the node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 tree.computeLayout(rootId, {
@@ -503,8 +469,6 @@ console.log(
   `Position: (${layout.x}, ${layout.y}), Size: ${layout.width}x${layout.height}`,
 );
 ```
-
-</details>
 
 ---
 
@@ -526,10 +490,9 @@ Gets the context value for a node
 
 `any`
 
-The attached context value, or `undefined` if none is set
+- The attached context value, or `undefined` if none is set
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 interface Context {
@@ -540,8 +503,6 @@ if (context) {
   console.log(context.text);
 }
 ```
-
-</details>
 
 ---
 
@@ -566,7 +527,7 @@ JavaScript objects are always passed by reference.
 
 `any`
 
-The attached context value, or `undefined` if none is set
+- The attached context value, or `undefined` if none is set
 
 ---
 
@@ -588,21 +549,18 @@ Gets the style for a node
 
 [`Style`](Style.md)
 
-The node's `Style`
+- The node's `Style`
 
 #### Throws
 
 `TaffyError` if the node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const style: Style = tree.getStyle(nodeId);
 console.log("Flex grow:", style.flexGrow);
 ```
-
-</details>
 
 ---
 
@@ -629,20 +587,15 @@ Inserts a child at a specific index
 
 `void`
 
-`undefined`
-
 #### Throws
 
 `TaffyError` if the parent or child node does not exist, or index is out of bounds
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 tree.insertChildAtIndex(parentId, 0, childId);
 ```
-
-</details>
 
 ---
 
@@ -667,15 +620,13 @@ For example, when text content changes and needs remeasuring.
 
 `void`
 
-`undefined`
-
 #### Throws
 
 `TaffyError` if the node does not exist
 
 #### Example
 
-```javascript
+```typescript
 // After updating text content
 tree.setNodeContext(nodeId, { text: "Updated text" });
 tree.markDirty(nodeId);
@@ -705,22 +656,19 @@ content (like text) rather than other elements.
 
 `bigint`
 
-The node ID (`bigint`)
+- The node ID (`bigint`)
 
 #### Throws
 
 `TaffyError` if the node cannot be created
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const style = new Style();
 style.size = { width: { Length: 100 }, height: { Length: 50 } };
 const nodeId: bigint = tree.newLeaf(style);
 ```
-
-</details>
 
 ---
 
@@ -747,14 +695,13 @@ references to text content or other dynamic data.
 
 `bigint`
 
-The node ID (`bigint`)
+- The node ID (`bigint`)
 
 #### Throws
 
 `TaffyError` if the node cannot be created
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 interface TextContext {
@@ -766,8 +713,6 @@ const style = new Style();
 const context: TextContext = { text: "Hello, World!", isBold: true };
 const nodeId: bigint = tree.newLeafWithContext(style, context);
 ```
-
-</details>
 
 ---
 
@@ -793,14 +738,13 @@ The children must already exist in the tree.
 
 `bigint`
 
-The node ID (`bigint`)
+- The node ID (`bigint`)
 
 #### Throws
 
 `TaffyError` if the node cannot be created
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const containerStyle = new Style();
@@ -814,8 +758,6 @@ const container: bigint = tree.newWithChildren(
   BigUint64Array.from([child1, child2]),
 );
 ```
-
-</details>
 
 ---
 
@@ -837,16 +779,13 @@ Gets the parent of a node
 
 `bigint` \| `undefined`
 
-The parent node ID, or `undefined` if the node has no parent
+- The parent node ID, or `undefined` if the node has no parent
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const parentId: bigint | undefined = tree.parent(childId);
 ```
-
-</details>
 
 ---
 
@@ -873,7 +812,7 @@ the given node. Useful for debugging layout issues.
 
 #### Example
 
-```javascript
+```typescript
 tree.printTree(rootId);
 // Output appears in browser console
 ```
@@ -901,14 +840,13 @@ it is automatically removed from the parent's children.
 
 `bigint`
 
-The removed node ID (`bigint`)
+- The removed node ID (`bigint`)
 
 #### Throws
 
 `TaffyError` if the node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 try {
@@ -917,8 +855,6 @@ try {
   console.error("Node doesn't exist");
 }
 ```
-
-</details>
 
 ---
 
@@ -941,20 +877,17 @@ Removes a specific child from a parent
 
 `bigint`
 
-The removed child ID (`bigint`)
+- The removed child ID (`bigint`)
 
 #### Throws
 
 `TaffyError` if the parent or child node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 tree.removeChild(parentId, childId);
 ```
-
-</details>
 
 ---
 
@@ -977,20 +910,17 @@ Removes a child at a specific index
 
 `bigint`
 
-The removed child ID (`bigint`)
+- The removed child ID (`bigint`)
 
 #### Throws
 
 `TaffyError` if the parent node does not exist or index is out of bounds
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const removedId: bigint = tree.removeChildAtIndex(parentId, 0);
 ```
-
-</details>
 
 ---
 
@@ -1019,20 +949,15 @@ Removes children from `start_index` (inclusive) to `end_index` (exclusive).
 
 `void`
 
-`undefined`
-
 #### Throws
 
 `TaffyError` if the parent node does not exist or range is invalid
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 tree.removeChildrenRange(parentId, 1, 3);
 ```
-
-</details>
 
 ---
 
@@ -1059,20 +984,17 @@ Replaces a child at a specific index
 
 `bigint`
 
-The replaced (old) child ID (`bigint`)
+- The replaced (old) child ID (`bigint`)
 
 #### Throws
 
 `TaffyError` if the parent node does not exist or index is out of bounds
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const oldChildId: bigint = tree.replaceChildAtIndex(parentId, 1, newChildId);
 ```
-
-</details>
 
 ---
 
@@ -1097,21 +1019,16 @@ Any existing children are removed and replaced with the new array.
 
 `void`
 
-`undefined`
-
 #### Throws
 
 `TaffyError` if the parent node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const children = BigUint64Array.from([child1, child2, child3]);
 tree.setChildren(parentId, children);
 ```
-
-</details>
 
 ---
 
@@ -1137,14 +1054,11 @@ function during layout computation.
 
 `void`
 
-`undefined`
-
 #### Throws
 
 `TaffyError` if the node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 interface Context {
@@ -1152,8 +1066,6 @@ interface Context {
 }
 tree.setNodeContext(nodeId, { text: "Updated text" } as Context);
 ```
-
-</details>
 
 ---
 
@@ -1179,22 +1091,17 @@ The node will be marked as dirty and require re-layout.
 
 `void`
 
-`undefined`
-
 #### Throws
 
 `TaffyError` if the node does not exist
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const newStyle = new Style();
 newStyle.flexGrow = 2;
 tree.setStyle(nodeId, newStyle);
 ```
-
-</details>
 
 ---
 
@@ -1210,16 +1117,13 @@ Gets the total number of nodes in the tree
 
 `number`
 
-The total count of all nodes
+- The total count of all nodes
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const count: number = tree.totalNodeCount();
 ```
-
-</details>
 
 ---
 
@@ -1244,17 +1148,14 @@ Useful when you need sub-pixel precision.
 
 [`Layout`](Layout.md)
 
-The unrounded `Layout`
+- The unrounded `Layout`
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+#### Example
 
 ```typescript
 const layout: Layout = tree.unroundedLayout(nodeId);
 console.log(`Exact width: ${layout.width}`);
 ```
-
-</details>
 
 ---
 
@@ -1271,10 +1172,16 @@ This can improve performance by reducing memory reallocations.
 
 #### Parameters
 
-| Parameter  | Type     | Description                                                                                                                                                                       |
-| ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `capacity` | `number` | The number of nodes to pre-allocate space for <details> <summary><strong>TypeScript Example</strong></summary> `const tree: TaffyTree = TaffyTree.withCapacity(1000);` </details> |
+| Parameter  | Type     | Description                                   |
+| ---------- | -------- | --------------------------------------------- |
+| `capacity` | `number` | The number of nodes to pre-allocate space for |
 
 #### Returns
 
 `TaffyTree`
+
+#### Example
+
+```typescript
+const tree: TaffyTree = TaffyTree.withCapacity(1000);
+```

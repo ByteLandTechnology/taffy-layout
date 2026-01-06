@@ -7,11 +7,7 @@
 # Type Alias: DetailedLayoutInfo
 
 ```ts
-type DetailedLayoutInfo =
-  | {
-      Grid: DetailedGridInfo;
-    }
-  | "None";
+type DetailedLayoutInfo = DetailedGridInfo | null;
 ```
 
 Detailed layout information (for grid layouts).
@@ -23,8 +19,7 @@ Contains detailed information about grid tracks and item placement.
 
 This is only available when the `detailed_layout_info` feature is enabled.
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+## Example
 
 ```typescript
 import type { DetailedLayoutInfo, DetailedGridInfo } from "taffy-js";
@@ -37,5 +32,3 @@ if (info !== "None" && typeof info === "object" && "Grid" in info) {
   console.log("Columns:", grid.columns.sizes);
 }
 ```
-
-</details>

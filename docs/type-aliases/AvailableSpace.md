@@ -7,12 +7,7 @@
 # Type Alias: AvailableSpace
 
 ```ts
-type AvailableSpace =
-  | {
-      Definite: number;
-    }
-  | "MinContent"
-  | "MaxContent";
+type AvailableSpace = number | "minContent" | "maxContent";
 ```
 
 Available space constraint for layout computation.
@@ -22,12 +17,11 @@ This is passed to `computeLayout()` to define the container constraints.
 
 ## Remarks
 
-- Use `{ Definite: number }` when you have a fixed container size
-- Use `"MinContent"` to shrink-wrap to the minimum content size
-- Use `"MaxContent"` to expand to fit all content without wrapping
+- Use `number` when you have a fixed container size
+- Use `"minContent"` to shrink-wrap to the minimum content size
+- Use `"maxContent"` to expand to fit all content without wrapping
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+## Example
 
 ```typescript
 import init, {
@@ -43,17 +37,15 @@ const root: bigint = tree.newLeaf(new Style());
 
 // Fixed size container with type annotation
 const fixedSpace: Size<AvailableSpace> = {
-  width: { Definite: 800 },
-  height: { Definite: 600 },
+  width: 800,
+  height: 600,
 };
 tree.computeLayout(root, fixedSpace);
 
 // Flexible width, fixed height
 const flexibleSpace: Size<AvailableSpace> = {
-  width: "MaxContent",
-  height: { Definite: 400 },
+  width: "maxContent",
+  height: 400,
 };
 tree.computeLayout(root, flexibleSpace);
 ```
-
-</details>

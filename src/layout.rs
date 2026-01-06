@@ -9,9 +9,9 @@
 //! to get its final position, size, and spacing values. The `Layout` object is read-only
 //! and contains all the information needed to render the node.
 //!
-//! ## JavaScript Usage
+//! @example
 //!
-//! ```javascript
+//! ```typescript
 //! // Compute layout first
 //! tree.computeLayout(rootNode, { width: { Definite: 800 }, height: { Definite: 600 } });
 //!
@@ -43,37 +43,18 @@ use wasm_bindgen::prelude::*;
 /// This class wraps the native [`taffy::Layout`] and provides read-only access
 /// to all computed layout values. All dimensions are in pixels.
 ///
-/// # Properties
-///
-/// | Property | Type | Description |
-/// |----------|------|-------------|
-/// | `x` | `f32` | X position relative to parent |
-/// | `y` | `f32` | Y position relative to parent |
-/// | `width` | `f32` | Computed width |
-/// | `height` | `f32` | Computed height |
-/// | `contentWidth` | `f32` | Width of scrollable content |
-/// | `contentHeight` | `f32` | Height of scrollable content |
-/// | `paddingTop/Right/Bottom/Left` | `f32` | Computed padding |
-/// | `borderTop/Right/Bottom/Left` | `f32` | Computed border widths |
-/// | `marginTop/Right/Bottom/Left` | `f32` | Computed margins |
-/// | `scrollbarWidth` | `f32` | Width of vertical scrollbar |
-/// | `scrollbarHeight` | `f32` | Height of horizontal scrollbar |
-/// | `order` | `u32` | Rendering order for z-indexing |
-///
-/// # JavaScript Interface
-///
+/// @example
 /// ```typescript
-/// class Layout {
-///   readonly x: number;
-///   readonly y: number;
-///   readonly width: number;
-///   readonly height: number;
-///   readonly paddingTop: number;
-///   readonly paddingRight: number;
-///   readonly paddingBottom: number;
-///   readonly paddingLeft: number;
-///   // ... and more
-/// }
+/// const layout = tree.getLayout(node);
+///
+/// console.log("Position:", layout.x, layout.y);
+/// console.log("Size:", layout.width, layout.height);
+/// console.log("Content:", layout.contentWidth, layout.contentHeight);
+/// console.log("Padding:", layout.paddingTop, layout.paddingRight, layout.paddingBottom, layout.paddingLeft);
+/// console.log("Border:", layout.borderTop, layout.borderRight, layout.borderBottom, layout.borderLeft);
+/// console.log("Margin:", layout.marginTop, layout.marginRight, layout.marginBottom, layout.marginLeft);
+/// console.log("Scrollbar:", layout.scrollbarWidth, layout.scrollbarHeight);
+/// console.log("Order:", layout.order);
 /// ```
 #[wasm_bindgen(js_name = Layout)]
 #[derive(Clone, Debug)]
@@ -93,9 +74,7 @@ impl JsLayout {
     /// This value determines the z-order for overlapping elements.
     /// Lower values are rendered first (behind higher values).
     ///
-    /// # Returns
-    ///
-    /// The rendering order as an unsigned 32-bit integer
+    /// @returns - The rendering order as an unsigned 32-bit integer
     #[wasm_bindgen(getter)]
     pub fn order(&self) -> u32 {
         self.inner.order
@@ -110,9 +89,7 @@ impl JsLayout {
     /// This value is relative to the node's parent. For the root node,
     /// this is always 0.
     ///
-    /// # Returns
-    ///
-    /// The horizontal position in pixels
+    /// @returns - The horizontal position in pixels
     #[wasm_bindgen(getter)]
     pub fn x(&self) -> f32 {
         self.inner.location.x
@@ -123,9 +100,7 @@ impl JsLayout {
     /// This value is relative to the node's parent. For the root node,
     /// this is always 0.
     ///
-    /// # Returns
-    ///
-    /// The vertical position in pixels
+    /// @returns - The vertical position in pixels
     #[wasm_bindgen(getter)]
     pub fn y(&self) -> f32 {
         self.inner.location.y
@@ -140,9 +115,7 @@ impl JsLayout {
     /// This is the final width after layout computation, including
     /// any constraints from min/max size or flex properties.
     ///
-    /// # Returns
-    ///
-    /// The width in pixels
+    /// @returns - The width in pixels
     #[wasm_bindgen(getter)]
     pub fn width(&self) -> f32 {
         self.inner.size.width
@@ -153,9 +126,7 @@ impl JsLayout {
     /// This is the final height after layout computation, including
     /// any constraints from min/max size or flex properties.
     ///
-    /// # Returns
-    ///
-    /// The height in pixels
+    /// @returns - The height in pixels
     #[wasm_bindgen(getter)]
     pub fn height(&self) -> f32 {
         self.inner.size.height
@@ -170,9 +141,7 @@ impl JsLayout {
     /// If the node has overflow content, this represents the total
     /// width of all content (may exceed `width`).
     ///
-    /// # Returns
-    ///
-    /// The content width in pixels
+    /// @returns - The content width in pixels
     #[wasm_bindgen(getter, js_name = contentWidth)]
     pub fn content_width(&self) -> f32 {
         self.inner.content_size.width
@@ -183,9 +152,7 @@ impl JsLayout {
     /// If the node has overflow content, this represents the total
     /// height of all content (may exceed `height`).
     ///
-    /// # Returns
-    ///
-    /// The content height in pixels
+    /// @returns - The content height in pixels
     #[wasm_bindgen(getter, js_name = contentHeight)]
     pub fn content_height(&self) -> f32 {
         self.inner.content_size.height
@@ -200,9 +167,7 @@ impl JsLayout {
     /// When overflow is set to scroll, this indicates the space
     /// reserved for the vertical scrollbar.
     ///
-    /// # Returns
-    ///
-    /// The scrollbar width in pixels (0 if no scrollbar)
+    /// @returns - The scrollbar width in pixels (0 if no scrollbar)
     #[wasm_bindgen(getter, js_name = scrollbarWidth)]
     pub fn scrollbar_width(&self) -> f32 {
         self.inner.scrollbar_size.width
@@ -213,9 +178,7 @@ impl JsLayout {
     /// When overflow is set to scroll, this indicates the space
     /// reserved for the horizontal scrollbar.
     ///
-    /// # Returns
-    ///
-    /// The scrollbar height in pixels (0 if no scrollbar)
+    /// @returns - The scrollbar height in pixels (0 if no scrollbar)
     #[wasm_bindgen(getter, js_name = scrollbarHeight)]
     pub fn scrollbar_height(&self) -> f32 {
         self.inner.scrollbar_size.height
@@ -227,9 +190,7 @@ impl JsLayout {
 
     /// Gets the left border width
     ///
-    /// # Returns
-    ///
-    /// The computed left border width in pixels
+    /// @returns - The computed left border width in pixels
     #[wasm_bindgen(getter, js_name = borderLeft)]
     pub fn border_left(&self) -> f32 {
         self.inner.border.left
@@ -237,9 +198,7 @@ impl JsLayout {
 
     /// Gets the right border width
     ///
-    /// # Returns
-    ///
-    /// The computed right border width in pixels
+    /// @returns - The computed right border width in pixels
     #[wasm_bindgen(getter, js_name = borderRight)]
     pub fn border_right(&self) -> f32 {
         self.inner.border.right
@@ -247,9 +206,7 @@ impl JsLayout {
 
     /// Gets the top border width
     ///
-    /// # Returns
-    ///
-    /// The computed top border width in pixels
+    /// @returns - The computed top border width in pixels
     #[wasm_bindgen(getter, js_name = borderTop)]
     pub fn border_top(&self) -> f32 {
         self.inner.border.top
@@ -257,9 +214,7 @@ impl JsLayout {
 
     /// Gets the bottom border width
     ///
-    /// # Returns
-    ///
-    /// The computed bottom border width in pixels
+    /// @returns - The computed bottom border width in pixels
     #[wasm_bindgen(getter, js_name = borderBottom)]
     pub fn border_bottom(&self) -> f32 {
         self.inner.border.bottom
@@ -271,9 +226,7 @@ impl JsLayout {
 
     /// Gets the left padding
     ///
-    /// # Returns
-    ///
-    /// The computed left padding in pixels
+    /// @returns - The computed left padding in pixels
     #[wasm_bindgen(getter, js_name = paddingLeft)]
     pub fn padding_left(&self) -> f32 {
         self.inner.padding.left
@@ -281,9 +234,7 @@ impl JsLayout {
 
     /// Gets the right padding
     ///
-    /// # Returns
-    ///
-    /// The computed right padding in pixels
+    /// @returns - The computed right padding in pixels
     #[wasm_bindgen(getter, js_name = paddingRight)]
     pub fn padding_right(&self) -> f32 {
         self.inner.padding.right
@@ -291,9 +242,7 @@ impl JsLayout {
 
     /// Gets the top padding
     ///
-    /// # Returns
-    ///
-    /// The computed top padding in pixels
+    /// @returns - The computed top padding in pixels
     #[wasm_bindgen(getter, js_name = paddingTop)]
     pub fn padding_top(&self) -> f32 {
         self.inner.padding.top
@@ -301,9 +250,7 @@ impl JsLayout {
 
     /// Gets the bottom padding
     ///
-    /// # Returns
-    ///
-    /// The computed bottom padding in pixels
+    /// @returns - The computed bottom padding in pixels
     #[wasm_bindgen(getter, js_name = paddingBottom)]
     pub fn padding_bottom(&self) -> f32 {
         self.inner.padding.bottom
@@ -315,9 +262,7 @@ impl JsLayout {
 
     /// Gets the left margin
     ///
-    /// # Returns
-    ///
-    /// The computed left margin in pixels
+    /// @returns - The computed left margin in pixels
     #[wasm_bindgen(getter, js_name = marginLeft)]
     pub fn margin_left(&self) -> f32 {
         self.inner.margin.left
@@ -325,9 +270,7 @@ impl JsLayout {
 
     /// Gets the right margin
     ///
-    /// # Returns
-    ///
-    /// The computed right margin in pixels
+    /// @returns - The computed right margin in pixels
     #[wasm_bindgen(getter, js_name = marginRight)]
     pub fn margin_right(&self) -> f32 {
         self.inner.margin.right
@@ -335,9 +278,7 @@ impl JsLayout {
 
     /// Gets the top margin
     ///
-    /// # Returns
-    ///
-    /// The computed top margin in pixels
+    /// @returns - The computed top margin in pixels
     #[wasm_bindgen(getter, js_name = marginTop)]
     pub fn margin_top(&self) -> f32 {
         self.inner.margin.top
@@ -345,9 +286,7 @@ impl JsLayout {
 
     /// Gets the bottom margin
     ///
-    /// # Returns
-    ///
-    /// The computed bottom margin in pixels
+    /// @returns - The computed bottom margin in pixels
     #[wasm_bindgen(getter, js_name = marginBottom)]
     pub fn margin_bottom(&self) -> f32 {
         self.inner.margin.bottom

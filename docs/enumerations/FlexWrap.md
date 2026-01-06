@@ -11,22 +11,14 @@ Flex wrap mode enumeration
 Controls whether flex items wrap onto multiple lines when they overflow the container.
 This corresponds to the CSS `flex-wrap` property.
 
-# JavaScript Usage
+## Example
 
-```javascript
+```typescript
 import { FlexWrap } from "taffy-js";
 
 style.flexWrap = FlexWrap.NoWrap; // All items on single line
 style.flexWrap = FlexWrap.Wrap; // Items wrap to new lines
 ```
-
-# Variants
-
-| Variant       | Value | Description                         |
-| ------------- | ----- | ----------------------------------- |
-| `NoWrap`      | 0     | All items forced onto single line   |
-| `Wrap`        | 1     | Items wrap to next line when needed |
-| `WrapReverse` | 2     | Items wrap in reverse order         |
 
 ## Enumeration Members
 

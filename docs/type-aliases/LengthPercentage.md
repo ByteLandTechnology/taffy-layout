@@ -7,13 +7,7 @@
 # Type Alias: LengthPercentage
 
 ```ts
-type LengthPercentage =
-  | {
-      Length: number;
-    }
-  | {
-      Percent: number;
-    };
+type LengthPercentage = number | `${number}%`;
 ```
 
 Length or percentage value (no auto support).
@@ -22,11 +16,10 @@ Used for properties that require explicit values, such as `padding`, `border`, a
 
 ## Remarks
 
-- `{ Length: number }`: Fixed size in pixels
-- `{ Percent: number }`: Percentage of parent's size (0-100)
+- `number`: Fixed size in pixels
+- `"{number}%"`: Percentage of parent's size (0-100)
 
-<details>
-<summary><strong>TypeScript Example</strong></summary>
+## Example
 
 ```typescript
 import { Style, type LengthPercentage, type Rect, type Size } from "taffy-js";
@@ -34,19 +27,17 @@ import { Style, type LengthPercentage, type Rect, type Size } from "taffy-js";
 const style = new Style();
 
 const padding: Rect<LengthPercentage> = {
-  left: { Length: 10 },
-  right: { Length: 10 },
-  top: { Length: 5 },
-  bottom: { Length: 5 },
+  left: 10,
+  right: 10,
+  top: 5,
+  bottom: 5,
 };
 
 const gap: Size<LengthPercentage> = {
-  width: { Percent: 5 },
-  height: { Percent: 5 },
+  width: "5%",
+  height: "5%",
 };
 
 style.padding = padding;
 style.gap = gap;
 ```
-
-</details>

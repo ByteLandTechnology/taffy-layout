@@ -22,9 +22,7 @@
 //! 5. Retrieve computed layouts using `getLayout()`
 //!
 //!
-//! <details>
-//! <summary><strong>TypeScript Example</strong></summary>
-//!
+//! @example
 //! ```typescript
 //! import init, {
 //!   TaffyTree,
@@ -75,8 +73,6 @@
 //! console.log(`Size: ${layout.width}x${layout.height}`);
 //! ```
 //!
-//! </details>
-//!
 //! ## Node IDs
 //!
 //! Node IDs are represented as `bigint` in JavaScript (u64 in Rust). They are stable
@@ -86,10 +82,8 @@
 //!
 //! Methods that can fail throw a `TaffyError` as a JavaScript exception.
 //!
-//! <details>
-//! <summary><strong>Error Handling Example</strong></summary>
-//!
-//! ```javascript
+//! @example
+//! ```typescript
 //! try {
 //!   const nodeId = tree.newLeaf(style);
 //!   console.log('Created node:', nodeId);
@@ -97,11 +91,8 @@
 //!   console.error('Error:', error.message);
 //! }
 //! ```
-//!
-//! </details>
 
-
-use crate::error::{map_bool_result, map_node_result, map_void_result, to_js_error, JsTaffyError};
+use crate::error::{JsTaffyError, map_bool_result, map_node_result, map_void_result, to_js_error};
 use crate::layout::JsLayout;
 use crate::style::JsStyle;
 use crate::types::{AvailableSizeDto, JsAvailableSizeArg, JsMeasureFunctionArg};
@@ -110,6 +101,8 @@ use taffy::TaffyError as NativeTaffyError;
 use taffy::TaffyTree;
 use taffy::prelude::*;
 use taffy::style::{self as TaffyStyle};
+#[cfg(feature = "detailed_layout_info")]
+use taffy::tree::DetailedLayoutInfo;
 use wasm_bindgen::prelude::*;
 
 // =============================================================================
@@ -138,15 +131,10 @@ impl JsTaffyTree {
     /// The tree starts with no nodes. Use `newLeaf()` or `newWithChildren()`
     /// to add nodes.
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const tree: TaffyTree = new TaffyTree();
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(constructor)]
     pub fn new() -> JsTaffyTree {
         #[cfg(feature = "console_error_panic_hook")]
@@ -163,15 +151,10 @@ impl JsTaffyTree {
     ///
     /// @param capacity - The number of nodes to pre-allocate space for
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const tree: TaffyTree = TaffyTree.withCapacity(1000);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = withCapacity)]
     pub fn with_capacity(capacity: usize) -> JsTaffyTree {
         #[cfg(feature = "console_error_panic_hook")]
@@ -191,15 +174,10 @@ impl JsTaffyTree {
     /// are rounded to the nearest integer. This prevents sub-pixel rendering
     /// issues in most rendering contexts.
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// tree.enableRounding();
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = enableRounding)]
     pub fn enable_rounding(&mut self) {
         self.tree.enable_rounding();
@@ -211,17 +189,12 @@ impl JsTaffyTree {
     /// Use this when you need sub-pixel accuracy or when performing custom
     /// rounding.
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// tree.disableRounding();
     /// const layout = tree.getLayout(node);
     /// console.log(layout.x);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = disableRounding)]
     pub fn disable_rounding(&mut self) {
         self.tree.disable_rounding();
@@ -237,20 +210,15 @@ impl JsTaffyTree {
     /// content (like text) rather than other elements.
     ///
     /// @param style - The style configuration for the node
-    /// @returns The node ID (`bigint`)
+    /// @returns - The node ID (`bigint`)
     /// @throws `TaffyError` if the node cannot be created
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const style = new Style();
     /// style.size = { width: { Length: 100 }, height: { Length: 50 } };
     /// const nodeId: bigint = tree.newLeaf(style);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = newLeaf)]
     pub fn new_leaf(&mut self, style: &JsStyle) -> Result<u64, JsValue> {
         map_node_result(self.tree.new_leaf(style.inner.clone()))
@@ -264,13 +232,10 @@ impl JsTaffyTree {
     ///
     /// @param style - The style configuration for the node
     /// @param context - Any JavaScript value to attach to the node
-    /// @returns The node ID (`bigint`)
+    /// @returns - The node ID (`bigint`)
     /// @throws `TaffyError` if the node cannot be created
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// interface TextContext { text: string; isBold: boolean; }
     ///
@@ -278,10 +243,12 @@ impl JsTaffyTree {
     /// const context: TextContext = { text: "Hello, World!", isBold: true };
     /// const nodeId: bigint = tree.newLeafWithContext(style, context);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = newLeafWithContext)]
-    pub fn new_leaf_with_context(&mut self, style: &JsStyle, context: JsValue) -> Result<u64, JsValue> {
+    pub fn new_leaf_with_context(
+        &mut self,
+        style: &JsStyle,
+        context: JsValue,
+    ) -> Result<u64, JsValue> {
         map_node_result(
             self.tree
                 .new_leaf_with_context(style.inner.clone(), context),
@@ -295,13 +262,12 @@ impl JsTaffyTree {
     ///
     /// @param style - The style configuration for the node
     /// @param children - Array of child node IDs (as BigUint64Array)
-    /// @returns The node ID (`bigint`)
+    ///
+    /// @returns - The node ID (`bigint`)
+    ///
     /// @throws `TaffyError` if the node cannot be created
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const containerStyle = new Style();
     /// containerStyle.display = Display.Flex;
@@ -314,10 +280,12 @@ impl JsTaffyTree {
     ///   BigUint64Array.from([child1, child2])
     /// );
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = newWithChildren)]
-    pub fn new_with_children(&mut self, style: &JsStyle, children: Box<[u64]>) -> Result<u64, JsValue> {
+    pub fn new_with_children(
+        &mut self,
+        style: &JsStyle,
+        children: Box<[u64]>,
+    ) -> Result<u64, JsValue> {
         let children_ids: Vec<NodeId> = children.iter().map(|&id| NodeId::from(id)).collect();
         map_node_result(
             self.tree
@@ -334,16 +302,11 @@ impl JsTaffyTree {
     /// This clears the entire tree, removing all nodes and their relationships.
     /// Use this to reset the tree for reuse.
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// tree.clear();
     /// console.log(tree.totalNodeCount());
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = clear)]
     pub fn clear(&mut self) {
         self.tree.clear();
@@ -356,14 +319,11 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID to remove
     ///
-    /// @returns The removed node ID (`bigint`)
+    /// @returns - The removed node ID (`bigint`)
     ///
     /// @throws `TaffyError` if the node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// try {
     ///   const removedId: bigint = tree.remove(nodeId);
@@ -371,8 +331,6 @@ impl JsTaffyTree {
     ///   console.error("Node doesn't exist");
     /// }
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = remove)]
     pub fn remove(&mut self, node: u64) -> Result<u64, JsValue> {
         map_node_result(self.tree.remove(NodeId::from(node)))
@@ -390,20 +348,13 @@ impl JsTaffyTree {
     /// @param node - The node ID
     /// @param context - Any JavaScript value to attach
     ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// interface Context { text: string };
     /// tree.setNodeContext(nodeId, { text: "Updated text" } as Context);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = setNodeContext)]
     pub fn set_node_context(&mut self, node: u64, context: JsValue) -> Result<(), JsValue> {
         map_void_result(
@@ -416,12 +367,9 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID
     ///
-    /// @returns The attached context value, or `undefined` if none is set
+    /// @returns - The attached context value, or `undefined` if none is set
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// interface Context { text: string };
     /// const context = tree.getNodeContext(nodeId) as Context | undefined;
@@ -429,8 +377,6 @@ impl JsTaffyTree {
     ///   console.log(context.text);
     /// }
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = getNodeContext)]
     pub fn get_node_context(&self, node: u64) -> Result<JsValue, JsValue> {
         match self.tree.get_node_context(NodeId::from(node)) {
@@ -446,7 +392,7 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID
     ///
-    /// @returns The attached context value, or `undefined` if none is set
+    /// @returns - The attached context value, or `undefined` if none is set
     #[wasm_bindgen(js_name = getNodeContextMut)]
     pub fn get_node_context_mut(&mut self, node: u64) -> Result<JsValue, JsValue> {
         match self.tree.get_node_context_mut(NodeId::from(node)) {
@@ -462,18 +408,13 @@ impl JsTaffyTree {
     ///
     /// @param children - Array of node IDs
     ///
-    /// @returns Array of context values (undefined for nodes without context)
+    /// @returns - Array of context values (undefined for nodes without context)
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const nodes = BigUint64Array.from([id1, id2]);
     /// const contexts = tree.getDisjointNodeContextMut(nodes);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = getDisjointNodeContextMut)]
     pub fn get_disjoint_node_context_mut(
         &mut self,
@@ -500,19 +441,12 @@ impl JsTaffyTree {
     /// @param parent - The parent node ID
     /// @param child - The child node ID to add
     ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the parent or child node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// tree.addChild(parentId, childId);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = addChild)]
     pub fn add_child(&mut self, parent: u64, child: u64) -> Result<(), JsValue> {
         map_void_result(
@@ -527,21 +461,19 @@ impl JsTaffyTree {
     /// @param index - The position to insert at (0-based)
     /// @param child - The child node ID to insert
     ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the parent or child node does not exist, or index is out of bounds
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// tree.insertChildAtIndex(parentId, 0, childId);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = insertChildAtIndex)]
-    pub fn insert_child_at_index(&mut self, parent: u64, index: usize, child: u64) -> Result<(), JsValue> {
+    pub fn insert_child_at_index(
+        &mut self,
+        parent: u64,
+        index: usize,
+        child: u64,
+    ) -> Result<(), JsValue> {
         map_void_result(self.tree.insert_child_at_index(
             NodeId::from(parent),
             index,
@@ -556,20 +488,13 @@ impl JsTaffyTree {
     /// @param parent - The parent node ID
     /// @param children - Array of new child node IDs
     ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the parent node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const children = BigUint64Array.from([child1, child2, child3]);
     /// tree.setChildren(parentId, children);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = setChildren)]
     pub fn set_children(&mut self, parent: u64, children: Box<[u64]>) -> Result<(), JsValue> {
         let children_ids: Vec<NodeId> = children.iter().map(|&id| NodeId::from(id)).collect();
@@ -581,19 +506,14 @@ impl JsTaffyTree {
     /// @param parent - The parent node ID
     /// @param child - The child node ID to remove
     ///
-    /// @returns The removed child ID (`bigint`)
+    /// @returns - The removed child ID (`bigint`)
     ///
     /// @throws `TaffyError` if the parent or child node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// tree.removeChild(parentId, childId);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = removeChild)]
     pub fn remove_child(&mut self, parent: u64, child: u64) -> Result<u64, JsValue> {
         map_node_result(
@@ -607,19 +527,14 @@ impl JsTaffyTree {
     /// @param parent - The parent node ID
     /// @param index - The index of the child to remove (0-based)
     ///
-    /// @returns The removed child ID (`bigint`)
+    /// @returns - The removed child ID (`bigint`)
     ///
     /// @throws `TaffyError` if the parent node does not exist or index is out of bounds
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const removedId: bigint = tree.removeChildAtIndex(parentId, 0);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = removeChildAtIndex)]
     pub fn remove_child_at_index(&mut self, parent: u64, index: usize) -> Result<u64, JsValue> {
         map_node_result(self.tree.remove_child_at_index(NodeId::from(parent), index))
@@ -631,19 +546,14 @@ impl JsTaffyTree {
     /// @param index - The index of the child to replace (0-based)
     /// @param new_child - The new child node ID
     ///
-    /// @returns The replaced (old) child ID (`bigint`)
+    /// @returns - The replaced (old) child ID (`bigint`)
     ///
     /// @throws `TaffyError` if the parent node does not exist or index is out of bounds
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const oldChildId: bigint = tree.replaceChildAtIndex(parentId, 1, newChildId);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = replaceChildAtIndex)]
     pub fn replace_child_at_index(
         &mut self,
@@ -663,19 +573,14 @@ impl JsTaffyTree {
     /// @param parent - The parent node ID
     /// @param index - The index of the child (0-based)
     ///
-    /// @returns The child node ID (`bigint`)
+    /// @returns - The child node ID (`bigint`)
     ///
     /// @throws `TaffyError` if the parent node does not exist or index is out of bounds
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const firstChild: bigint = tree.getChildAtIndex(parentId, 0);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = getChildAtIndex)]
     pub fn get_child_at_index(&self, parent: u64, index: usize) -> Result<u64, JsValue> {
         map_node_result(self.tree.child_at_index(NodeId::from(parent), index))
@@ -689,19 +594,12 @@ impl JsTaffyTree {
     /// @param start_index - Start of range (inclusive)
     /// @param end_index - End of range (exclusive)
     ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the parent node does not exist or range is invalid
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// tree.removeChildrenRange(parentId, 1, 3);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = removeChildrenRange)]
     pub fn remove_children_range(
         &mut self,
@@ -717,17 +615,12 @@ impl JsTaffyTree {
 
     /// Gets the total number of nodes in the tree
     ///
-    /// @returns The total count of all nodes
+    /// @returns - The total count of all nodes
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const count: number = tree.totalNodeCount();
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = totalNodeCount)]
     pub fn total_node_count(&self) -> usize {
         self.tree.total_node_count()
@@ -737,19 +630,14 @@ impl JsTaffyTree {
     ///
     /// @param parent - The parent node ID
     ///
-    /// @returns The number of direct children
+    /// @returns - The number of direct children
     ///
     /// @throws `TaffyError` if the node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const count: number = tree.childCount(parentId);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = childCount)]
     pub fn child_count(&self, parent: u64) -> usize {
         self.tree.child_count(NodeId::from(parent))
@@ -759,17 +647,12 @@ impl JsTaffyTree {
     ///
     /// @param child - The child node ID
     ///
-    /// @returns The parent node ID, or `undefined` if the node has no parent
+    /// @returns - The parent node ID, or `undefined` if the node has no parent
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const parentId: bigint | undefined = tree.parent(childId);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = parent)]
     pub fn parent(&self, child: u64) -> Option<u64> {
         self.tree.parent(NodeId::from(child)).map(u64::from)
@@ -779,19 +662,14 @@ impl JsTaffyTree {
     ///
     /// @param parent - The parent node ID
     ///
-    /// @returns Array of child node IDs (`BigUint64Array`)
+    /// @returns - Array of child node IDs (`BigUint64Array`)
     ///
     /// @throws `TaffyError` if the parent node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const children: BigUint64Array = tree.children(parentId);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = children)]
     pub fn children(&self, parent: u64) -> Result<Box<[u64]>, JsValue> {
         self.tree
@@ -812,21 +690,14 @@ impl JsTaffyTree {
     /// @param node - The node ID
     /// @param style - The new style configuration
     ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const newStyle = new Style();
     /// newStyle.flexGrow = 2;
     /// tree.setStyle(nodeId, newStyle);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = setStyle)]
     pub fn set_style(&mut self, node: u64, style: &JsStyle) -> Result<(), JsValue> {
         map_void_result(self.tree.set_style(NodeId::from(node), style.inner.clone()))
@@ -836,20 +707,15 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID
     ///
-    /// @returns The node's `Style`
+    /// @returns - The node's `Style`
     ///
     /// @throws `TaffyError` if the node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const style: Style = tree.getStyle(nodeId);
     /// console.log('Flex grow:', style.flexGrow);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = getStyle)]
     pub fn style(&self, node: u64) -> Result<JsStyle, JsValue> {
         match self.tree.style(NodeId::from(node)) {
@@ -869,21 +735,16 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID
     ///
-    /// @returns The computed `Layout`
+    /// @returns - The computed `Layout`
     ///
     /// @throws `TaffyError` if the node does not exist
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// tree.computeLayout(rootId, { width: { Definite: 800 }, height: { Definite: 600 } });
     /// const layout: Layout = tree.getLayout(nodeId);
     /// console.log(`Position: (${layout.x}, ${layout.y}), Size: ${layout.width}x${layout.height}`);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = getLayout)]
     pub fn layout(&self, node: u64) -> Result<JsLayout, JsValue> {
         match self.tree.layout(NodeId::from(node)) {
@@ -899,18 +760,13 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID
     ///
-    /// @returns The unrounded `Layout`
+    /// @returns - The unrounded `Layout`
     ///
-    ///
-    /// <details>
-    /// <summary><strong>TypeScript Example</strong></summary>
-    ///
+    /// @example
     /// ```typescript
     /// const layout: Layout = tree.unroundedLayout(nodeId);
     /// console.log(`Exact width: ${layout.width}`);
     /// ```
-    ///
-    /// </details>
     #[wasm_bindgen(js_name = unroundedLayout)]
     pub fn unrounded_layout(&self, node: u64) -> JsLayout {
         JsLayout::from(self.tree.unrounded_layout(NodeId::from(node)))
@@ -918,20 +774,49 @@ impl JsTaffyTree {
 
     /// Gets detailed layout information for grid layouts
     ///
-    /// **Note**: This method is only available when the `detailed_layout_info`
+    /// @note
+    /// This method is only available when the `detailed_layout_info`
     /// feature is enabled.
     ///
     /// @param node - The node ID
     ///
-    /// @returns Detailed grid info or "None" for non-grid nodes
+    /// @returns - Detailed grid info or "None" for non-grid nodes
     ///
     /// @throws `TaffyError` if the node does not exist
     #[cfg(feature = "detailed_layout_info")]
     #[wasm_bindgen(js_name = detailedLayoutInfo)]
     pub fn detailed_layout_info(&self, node: u64) -> Result<JsValue, JsValue> {
         match self.tree.detailed_layout_info(NodeId::from(node)) {
-            Ok(info) => Ok(serde_wasm_bindgen::to_value(info).unwrap_or(JsValue::NULL)),
-            Err(e) => Err(JsValue::from(JsTaffyError::from(e))),
+            DetailedLayoutInfo::Grid(info) => {
+                let dto = DetailedGridInfoDto {
+                    rows: DetailedGridTracksInfoDto {
+                        negative_implicit_tracks: info.rows.negative_implicit_tracks,
+                        explicit_tracks: info.rows.explicit_tracks,
+                        positive_implicit_tracks: info.rows.positive_implicit_tracks,
+                        gutters: info.rows.gutters.clone(),
+                        sizes: info.rows.sizes.clone(),
+                    },
+                    columns: DetailedGridTracksInfoDto {
+                        negative_implicit_tracks: info.columns.negative_implicit_tracks,
+                        explicit_tracks: info.columns.explicit_tracks,
+                        positive_implicit_tracks: info.columns.positive_implicit_tracks,
+                        gutters: info.columns.gutters.clone(),
+                        sizes: info.columns.sizes.clone(),
+                    },
+                    items: info
+                        .items
+                        .iter()
+                        .map(|item| DetailedGridItemsInfoDto {
+                            row_start: item.row_start,
+                            row_end: item.row_end,
+                            column_start: item.column_start,
+                            column_end: item.column_end,
+                        })
+                        .collect(),
+                };
+                Ok(serde_wasm_bindgen::to_value(&dto).unwrap_or(JsValue::NULL))
+            }
+            DetailedLayoutInfo::None => Ok(JsValue::NULL),
         }
     }
 
@@ -946,11 +831,10 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID to mark dirty
     ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the node does not exist
+    ///
     /// @example
-    /// ```javascript
+    /// ```typescript
     /// // After updating text content
     /// tree.setNodeContext(nodeId, { text: "Updated text" });
     /// tree.markDirty(nodeId);
@@ -968,11 +852,12 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID to check
     ///
-    /// @returns `boolean` - true if dirty, false otherwise
+    /// @returns - true if dirty, false otherwise
     ///
     /// @throws `TaffyError` if the node does not exist
+    ///
     /// @example
-    /// ```javascript
+    /// ```typescript
     /// if (tree.dirty(nodeId)) {
     ///   tree.computeLayout(rootId, availableSpace);
     /// }
@@ -996,23 +881,10 @@ impl JsTaffyTree {
     /// @param available_space - The available space constraints
     /// @param measure_func - A function that measures leaf node content
     ///
-    /// # Measure Function Signature
-    ///
-    /// ```typescript
-    /// (
-    ///   knownDimensions: Size<number | null>,  // Already determined sizes
-    ///   availableSpace: Size<AvailableSpace>,  // Space constraints
-    ///   node: bigint,                          // Current node ID
-    ///   context: any,                          // Node's attached context
-    ///   style: Style                           // Node's style
-    /// ) => Size<number>                        // Measured size
-    /// ```
-    ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the node does not exist or available space is invalid
+    ///
     /// @example
-    /// ```javascript
+    /// ```typescript
     /// tree.computeLayoutWithMeasure(
     ///   rootId,
     ///   { width: { Definite: 800 }, height: "MaxContent" },
@@ -1036,9 +908,9 @@ impl JsTaffyTree {
         let js_space = match serde_wasm_bindgen::from_value::<AvailableSizeDto>(js_value) {
             Ok(s) => s,
             Err(_) => {
-                return Err(JsValue::from(JsTaffyError::from(NativeTaffyError::InvalidInputNode(
-                    NodeId::from(node),
-                ))));
+                return Err(JsValue::from(JsTaffyError::from(
+                    NativeTaffyError::InvalidInputNode(NodeId::from(node)),
+                )));
             }
         };
 
@@ -1085,9 +957,8 @@ impl JsTaffyTree {
     /// @param node - The root node ID to compute layout for
     /// @param available_space - The available space constraints
     ///
-    /// # Available Space
     /// @example
-    /// ```javascript
+    /// ```typescript
     /// // Fixed size container
     /// { width: { Definite: 800 }, height: { Definite: 600 } }
     ///
@@ -1098,11 +969,10 @@ impl JsTaffyTree {
     /// { width: "MinContent", height: "MinContent" }
     /// ```
     ///
-    /// @returns `undefined`
-    ///
     /// @throws `TaffyError` if the node does not exist or available space is invalid
+    ///
     /// @example
-    /// ```javascript
+    /// ```typescript
     /// tree.computeLayout(rootId, { width: { Definite: 800 }, height: { Definite: 600 } });
     /// ```
     #[wasm_bindgen(js_name = computeLayout)]
@@ -1117,9 +987,9 @@ impl JsTaffyTree {
                 let space: Size<AvailableSpace> = js_space.into();
                 map_void_result(self.tree.compute_layout(NodeId::from(node), space))
             }
-            Err(_) => {
-                Err(JsValue::from(JsTaffyError::from(NativeTaffyError::InvalidInputNode(NodeId::from(node)))))
-            }
+            Err(_) => Err(JsValue::from(JsTaffyError::from(
+                NativeTaffyError::InvalidInputNode(NodeId::from(node)),
+            ))),
         }
     }
 
@@ -1133,8 +1003,9 @@ impl JsTaffyTree {
     /// the given node. Useful for debugging layout issues.
     ///
     /// @param node - The root node ID to print from
+    ///
     /// @example
-    /// ```javascript
+    /// ```typescript
     /// tree.printTree(rootId);
     /// // Output appears in browser console
     /// ```
