@@ -289,7 +289,7 @@ dependencies = [
 
 [[package]]
 name = "taffy-wasm"
-version = "0.9.4"
+version = "0.9.5"
 dependencies = [
  "console_error_panic_hook",
  "js-sys",
