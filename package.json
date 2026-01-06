@@ -28,17 +28,22 @@
     "pkg"
   ],
   "scripts": {
-    "build": "wasm-pack build --release --target web",
-    "build:dev": "wasm-pack build --dev --target web",
+    "build": "wasm-pack build --release --target web && npx tsx scripts/patch-dts.ts && npm run docs",
+    "build:dev": "wasm-pack build --dev --target web && npx tsx scripts/patch-dts.ts",
+    "docs": "typedoc",
     "test": "wasm-pack test --node",
     "prepare": "husky"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.3.0",
     "@commitlint/config-conventional": "^20.3.0",
+    "@types/node": "^22.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
+    "tsx": "^4.0.0",
+    "typedoc": "^0.28.15",
+    "typedoc-plugin-markdown": "^4.9.0",
     "wasm-pack": "^0.13.1"
   },
   "engines": {

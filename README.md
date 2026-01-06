@@ -1,19 +1,18 @@
-# Taffy-JS: WebAssembly Bindings for Taffy Layout Engine
+# Taffy-JS
 
-> **High-performance Flexbox and CSS Grid layout for JavaScript/TypeScript, powered by Rust and WebAssembly.**
+[![npm version](https://badge.fury.io/js/taffy-js.svg)](https://www.npmjs.com/package/taffy-js)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![License](https://img.shields.io/npm/l/taffy-js?style=flat-square) ![Version](https://img.shields.io/npm/v/taffy-js?style=flat-square) ![WASM](https://img.shields.io/badge/platform-wasm-blueviolet?style=flat-square)
-
-**Taffy** is a high-performance UI layout library written in Rust. This package (`taffy-js`) provides WebAssembly bindings, enabling JavaScript/TypeScript applications to use standards-compliant Flexbox, CSS Grid, and Block layout algorithms with near-native performance.
+High-performance WebAssembly bindings for the [Taffy](https://github.com/DioxusLabs/taffy) layout engine, bringing CSS Flexbox and Grid layout algorithms to JavaScript with near-native performance.
 
 ## ✨ Features
 
-- 🚀 **High Performance** – Rust + WebAssembly for complex layout computations
-- 📦 **Tiny Footprint** – Optimized WASM binary size
-- 🎨 **Modern Layouts** – Full Flexbox, CSS Grid, and Block layout support
-- 🛠 **Framework Agnostic** – Works with React, Vue, Svelte, vanilla JS, Node.js
-- 🔒 **Type-Safe** – Full TypeScript definitions included
-- 📐 **Custom Measurement** – Support for text measurement via callback functions
+- **🚀 High Performance**: WebAssembly-powered layout calculations
+- **📦 Complete CSS Support**: Full Flexbox and CSS Grid implementation
+- **🔧 Custom Measurement**: Support for custom text/content measurement callbacks
+- **📝 TypeScript Ready**: Complete type definitions included
+- **🌳 Tree-Based API**: Efficient tree structure for complex layouts
+- **💡 Familiar API**: CSS-like property names and values
 
 ## 📦 Installation
 
@@ -21,474 +20,433 @@
 npm install taffy-js
 ```
 
-> **Note**: Requires a runtime that supports WebAssembly (all modern browsers and Node.js 12+).
-
 ## 🚀 Quick Start
 
-```typescript
+```javascript
 import init, {
   TaffyTree,
   Style,
   Display,
   FlexDirection,
   AlignItems,
-  JustifyContent,
 } from "taffy-js";
 
 async function main() {
-  // 1. Initialize WASM module
+  // Initialize WebAssembly module
   await init();
 
-  // 2. Create tree and styles
+  // Create a layout tree
   const tree = new TaffyTree();
 
-  const rootStyle = new Style();
-  rootStyle.display = Display.Flex;
-  rootStyle.flex_direction = FlexDirection.Row;
-  rootStyle.justify_content = JustifyContent.SpaceAround;
-  rootStyle.align_items = AlignItems.Center;
-  rootStyle.size = { width: { Length: 500 }, height: { Length: 400 } };
+  // Create container style
+  const containerStyle = new Style();
+  containerStyle.display = Display.Flex;
+  containerStyle.flexDirection = FlexDirection.Column;
+  containerStyle.alignItems = AlignItems.Center;
+  containerStyle.size = { width: { Length: 300 }, height: { Length: 200 } };
+  containerStyle.padding = {
+    left: { Length: 10 },
+    right: { Length: 10 },
+    top: { Length: 10 },
+    bottom: { Length: 10 },
+  };
 
+  // Create child styles
   const childStyle = new Style();
-  childStyle.size = { width: { Length: 100 }, height: { Length: 100 } };
+  childStyle.flexGrow = 1;
+  childStyle.size = { width: { Percent: 100 }, height: "Auto" };
 
-  // 3. Build the tree
+  // Create nodes
   const child1 = tree.newLeaf(childStyle);
   const child2 = tree.newLeaf(childStyle);
-  const root = tree.newWithChildren(rootStyle, [child1, child2]);
+  const container = tree.newWithChildren(
+    containerStyle,
+    BigUint64Array.from([child1, child2]),
+  );
 
-  // 4. Compute layout
-  tree.computeLayout(root, {
-    width: { Definite: 500 },
-    height: { Definite: 400 },
+  // Compute layout
+  tree.computeLayout(container, {
+    width: { Definite: 300 },
+    height: { Definite: 200 },
   });
 
-  // 5. Read results
-  console.log("Root:", tree.getLayout(root));
-  console.log("Child 1:", tree.getLayout(child1));
-  console.log("Child 2:", tree.getLayout(child2));
+  // Read computed layouts
+  const containerLayout = tree.getLayout(container);
+  const child1Layout = tree.getLayout(child1);
+  const child2Layout = tree.getLayout(child2);
+
+  console.log(`Container: ${containerLayout.width}x${containerLayout.height}`);
+  console.log(
+    `Child 1: ${child1Layout.width}x${child1Layout.height} at (${child1Layout.x}, ${child1Layout.y})`,
+  );
+  console.log(
+    `Child 2: ${child2Layout.width}x${child2Layout.height} at (${child2Layout.x}, ${child2Layout.y})`,
+  );
 }
 
 main();
 ```
 
-## 📐 Architecture
+## 📖 API Reference
 
-The library is organized into four main components:
+### TaffyTree
 
-| Component     | Description                                                                           |
-| :------------ | :------------------------------------------------------------------------------------ |
-| **Enums**     | CSS layout enum types (Display, Position, FlexDirection, FlexWrap, AlignItems, etc.)  |
-| **DTOs**      | Data Transfer Objects for JS ↔ Rust serialization (JsDimension, JsSize, JsRect, etc.) |
-| **Style**     | Node style configuration with getter/setter methods for all CSS layout properties     |
-| **TaffyTree** | Layout tree manager for node creation, tree manipulation, and layout computation      |
-
-### How It Works
-
-1. **Create Tree** – Instantiate a `TaffyTree` to manage layout nodes
-2. **Define Styles** – Create `Style` objects and set CSS layout properties
-3. **Build Nodes** – Use `newLeaf()` or `newWithChildren()` to create nodes
-4. **Compute Layout** – Call `computeLayout()` on the root node
-5. **Read Results** – Use `getLayout()` to retrieve computed positions and sizes
-
----
-
-## 📚 API Reference
-
-### TaffyTree Class
-
-The main entry point for layout computation.
-
-#### Constructors
-
-| Method                      | Description                                              |
-| :-------------------------- | :------------------------------------------------------- |
-| `new TaffyTree()`           | Creates a new empty layout tree                          |
-| `TaffyTree.withCapacity(n)` | Creates a tree with pre-allocated capacity for `n` nodes |
-
-#### Configuration
-
-| Method              | Description                                              |
-| :------------------ | :------------------------------------------------------- |
-| `enableRounding()`  | Enables rounding layout values to whole pixels (default) |
-| `disableRounding()` | Disables rounding for sub-pixel precision                |
-
-#### Node Creation
-
-| Method               | Signature                                     | Description                               |
-| :------------------- | :-------------------------------------------- | :---------------------------------------- |
-| `newLeaf`            | `(style: Style) → number`                     | Creates a leaf node (no children)         |
-| `newLeafWithContext` | `(style: Style, context: any) → number`       | Creates a leaf with attached context data |
-| `newWithChildren`    | `(style: Style, children: number[]) → number` | Creates a container node with children    |
-
-#### Style Management
-
-| Method     | Signature                             | Description                          |
-| :--------- | :------------------------------------ | :----------------------------------- |
-| `setStyle` | `(node: number, style: Style) → void` | Updates a node's style (marks dirty) |
-| `getStyle` | `(node: number) → Style`              | Returns a copy of the node's style   |
-
-#### Tree Operations
-
-| Method                | Signature                         | Description                    |
-| :-------------------- | :-------------------------------- | :----------------------------- |
-| `addChild`            | `(parent, child) → void`          | Appends a child to a parent    |
-| `removeChild`         | `(parent, child) → number`        | Removes and returns the child  |
-| `removeChildAtIndex`  | `(parent, index) → number`        | Removes child at index         |
-| `insertChildAtIndex`  | `(parent, index, child) → void`   | Inserts child at index         |
-| `replaceChildAtIndex` | `(parent, index, child) → number` | Replaces and returns old child |
-| `setChildren`         | `(parent, children[]) → void`     | Replaces all children          |
-| `remove`              | `(node) → number`                 | Removes node from tree         |
-| `clear`               | `() → void`                       | Removes all nodes              |
-
-#### Tree Queries
-
-| Method            | Signature                  | Description                 |
-| :---------------- | :------------------------- | :-------------------------- |
-| `parent`          | `(child) → number \| null` | Returns parent node ID      |
-| `children`        | `(parent) → number[]`      | Returns array of child IDs  |
-| `childCount`      | `(parent) → number`        | Returns number of children  |
-| `getChildAtIndex` | `(parent, index) → number` | Returns child at index      |
-| `totalNodeCount`  | `() → number`              | Returns total nodes in tree |
-
-#### Dirty Tracking
-
-| Method      | Signature          | Description                    |
-| :---------- | :----------------- | :----------------------------- |
-| `markDirty` | `(node) → void`    | Marks node for re-layout       |
-| `dirty`     | `(node) → boolean` | Checks if node needs re-layout |
-
-#### Layout Computation
-
-| Method                     | Signature                                  | Description                           |
-| :------------------------- | :----------------------------------------- | :------------------------------------ |
-| `computeLayout`            | `(node, availableSpace) → void`            | Computes layout for subtree           |
-| `computeLayoutWithMeasure` | `(node, availableSpace, measureFn) → void` | Computes with custom measure function |
-
-#### Layout Results
-
-| Method            | Signature         | Description                           |
-| :---------------- | :---------------- | :------------------------------------ |
-| `getLayout`       | `(node) → Layout` | Returns computed layout (rounded)     |
-| `unroundedLayout` | `(node) → Layout` | Returns layout with fractional values |
-
-#### Node Context
-
-| Method           | Signature                | Description             |
-| :--------------- | :----------------------- | :---------------------- |
-| `setNodeContext` | `(node, context) → void` | Attaches data to node   |
-| `getNodeContext` | `(node) → any`           | Retrieves attached data |
-
-#### Debug
-
-| Method            | Description                      |
-| :---------------- | :------------------------------- |
-| `printTree(node)` | Prints tree structure to console |
-
----
-
-### Style Class
-
-Configuration object for CSS layout properties.
+The main class for managing layout trees.
 
 ```typescript
-const style = new Style();
-```
+class TaffyTree {
+  // Construction
+  constructor();
+  static withCapacity(capacity: number): TaffyTree;
 
-#### Layout Mode
+  // Node Creation (throws TaffyError on failure)
+  newLeaf(style: Style): bigint;
+  newLeafWithContext(style: Style, context: any): bigint;
+  newWithChildren(style: Style, children: BigUint64Array): bigint;
 
-| Property   | Type       | Description                               |
-| :--------- | :--------- | :---------------------------------------- |
-| `display`  | `Display`  | Layout algorithm: Block, Flex, Grid, None |
-| `position` | `Position` | Positioning: Relative, Absolute           |
+  // Tree Operations
+  clear(): void;
+  remove(node: bigint): bigint; // throws TaffyError
+  totalNodeCount(): number;
 
-#### Flexbox Properties
+  // Child Management (throws TaffyError on failure)
+  addChild(parent: bigint, child: bigint): void;
+  removeChild(parent: bigint, child: bigint): bigint;
+  setChildren(parent: bigint, children: BigUint64Array): void;
+  children(parent: bigint): BigUint64Array;
+  childCount(parent: bigint): number;
+  parent(child: bigint): bigint | undefined;
 
-| Property         | Type            | Description                                       |
-| :--------------- | :-------------- | :------------------------------------------------ |
-| `flex_direction` | `FlexDirection` | Main axis: Row, Column, RowReverse, ColumnReverse |
-| `flex_wrap`      | `FlexWrap`      | Wrap behavior: NoWrap, Wrap, WrapReverse          |
-| `flex_grow`      | `number`        | Grow factor (default: 0)                          |
-| `flex_shrink`    | `number`        | Shrink factor (default: 1)                        |
-| `flex_basis`     | `Dimension`     | Initial size before grow/shrink                   |
+  // Style Management (throws TaffyError on failure)
+  setStyle(node: bigint, style: Style): void;
+  getStyle(node: bigint): Style;
 
-#### Alignment
+  // Layout Computation (throws TaffyError on failure)
+  computeLayout(node: bigint, availableSpace: Size<AvailableSpace>): void;
+  computeLayoutWithMeasure(
+    node: bigint,
+    availableSpace: Size<AvailableSpace>,
+    measureFunc: MeasureFunction,
+  ): void;
 
-| Property          | Type              | Description                        |
-| :---------------- | :---------------- | :--------------------------------- |
-| `align_items`     | `AlignItems?`     | Cross-axis alignment for children  |
-| `align_self`      | `AlignSelf?`      | Cross-axis alignment for this item |
-| `align_content`   | `AlignContent?`   | Multi-line cross-axis alignment    |
-| `justify_content` | `JustifyContent?` | Main-axis alignment                |
+  // Layout Results (throws TaffyError on failure)
+  getLayout(node: bigint): Layout;
+  unroundedLayout(node: bigint): Layout;
 
-#### Sizing
+  // Dirty Tracking (throws TaffyError on failure)
+  markDirty(node: bigint): void;
+  dirty(node: bigint): boolean;
 
-| Property       | Type                | Description              |
-| :------------- | :------------------ | :----------------------- |
-| `size`         | `{ width, height }` | Element dimensions       |
-| `min_size`     | `{ width, height }` | Minimum size constraints |
-| `max_size`     | `{ width, height }` | Maximum size constraints |
-| `aspect_ratio` | `number?`           | Width-to-height ratio    |
-| `box_sizing`   | `BoxSizing`         | Size calculation mode    |
-
-#### Spacing
-
-| Property  | Type                           | Description                           |
-| :-------- | :----------------------------- | :------------------------------------ |
-| `margin`  | `{ left, right, top, bottom }` | Outer spacing (supports Auto)         |
-| `padding` | `{ left, right, top, bottom }` | Inner spacing                         |
-| `border`  | `{ left, right, top, bottom }` | Border width                          |
-| `gap`     | `{ width, height }`            | Gap between children (column/row gap) |
-| `inset`   | `{ left, right, top, bottom }` | Absolute positioning offsets          |
-
-#### Overflow
-
-| Property   | Type       | Description                |
-| :--------- | :--------- | :------------------------- |
-| `overflow` | `{ x, y }` | Overflow behavior per axis |
-
----
-
-### Type Definitions
-
-#### Dimension (JsDimension)
-
-Values for size properties:
-
-```typescript
-// Fixed pixel value
-{
-  Length: 100;
-}
-
-// Percentage of parent
-{
-  Percent: 0.5;
-} // 50%
-
-// Automatic sizing
-("Auto");
-```
-
-#### LengthPercentage (JsLengthPercentage)
-
-For properties that don't support Auto (padding, border):
-
-```typescript
-{
-  Length: 10;
-}
-{
-  Percent: 0.1;
+  // Configuration
+  enableRounding(): void;
+  disableRounding(): void;
 }
 ```
 
-#### LengthPercentageAuto (JsLengthPercentageAuto)
+### Style
 
-For properties that support Auto (margin, inset):
-
-```typescript
-{
-  Length: 10;
-}
-{
-  Percent: 0.1;
-}
-("Auto");
-```
-
-#### AvailableSpace (JsAvailableSize)
-
-Constraints for layout computation:
+Configuration object for node layout properties.
 
 ```typescript
-{
-  width: { Definite: 800 },   // Fixed width
-  height: { Definite: 600 }   // Fixed height
-}
+class Style {
+  constructor();
 
-{
-  width: "MaxContent",        // Intrinsic max width
-  height: "MinContent"        // Intrinsic min height
+  // Layout Mode
+  display: Display; // Block, Flex, Grid, None
+  position: Position; // Relative, Absolute
+
+  // Flexbox
+  flexDirection: FlexDirection; // Row, Column, RowReverse, ColumnReverse
+  flexWrap: FlexWrap; // NoWrap, Wrap, WrapReverse
+  flexGrow: number; // Growth factor (default: 0)
+  flexShrink: number; // Shrink factor (default: 1)
+  flexBasis: Dimension; // Initial size
+
+  // Alignment
+  alignItems: AlignItems | undefined;
+  alignSelf: AlignSelf | undefined;
+  alignContent: AlignContent | undefined;
+  justifyContent: JustifyContent | undefined;
+
+  // Sizing
+  size: Size<Dimension>; // Width and height
+  minSize: Size<Dimension>; // Minimum constraints
+  maxSize: Size<Dimension>; // Maximum constraints
+  aspectRatio: number | undefined; // Width/height ratio
+  boxSizing: BoxSizing; // BorderBox, ContentBox
+
+  // Spacing
+  margin: Rect<LengthPercentageAuto>;
+  padding: Rect<LengthPercentage>;
+  border: Rect<LengthPercentage>;
+  gap: Size<LengthPercentage>; // Row and column gap
+  inset: Rect<LengthPercentageAuto>; // For absolute positioning
+
+  // Overflow
+  overflow: Point<Overflow>;
 }
 ```
 
-#### Layout Result
+### Layout
 
-Returned by `getLayout()`:
+Read-only computed layout result.
 
 ```typescript
-{
-  order: number,
-  size: { width: number, height: number },
-  location: { x: number, y: number },
-  padding: { left, right, top, bottom },
-  border: { left, right, top, bottom },
-  scrollbar_size: { width, height },
-  content_size: { width, height }
+class Layout {
+  // Position (relative to parent)
+  readonly x: number;
+  readonly y: number;
+
+  // Size
+  readonly width: number;
+  readonly height: number;
+
+  // Content size (for scrollable content)
+  readonly contentWidth: number;
+  readonly contentHeight: number;
+
+  // Spacing
+  readonly paddingTop: number;
+  readonly paddingRight: number;
+  readonly paddingBottom: number;
+  readonly paddingLeft: number;
+
+  readonly borderTop: number;
+  readonly borderRight: number;
+  readonly borderBottom: number;
+  readonly borderLeft: number;
+
+  readonly marginTop: number;
+  readonly marginRight: number;
+  readonly marginBottom: number;
+  readonly marginLeft: number;
+
+  // Scrollbars
+  readonly scrollbarWidth: number;
+  readonly scrollbarHeight: number;
+
+  // Rendering order
+  readonly order: number;
 }
 ```
-
----
 
 ### Enums
 
-#### Display
-
 ```typescript
-Display.Block; // Block layout (default)
-Display.Flex; // Flexbox container
-Display.Grid; // CSS Grid container
-Display.None; // Hidden, takes no space
+enum Display {
+  Block,
+  Flex,
+  Grid,
+  None,
+}
+enum Position {
+  Relative,
+  Absolute,
+}
+enum FlexDirection {
+  Row,
+  Column,
+  RowReverse,
+  ColumnReverse,
+}
+enum FlexWrap {
+  NoWrap,
+  Wrap,
+  WrapReverse,
+}
+enum AlignItems {
+  Start,
+  End,
+  FlexStart,
+  FlexEnd,
+  Center,
+  Baseline,
+  Stretch,
+}
+enum AlignSelf {
+  Auto,
+  Start,
+  End,
+  FlexStart,
+  FlexEnd,
+  Center,
+  Baseline,
+  Stretch,
+}
+enum AlignContent {
+  Start,
+  End,
+  FlexStart,
+  FlexEnd,
+  Center,
+  Stretch,
+  SpaceBetween,
+  SpaceAround,
+  SpaceEvenly,
+}
+enum JustifyContent {
+  Start,
+  End,
+  FlexStart,
+  FlexEnd,
+  Center,
+  Stretch,
+  SpaceBetween,
+  SpaceAround,
+  SpaceEvenly,
+}
+enum Overflow {
+  Visible,
+  Hidden,
+  Scroll,
+  Auto,
+}
+enum BoxSizing {
+  BorderBox,
+  ContentBox,
+}
 ```
 
-#### Position
+### Types
 
 ```typescript
-Position.Relative; // Normal document flow (default)
-Position.Absolute; // Removed from flow, positioned via inset
+// Dimension values
+type Dimension = { Length: number } | { Percent: number } | "Auto";
+type LengthPercentage = { Length: number } | { Percent: number };
+type LengthPercentageAuto = { Length: number } | { Percent: number } | "Auto";
+
+// Geometry
+interface Size<T> {
+  width: T;
+  height: T;
+}
+interface Rect<T> {
+  left: T;
+  right: T;
+  top: T;
+  bottom: T;
+}
+interface Point<T> {
+  x: T;
+  y: T;
+}
+
+// Available space for layout computation
+type AvailableSpace = { Definite: number } | "MinContent" | "MaxContent";
+
+// Measure function for custom content measurement
+type MeasureFunction = (
+  knownDimensions: Size<number | null>,
+  availableSpace: Size<AvailableSpace>,
+  node: bigint,
+  context: any,
+  style: Style,
+) => Size<number>;
 ```
 
-#### FlexDirection
+## 📐 Custom Text Measurement
 
-```typescript
-FlexDirection.Row; // Horizontal, left to right
-FlexDirection.Column; // Vertical, top to bottom
-FlexDirection.RowReverse; // Horizontal, right to left
-FlexDirection.ColumnReverse; // Vertical, bottom to top
-```
+For text nodes or other content that needs dynamic measurement:
 
-#### FlexWrap
+```javascript
+const textNode = tree.newLeafWithContext(textStyle, { text: "Hello, World!" });
 
-```typescript
-FlexWrap.NoWrap; // Single line (default)
-FlexWrap.Wrap; // Wrap to multiple lines
-FlexWrap.WrapReverse; // Wrap in reverse order
-```
-
-#### AlignItems / AlignSelf
-
-```typescript
-AlignItems.Start; // Align to start
-AlignItems.End; // Align to end
-AlignItems.FlexStart; // Align to flex start
-AlignItems.FlexEnd; // Align to flex end
-AlignItems.Center; // Center alignment
-AlignItems.Baseline; // Baseline alignment
-AlignItems.Stretch; // Stretch to fill
-
-AlignSelf.Auto; // Inherit from parent (AlignSelf only)
-```
-
-#### AlignContent
-
-```typescript
-AlignContent.Start;
-AlignContent.End;
-AlignContent.FlexStart;
-AlignContent.FlexEnd;
-AlignContent.Center;
-AlignContent.Stretch;
-AlignContent.SpaceBetween;
-AlignContent.SpaceAround;
-AlignContent.SpaceEvenly;
-```
-
-#### JustifyContent
-
-```typescript
-JustifyContent.Start;
-JustifyContent.End;
-JustifyContent.FlexStart;
-JustifyContent.FlexEnd;
-JustifyContent.Center;
-JustifyContent.Stretch;
-JustifyContent.SpaceBetween;
-JustifyContent.SpaceAround;
-JustifyContent.SpaceEvenly;
-```
-
-#### Overflow
-
-```typescript
-Overflow.Visible; // Content not clipped
-Overflow.Hidden; // Content clipped
-Overflow.Scroll; // Always show scrollbars
-Overflow.Auto; // Show scrollbars when needed
-```
-
-#### BoxSizing
-
-```typescript
-BoxSizing.BorderBox; // Include padding/border in size (default)
-BoxSizing.ContentBox; // Size is content only
-```
-
----
-
-## 📏 Custom Measurement
-
-For nodes with intrinsic sizes (like text), use `computeLayoutWithMeasure`:
-
-```typescript
 tree.computeLayoutWithMeasure(
-  root,
-  { width: { Definite: 800 }, height: { Definite: 600 } },
-  (knownDimensions, availableSpace, context) => {
-    // knownDimensions: { width: number | null, height: number | null }
-    // availableSpace: { width: AvailableSpace, height: AvailableSpace }
-    // context: The value attached via setNodeContext/newLeafWithContext
-
-    // Return the measured size
-    return { width: 100, height: 20 };
+  rootNode,
+  { width: { Definite: 800 }, height: "MaxContent" },
+  (known, available, node, context, style) => {
+    if (context?.text) {
+      // Your text measurement logic here
+      const width = measureTextWidth(context.text);
+      const height = measureTextHeight(context.text, available.width);
+      return { width, height };
+    }
+    return { width: 0, height: 0 };
   },
 );
 ```
 
-**Example with text measurement:**
+## 🔧 Error Handling
 
-```typescript
-// Create a text node with context
-const textNode = tree.newLeafWithContext(style, { text: "Hello World" });
+Methods that can fail throw a `TaffyError` as a JavaScript exception. Use try-catch to handle errors:
 
-// Measure function
-tree.computeLayoutWithMeasure(root, availableSpace, (known, available, ctx) => {
-  if (ctx?.text) {
-    // Use your text measurement library here
-    const measured = measureText(ctx.text, available.width);
-    return { width: measured.width, height: measured.height };
-  }
-  return { width: 0, height: 0 };
-});
+```javascript
+try {
+  const nodeId = tree.newLeaf(style);
+  console.log("Created node:", nodeId);
+} catch (error) {
+  // error is a TaffyError instance
+  console.error("Error:", error.message);
+}
 ```
 
----
+## 🌐 Browser Support
 
-## 🛠 Building from Source
+Taffy-JS works in all modern browsers that support WebAssembly:
 
-1. **Prerequisites**: Install Rust and `wasm-pack`
+- Chrome 57+
+- Firefox 52+
+- Safari 11+
+- Edge 16+
 
-   ```bash
-   curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-   ```
+## 📚 Examples
 
-2. **Build**
+### Flexbox Row Layout
 
-   ```bash
-   npm install
-   npm run build
-   ```
+```javascript
+const rowStyle = new Style();
+rowStyle.display = Display.Flex;
+rowStyle.flexDirection = FlexDirection.Row;
+rowStyle.justifyContent = JustifyContent.SpaceBetween;
+rowStyle.gap = { width: { Length: 10 }, height: { Length: 0 } };
+```
 
-3. **Build with debug features**
+### Absolute Positioning
 
-   ```bash
-   wasm-pack build --features console_error_panic_hook
-   ```
+```javascript
+const absoluteStyle = new Style();
+absoluteStyle.position = Position.Absolute;
+absoluteStyle.inset = {
+  left: { Length: 10 },
+  top: { Length: 10 },
+  right: "Auto",
+  bottom: "Auto",
+};
+absoluteStyle.size = { width: { Length: 100 }, height: { Length: 50 } };
+```
 
----
+### Percentage Sizing
+
+```javascript
+const percentStyle = new Style();
+percentStyle.size = {
+  width: { Percent: 50 }, // 50% of parent
+  height: { Percent: 100 }, // 100% of parent
+};
+```
+
+## 🏗️ Building from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/user/taffy-js.git
+cd taffy-js
+
+# Install dependencies
+npm install
+
+# Build the WebAssembly module
+npm run build
+
+# Run tests
+npm test
+```
 
 ## 📄 License
 
-MIT License © 2024 ByteLand Technology
+MIT License - see [LICENSE](LICENSE) for details.
 
-This project wraps [Taffy](https://github.com/DioxusLabs/taffy), which is also MIT licensed.
+## 🙏 Acknowledgments
+
+- [Taffy](https://github.com/DioxusLabs/taffy) - The Rust layout engine this project wraps
+- [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) - Rust/WebAssembly interoperability
