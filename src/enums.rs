@@ -71,19 +71,6 @@ impl From<taffy::style::Display> for JsDisplay {
     }
 }
 
-impl TryFrom<u32> for JsDisplay {
-    type Error = ();
-    fn try_from(v: u32) -> Result<Self, Self::Error> {
-        match v {
-            0 => Ok(JsDisplay::Block),
-            1 => Ok(JsDisplay::Flex),
-            2 => Ok(JsDisplay::Grid),
-            3 => Ok(JsDisplay::None),
-            _ => Err(()),
-        }
-    }
-}
-
 // =============================================================================
 // Position Mode
 // =============================================================================
@@ -123,17 +110,6 @@ impl From<taffy::style::Position> for JsPosition {
         match val {
             taffy::style::Position::Relative => JsPosition::Relative,
             taffy::style::Position::Absolute => JsPosition::Absolute,
-        }
-    }
-}
-
-impl TryFrom<u32> for JsPosition {
-    type Error = ();
-    fn try_from(v: u32) -> Result<Self, Self::Error> {
-        match v {
-            0 => Ok(JsPosition::Relative),
-            1 => Ok(JsPosition::Absolute),
-            _ => Err(()),
         }
     }
 }
@@ -299,22 +275,6 @@ impl From<taffy::style::AlignItems> for JsAlignItems {
     }
 }
 
-impl TryFrom<u32> for JsAlignItems {
-    type Error = ();
-    fn try_from(v: u32) -> Result<Self, Self::Error> {
-        match v {
-            0 => Ok(JsAlignItems::Start),
-            1 => Ok(JsAlignItems::End),
-            2 => Ok(JsAlignItems::FlexStart),
-            3 => Ok(JsAlignItems::FlexEnd),
-            4 => Ok(JsAlignItems::Center),
-            5 => Ok(JsAlignItems::Baseline),
-            6 => Ok(JsAlignItems::Stretch),
-            _ => Err(()),
-        }
-    }
-}
-
 // =============================================================================
 // Align Self
 // =============================================================================
@@ -377,23 +337,6 @@ impl From<taffy::style::AlignSelf> for JsAlignSelf {
             taffy::style::AlignSelf::Center => JsAlignSelf::Center,
             taffy::style::AlignSelf::Baseline => JsAlignSelf::Baseline,
             taffy::style::AlignSelf::Stretch => JsAlignSelf::Stretch,
-        }
-    }
-}
-
-impl TryFrom<u32> for JsAlignSelf {
-    type Error = ();
-    fn try_from(v: u32) -> Result<Self, Self::Error> {
-        match v {
-            0 => Ok(JsAlignSelf::Auto),
-            1 => Ok(JsAlignSelf::Start),
-            2 => Ok(JsAlignSelf::End),
-            3 => Ok(JsAlignSelf::FlexStart),
-            4 => Ok(JsAlignSelf::FlexEnd),
-            5 => Ok(JsAlignSelf::Center),
-            6 => Ok(JsAlignSelf::Baseline),
-            7 => Ok(JsAlignSelf::Stretch),
-            _ => Err(()),
         }
     }
 }
@@ -471,24 +414,6 @@ impl From<taffy::style::AlignContent> for JsAlignContent {
     }
 }
 
-impl TryFrom<u32> for JsAlignContent {
-    type Error = ();
-    fn try_from(v: u32) -> Result<Self, Self::Error> {
-        match v {
-            0 => Ok(JsAlignContent::Start),
-            1 => Ok(JsAlignContent::End),
-            2 => Ok(JsAlignContent::FlexStart),
-            3 => Ok(JsAlignContent::FlexEnd),
-            4 => Ok(JsAlignContent::Center),
-            5 => Ok(JsAlignContent::Stretch),
-            6 => Ok(JsAlignContent::SpaceBetween),
-            7 => Ok(JsAlignContent::SpaceAround),
-            8 => Ok(JsAlignContent::SpaceEvenly),
-            _ => Err(()),
-        }
-    }
-}
-
 // =============================================================================
 // Justify Content
 // =============================================================================
@@ -560,24 +485,6 @@ impl From<taffy::style::JustifyContent> for JsJustifyContent {
     }
 }
 
-impl TryFrom<u32> for JsJustifyContent {
-    type Error = ();
-    fn try_from(v: u32) -> Result<Self, Self::Error> {
-        match v {
-            0 => Ok(JsJustifyContent::Start),
-            1 => Ok(JsJustifyContent::End),
-            2 => Ok(JsJustifyContent::FlexStart),
-            3 => Ok(JsJustifyContent::FlexEnd),
-            4 => Ok(JsJustifyContent::Center),
-            5 => Ok(JsJustifyContent::Stretch),
-            6 => Ok(JsJustifyContent::SpaceBetween),
-            7 => Ok(JsJustifyContent::SpaceAround),
-            8 => Ok(JsJustifyContent::SpaceEvenly),
-            _ => Err(()),
-        }
-    }
-}
-
 // =============================================================================
 // Overflow
 // =============================================================================
@@ -598,12 +505,12 @@ impl TryFrom<u32> for JsJustifyContent {
 pub enum JsOverflow {
     /// Content is not clipped and may render outside the container
     Visible = 0,
+    /// Content is clipped at the container boundary, but unlike Hidden, this forbids all scrolling
+    Clip = 1,
     /// Content is clipped at the container boundary
-    Hidden = 1,
+    Hidden = 2,
     /// Always display scrollbars for scrollable content
-    Scroll = 2,
-    /// Display scrollbars only when content overflows (internally maps to Scroll)
-    Auto = 3,
+    Scroll = 3,
 }
 
 impl From<JsOverflow> for taffy::style::Overflow {
@@ -612,7 +519,7 @@ impl From<JsOverflow> for taffy::style::Overflow {
             JsOverflow::Visible => taffy::style::Overflow::Visible,
             JsOverflow::Hidden => taffy::style::Overflow::Hidden,
             JsOverflow::Scroll => taffy::style::Overflow::Scroll,
-            JsOverflow::Auto => taffy::style::Overflow::Scroll,
+            JsOverflow::Clip => taffy::style::Overflow::Clip,
         }
     }
 }
@@ -623,7 +530,7 @@ impl From<taffy::style::Overflow> for JsOverflow {
             taffy::style::Overflow::Visible => JsOverflow::Visible,
             taffy::style::Overflow::Hidden => JsOverflow::Hidden,
             taffy::style::Overflow::Scroll => JsOverflow::Scroll,
-            taffy::style::Overflow::Clip => JsOverflow::Hidden,
+            taffy::style::Overflow::Clip => JsOverflow::Clip,
         }
     }
 }

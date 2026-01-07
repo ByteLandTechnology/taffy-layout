@@ -21,9 +21,9 @@ style.overflow = { x: Overflow.Hidden, y: Overflow.Scroll };
 
 ## Enumeration Members
 
-| Enumeration Member             | Value | Description                                                                |
-| ------------------------------ | ----- | -------------------------------------------------------------------------- |
-| <a id="auto"></a> `Auto`       | `3`   | Display scrollbars only when content overflows (internally maps to Scroll) |
-| <a id="hidden"></a> `Hidden`   | `1`   | Content is clipped at the container boundary                               |
-| <a id="scroll"></a> `Scroll`   | `2`   | Always display scrollbars for scrollable content                           |
-| <a id="visible"></a> `Visible` | `0`   | Content is not clipped and may render outside the container                |
+| Enumeration Member             | Value | Description                                                                                 |
+| ------------------------------ | ----- | ------------------------------------------------------------------------------------------- |
+| <a id="clip"></a> `Clip`       | `1`   | Content is clipped at the container boundary, but unlike Hidden, this forbids all scrolling |
+| <a id="hidden"></a> `Hidden`   | `2`   | Content is clipped at the container boundary                                                |
+| <a id="scroll"></a> `Scroll`   | `3`   | Always display scrollbars for scrollable content                                            |
+| <a id="visible"></a> `Visible` | `0`   | Content is not clipped and may render outside the container                                 |

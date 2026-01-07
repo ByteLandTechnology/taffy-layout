@@ -95,23 +95,23 @@ extern "C" {
 
     /// Optional AlignItems type for setters
     #[wasm_bindgen(typescript_type = "AlignItems | undefined")]
-    pub type OneOptAlignItems;
+    pub type JsOptionAlignItems;
 
     /// Optional AlignSelf type for setters
     #[wasm_bindgen(typescript_type = "AlignSelf | undefined")]
-    pub type OneOptAlignSelf;
+    pub type JsOptionAlignSelf;
 
     /// Optional AlignContent type for setters
     #[wasm_bindgen(typescript_type = "AlignContent | undefined")]
-    pub type OneOptAlignContent;
+    pub type JsOptionAlignContent;
 
     /// Optional JustifyContent type for setters
     #[wasm_bindgen(typescript_type = "JustifyContent | undefined")]
-    pub type OneOptJustifyContent;
+    pub type JsOptionJustifyContent;
 
     /// Optional number type for setters
     #[wasm_bindgen(typescript_type = "number | undefined")]
-    pub type OnOptNumber;
+    pub type JsOptionNumber;
 }
 
 // =============================================================================
@@ -865,6 +865,76 @@ impl From<LengthPercentageAuto> for LengthPercentageAutoDto {
                 _ => LengthPercentageAutoDto::Auto,
             }
         }
+    }
+}
+
+// =============================================================================
+// PointOverflow DTO
+// =============================================================================
+
+/// Data Transfer Object for overflow values (x and y)
+///
+/// @example
+/// ```json
+/// { "x": 2, "y": 3 }
+/// ```
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct PointOverflowDto {
+    /// The x-axis value (Overflow enum discriminant)
+    pub x: u8,
+    /// The y-axis value (Overflow enum discriminant)
+    pub y: u8,
+}
+
+impl From<PointOverflowDto> for taffy::geometry::Point<taffy::style::Overflow> {
+    fn from(v: PointOverflowDto) -> Self {
+        use crate::enums::JsOverflow;
+
+        // NOTE: Guard expressions ensure match arms stay in sync with JsOverflow discriminants.
+        // If JsOverflow values change, these will fail to compile.
+        const VISIBLE: u8 = JsOverflow::Visible as u8;
+        const CLIP: u8 = JsOverflow::Clip as u8;
+        const HIDDEN: u8 = JsOverflow::Hidden as u8;
+        const SCROLL: u8 = JsOverflow::Scroll as u8;
+
+        taffy::geometry::Point {
+            x: match v.x {
+                VISIBLE => taffy::style::Overflow::Visible,
+                CLIP => taffy::style::Overflow::Clip,
+                HIDDEN => taffy::style::Overflow::Hidden,
+                SCROLL => taffy::style::Overflow::Scroll,
+                _ => taffy::style::Overflow::Visible,
+            },
+            y: match v.y {
+                VISIBLE => taffy::style::Overflow::Visible,
+                CLIP => taffy::style::Overflow::Clip,
+                HIDDEN => taffy::style::Overflow::Hidden,
+                SCROLL => taffy::style::Overflow::Scroll,
+                _ => taffy::style::Overflow::Visible,
+            },
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_overflow_discriminants() {
+        use crate::enums::JsOverflow;
+
+        // Ensure JsOverflow discriminants are as expected
+        assert_eq!(JsOverflow::Visible as u8, 0);
+        assert_eq!(JsOverflow::Clip as u8, 1);
+        assert_eq!(JsOverflow::Hidden as u8, 2);
+        assert_eq!(JsOverflow::Scroll as u8, 3);
+
+        // Ensure roundtrip conversion works
+        let dto = PointOverflowDto { x: 2, y: 3 };
+        let point: taffy::geometry::Point<taffy::style::Overflow> = dto.into();
+        assert_eq!(point.x, taffy::style::Overflow::Hidden);
+        assert_eq!(point.y, taffy::style::Overflow::Scroll);
     }
 }
 

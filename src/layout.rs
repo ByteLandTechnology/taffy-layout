@@ -10,7 +10,6 @@
 //! and contains all the information needed to render the node.
 //!
 //! @example
-//!
 //! ```typescript
 //! // Compute layout first
 //! tree.computeLayout(rootNode, { width: 800, height: 600 });

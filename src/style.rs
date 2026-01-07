@@ -76,6 +76,7 @@ use crate::types::*;
 use crate::utils::log;
 use crate::utils::serialize;
 use taffy::style::{self as TaffyStyle};
+use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 
 // =============================================================================
@@ -149,7 +150,6 @@ impl JsStyle {
     ///
     ///
     /// @example
-    ///
     /// ```typescript
     /// style.display = Display.Flex;
     /// ```
@@ -176,7 +176,6 @@ impl JsStyle {
     ///
     ///
     /// @example
-    ///
     /// ```typescript
     /// style.position = Position.Absolute;
     /// style.inset = { left: 10, top: 10, right: "auto", bottom: "auto" };
@@ -208,7 +207,6 @@ impl JsStyle {
     ///
     ///
     /// @example
-    ///
     /// ```typescript
     /// style.flexDirection = FlexDirection.Column;
     /// ```
@@ -235,7 +233,6 @@ impl JsStyle {
     ///
     ///
     /// @example
-    ///
     /// ```typescript
     /// style.flexWrap = FlexWrap.Wrap;
     /// ```
@@ -311,18 +308,18 @@ impl JsStyle {
     /// @param val - The new align-items value, or `undefined` to use default
     ///
     /// @example
-    ///
     /// ```typescript
     /// style.alignItems = AlignItems.Center;
     /// ```
     #[wasm_bindgen(setter, js_name = alignItems)]
-    pub fn set_align_items(&mut self, val: OneOptAlignItems) {
+    pub fn set_align_items(&mut self, val: JsOptionAlignItems) {
         let val: JsValue = val.unchecked_into();
-        self.inner.align_items = if val.is_undefined() || val.is_null() {
+        self.inner.align_items = if val.is_undefined() {
             None
+        } else if let Some(n) = val.as_f64() {
+            Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into())
         } else {
-            let n = val.as_f64().unwrap_or(0.0) as u32;
-            JsAlignItems::try_from(n).ok().map(|x| x.into())
+            None
         };
     }
 
@@ -348,17 +345,18 @@ impl JsStyle {
     /// style.alignSelf = AlignSelf.Stretch;
     /// ```
     #[wasm_bindgen(setter, js_name = alignSelf)]
-    pub fn set_align_self(&mut self, val: OneOptAlignSelf) {
+    pub fn set_align_self(&mut self, val: JsOptionAlignSelf) {
         let val: JsValue = val.unchecked_into();
-        self.inner.align_self = if val.is_undefined() || val.is_null() {
+        self.inner.align_self = if val.is_undefined() {
             None
-        } else {
-            let n = val.as_f64().unwrap_or(0.0) as u32;
-            match JsAlignSelf::try_from(n) {
-                Ok(JsAlignSelf::Auto) => None,
-                Ok(other) => Some(other.into()),
-                Err(_) => None,
+        } else if let Some(n) = val.as_f64() {
+            let js_val = unsafe { std::mem::transmute::<u8, JsAlignSelf>(n as u8) };
+            match js_val {
+                JsAlignSelf::Auto => None,
+                _ => Some(js_val.into()),
             }
+        } else {
+            None
         };
     }
 
@@ -381,13 +379,14 @@ impl JsStyle {
     /// style.alignContent = AlignContent.SpaceBetween;
     /// ```
     #[wasm_bindgen(setter, js_name = alignContent)]
-    pub fn set_align_content(&mut self, val: OneOptAlignContent) {
+    pub fn set_align_content(&mut self, val: JsOptionAlignContent) {
         let val: JsValue = val.unchecked_into();
-        self.inner.align_content = if val.is_undefined() || val.is_null() {
+        self.inner.align_content = if val.is_undefined() {
             None
+        } else if let Some(n) = val.as_f64() {
+            Some(unsafe { std::mem::transmute::<u8, JsAlignContent>(n as u8) }.into())
         } else {
-            let n = val.as_f64().unwrap_or(0.0) as u32;
-            JsAlignContent::try_from(n).ok().map(|x| x.into())
+            None
         };
     }
 
@@ -410,13 +409,14 @@ impl JsStyle {
     /// style.justifyContent = JustifyContent.Center;
     /// ```
     #[wasm_bindgen(setter, js_name = justifyContent)]
-    pub fn set_justify_content(&mut self, val: OneOptJustifyContent) {
+    pub fn set_justify_content(&mut self, val: JsOptionJustifyContent) {
         let val: JsValue = val.unchecked_into();
-        self.inner.justify_content = if val.is_undefined() || val.is_null() {
+        self.inner.justify_content = if val.is_undefined() {
             None
+        } else if let Some(n) = val.as_f64() {
+            Some(unsafe { std::mem::transmute::<u8, JsJustifyContent>(n as u8) }.into())
         } else {
-            let n = val.as_f64().unwrap_or(0.0) as u32;
-            JsJustifyContent::try_from(n).ok().map(|x| x.into())
+            None
         };
     }
 
@@ -443,7 +443,7 @@ impl JsStyle {
     /// style.aspectRatio = 16 / 9;
     /// ```
     #[wasm_bindgen(setter, js_name = aspectRatio)]
-    pub fn set_aspect_ratio(&mut self, val: OnOptNumber) {
+    pub fn set_aspect_ratio(&mut self, val: JsOptionNumber) {
         let val: JsValue = val.unchecked_into();
         self.inner.aspect_ratio = if val.is_undefined() || val.is_null() {
             None
@@ -459,7 +459,11 @@ impl JsStyle {
     /// @returns - A `Point<Overflow>` with `x` and `y` overflow settings
     #[wasm_bindgen(getter)]
     pub fn overflow(&self) -> JsPointOverflow {
-        serialize(&self.inner.overflow).unchecked_into()
+        let s = PointOverflowDto {
+            x: self.inner.overflow.x as u8,
+            y: self.inner.overflow.y as u8,
+        };
+        serialize(&s).unchecked_into()
     }
 
     /// Sets the overflow behavior
@@ -473,8 +477,8 @@ impl JsStyle {
     #[wasm_bindgen(setter)]
     pub fn set_overflow(&mut self, val: JsPointOverflow) {
         let val: JsValue = val.unchecked_into();
-        if let Ok(o) = serde_wasm_bindgen::from_value(val) {
-            self.inner.overflow = o;
+        if let Ok(s) = serde_wasm_bindgen::from_value::<PointOverflowDto>(val) {
+            self.inner.overflow = s.into();
         }
     }
 
