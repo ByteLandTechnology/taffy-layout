@@ -1,6 +1,6 @@
 {
   "name": "taffy-js",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "WebAssembly bindings for Taffy layout library",
   "keywords": [
     "layout",
