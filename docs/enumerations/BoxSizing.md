@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / BoxSizing
+[Taffy Layout API Documentation](../index.md) / BoxSizing
 
 # Enumeration: BoxSizing
 
@@ -14,7 +14,7 @@ This corresponds to the CSS `box-sizing` property.
 ## Example
 
 ```typescript
-import { Style, BoxSizing } from "taffy-js";
+import { Style, BoxSizing } from "taffy-layout";
 
 const style = new Style();
 style.boxSizing = BoxSizing.BorderBox; // Size includes padding and border

@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / GridPlacement
+[Taffy Layout API Documentation](../index.md) / GridPlacement
 
 # Type Alias: GridPlacement
 
@@ -34,7 +34,7 @@ Follows CSS `grid-row-start` / `grid-column-start` specification.
 ## Example
 
 ```typescript
-import type { GridPlacement, Line } from "taffy-js";
+import type { GridPlacement, Line } from "taffy-layout";
 
 // Line index (CSS: grid-row-start: 2)
 const lineIndex: GridPlacement = 2;

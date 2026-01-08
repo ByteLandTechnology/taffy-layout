@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Overflow
+[Taffy Layout API Documentation](../index.md) / Overflow
 
 # Enumeration: Overflow
 
@@ -14,7 +14,7 @@ This corresponds to the CSS `overflow` property.
 ## Example
 
 ```typescript
-import { Style, Overflow } from "taffy-js";
+import { Style, Overflow } from "taffy-layout";
 
 const style = new Style();
 style.overflow = { x: Overflow.Hidden, y: Overflow.Scroll };

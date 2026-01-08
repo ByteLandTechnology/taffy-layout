@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Display
+[Taffy Layout API Documentation](../index.md) / Display
 
 # Enumeration: Display
 
@@ -14,7 +14,7 @@ and determines how an element and its children are laid out.
 ## Example
 
 ```typescript
-import { Style, Display } from "taffy-js";
+import { Style, Display } from "taffy-layout";
 
 const style = new Style();
 style.display = Display.Flex; // Enable flexbox layout

@@ -1,6 +1,6 @@
 //! # Utility Functions Module
 //!
-//! This module provides utility functions used throughout the Taffy-JS crate.
+//! This module provides utility functions used throughout the Taffy Layout crate.
 //!
 //! ## Functions
 //!

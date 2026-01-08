@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / AlignContent
+[Taffy Layout API Documentation](../index.md) / AlignContent
 
 # Enumeration: AlignContent
 
@@ -16,7 +16,7 @@ in a multi-line flex container. This corresponds to the CSS `align-content` prop
 ## Example
 
 ```typescript
-import { Style, AlignContent, FlexWrap } from "taffy-js";
+import { Style, AlignContent, FlexWrap } from "taffy-layout";
 
 const style = new Style();
 style.flexWrap = FlexWrap.Wrap;

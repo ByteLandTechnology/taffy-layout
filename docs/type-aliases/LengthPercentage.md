@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / LengthPercentage
+[Taffy Layout API Documentation](../index.md) / LengthPercentage
 
 # Type Alias: LengthPercentage
 
@@ -22,7 +22,12 @@ Used for properties that require explicit values, such as `padding`, `border`, a
 ## Example
 
 ```typescript
-import { Style, type LengthPercentage, type Rect, type Size } from "taffy-js";
+import {
+  Style,
+  type LengthPercentage,
+  type Rect,
+  type Size,
+} from "taffy-layout";
 
 const style = new Style();
 

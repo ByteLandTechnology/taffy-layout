@@ -22,7 +22,7 @@
 //!   type Size,
 //!   type Rect,
 //!   type LengthPercentage
-//! } from 'taffy-js';
+//! } from 'taffy-layout';
 //!
 //! await init();
 //!

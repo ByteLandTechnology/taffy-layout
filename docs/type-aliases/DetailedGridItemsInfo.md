@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / DetailedGridItemsInfo
+[Taffy Layout API Documentation](../index.md) / DetailedGridItemsInfo
 
 # Type Alias: DetailedGridItemsInfo
 

@@ -1,12 +1,12 @@
 /**
- * Taffy-JS: TypeScript wrapper for Taffy WASM bindings
+ * Taffy Layout: TypeScript wrapper for Taffy WASM bindings
  *
  * This module provides the `loadTaffy` function for initializing the WASM module
  * and re-exports all types and functions from the underlying WASM bindings.
  *
  * @example
  * ```typescript
- * import { loadTaffy, TaffyTree, Style, Display } from 'taffy-js';
+ * import { loadTaffy, TaffyTree, Style, Display } from 'taffy-layout';
  *
  * await loadTaffy();
  *
@@ -47,7 +47,7 @@ function isNode(): boolean {
  *
  * @example
  * ```typescript
- * import { loadTaffy } from 'taffy-js';
+ * import { loadTaffy } from 'taffy-layout';
  * await loadTaffy();
  * ```
  */

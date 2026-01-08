@@ -95,7 +95,7 @@ import init, {
     LengthPercentage, LengthPercentageAuto,
     DetailedLayoutInfo, DetailedGridInfo, DetailedGridTracksInfo, DetailedGridItemsInfo,
     TrackSizingFunction, Point, TaffyError, Layout, MeasureFunction
-} from 'taffy-js';
+} from 'taffy-layout';
 
 // Global init for the suite
 await init();

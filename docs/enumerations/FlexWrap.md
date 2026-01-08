@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / FlexWrap
+[Taffy Layout API Documentation](../index.md) / FlexWrap
 
 # Enumeration: FlexWrap
 
@@ -14,7 +14,7 @@ This corresponds to the CSS `flex-wrap` property.
 ## Example
 
 ```typescript
-import { Style, FlexWrap } from "taffy-js";
+import { Style, FlexWrap } from "taffy-layout";
 
 const style = new Style();
 style.flexWrap = FlexWrap.NoWrap; // All items on single line

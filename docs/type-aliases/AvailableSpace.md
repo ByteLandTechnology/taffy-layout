@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / AvailableSpace
+[Taffy Layout API Documentation](../index.md) / AvailableSpace
 
 # Type Alias: AvailableSpace
 
@@ -29,7 +29,7 @@ import init, {
   Style,
   type AvailableSpace,
   type Size,
-} from "taffy-js";
+} from "taffy-layout";
 
 await init();
 const tree = new TaffyTree();

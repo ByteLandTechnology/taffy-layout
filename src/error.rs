@@ -1,6 +1,6 @@
 //! # Error Handling Module
 //!
-//! This module provides error handling types and utilities for the Taffy-JS bindings.
+//! This module provides error handling types and utilities for the Taffy Layout bindings.
 //! It wraps the native Taffy error types and provides helper functions for mapping
 //! Rust `Result` types to JavaScript exceptions.
 //!

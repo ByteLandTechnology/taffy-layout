@@ -30,7 +30,7 @@ use wasm_bindgen::prelude::*;
 ///
 /// @example
 /// ```typescript
-/// import { Style, Display } from 'taffy-js';
+/// import { Style, Display } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.display = Display.Flex;  // Enable flexbox layout
@@ -83,7 +83,7 @@ impl From<taffy::style::Display> for JsDisplay {
 ///
 /// @example
 /// ```typescript
-/// import { Style, Position } from 'taffy-js';
+/// import { Style, Position } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.position = Position.Relative;  // Normal document flow
@@ -127,7 +127,7 @@ impl From<taffy::style::Position> for JsPosition {
 ///
 /// @example
 /// ```typescript
-/// import { Style, FlexDirection } from 'taffy-js';
+/// import { Style, FlexDirection } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.flexDirection = FlexDirection.Row;     // Horizontal, left to right
@@ -179,7 +179,7 @@ impl From<taffy::style::FlexDirection> for JsFlexDirection {
 ///
 /// @example
 /// ```typescript
-/// import { Style, FlexWrap } from 'taffy-js';
+/// import { Style, FlexWrap } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.flexWrap = FlexWrap.NoWrap;  // All items on single line
@@ -227,7 +227,7 @@ impl From<taffy::style::FlexWrap> for JsFlexWrap {
 ///
 /// @example
 /// ```typescript
-/// import { Style, AlignItems } from 'taffy-js';
+/// import { Style, AlignItems } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.alignItems = AlignItems.Center;   // Center items on cross axis
@@ -291,7 +291,7 @@ impl From<taffy::style::AlignItems> for JsAlignItems {
 ///
 /// @example
 /// ```typescript
-/// import { Style, AlignSelf } from 'taffy-js';
+/// import { Style, AlignSelf } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.alignSelf = AlignSelf.Auto;    // Use parent's align-items
@@ -360,7 +360,7 @@ impl From<taffy::style::AlignSelf> for JsAlignSelf {
 ///
 /// @example
 /// ```typescript
-/// import { Style, AlignContent, FlexWrap } from 'taffy-js';
+/// import { Style, AlignContent, FlexWrap } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.flexWrap = FlexWrap.Wrap;
@@ -432,7 +432,7 @@ impl From<taffy::style::AlignContent> for JsAlignContent {
 ///
 /// @example
 /// ```typescript
-/// import { Style, JustifyContent } from 'taffy-js';
+/// import { Style, JustifyContent } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.justifyContent = JustifyContent.Center;        // Center items
@@ -504,7 +504,7 @@ impl From<taffy::style::JustifyContent> for JsJustifyContent {
 ///
 /// @example
 /// ```typescript
-/// import { Style, Overflow } from 'taffy-js';
+/// import { Style, Overflow } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.overflow = { x: Overflow.Hidden, y: Overflow.Scroll };
@@ -555,7 +555,7 @@ impl From<taffy::style::Overflow> for JsOverflow {
 ///
 /// @example
 /// ```typescript
-/// import { Style, BoxSizing } from 'taffy-js';
+/// import { Style, BoxSizing } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.boxSizing = BoxSizing.BorderBox;   // Size includes padding and border
@@ -599,7 +599,7 @@ impl From<taffy::style::BoxSizing> for JsBoxSizing {
 ///
 /// @example
 /// ```typescript
-/// import { Style, TextAlign } from 'taffy-js';
+/// import { Style, TextAlign } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.textAlign = TextAlign.LegacyCenter;  // Center block children
@@ -650,7 +650,7 @@ impl From<taffy::style::TextAlign> for JsTextAlign {
 ///
 /// @example
 /// ```typescript
-/// import { Style, GridAutoFlow } from 'taffy-js';
+/// import { Style, GridAutoFlow } from 'taffy-layout';
 ///
 /// const style = new Style();
 /// style.gridAutoFlow = GridAutoFlow.Row;       // Fill rows first

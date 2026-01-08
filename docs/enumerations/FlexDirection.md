@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / FlexDirection
+[Taffy Layout API Documentation](../index.md) / FlexDirection
 
 # Enumeration: FlexDirection
 
@@ -14,7 +14,7 @@ Defines the main axis direction for flex item layout. This corresponds to the CS
 ## Example
 
 ```typescript
-import { Style, FlexDirection } from "taffy-js";
+import { Style, FlexDirection } from "taffy-layout";
 
 const style = new Style();
 style.flexDirection = FlexDirection.Row; // Horizontal, left to right

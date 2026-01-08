@@ -3,7 +3,7 @@
   "entryPoints": ["./pkg/taffy_wasm.d.ts"],
   "out": "./docs",
   "plugin": ["typedoc-plugin-markdown"],
-  "name": "Taffy-JS API Documentation",
+  "name": "Taffy Layout API Documentation",
   "readme": "none",
   "excludePrivate": true,
   "excludeProtected": true,

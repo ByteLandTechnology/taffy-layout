@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / initSync
+[Taffy Layout API Documentation](../index.md) / initSync
 
 # Function: initSync()
 

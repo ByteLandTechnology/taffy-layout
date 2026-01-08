@@ -1,6 +1,6 @@
-# Taffy-JS
+# Taffy Layout
 
-[![npm version](https://badge.fury.io/js/taffy-js.svg)](https://www.npmjs.com/package/taffy-js)
+[![npm version](https://badge.fury.io/js/taffy-layout.svg)](https://www.npmjs.com/package/taffy-layout)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 High-performance WebAssembly bindings for the [Taffy](https://github.com/DioxusLabs/taffy) layout engine, bringing CSS Flexbox and Grid layout algorithms to JavaScript with near-native performance.
@@ -17,7 +17,7 @@ High-performance WebAssembly bindings for the [Taffy](https://github.com/DioxusL
 ## 📦 Installation
 
 ```bash
-npm install taffy-js
+npm install taffy-layout
 ```
 
 ## 🚀 Quick Start
@@ -30,7 +30,7 @@ import {
   Display,
   FlexDirection,
   AlignItems,
-} from "taffy-js";
+} from "taffy-layout";
 
 // Initialize WebAssembly module
 await loadTaffy();
@@ -82,27 +82,27 @@ console.log(
 
 The main class for managing layout trees.
 
-[View Documentation](https://github.com/ByteLandTechnology/taffy-js/blob/main/docs/classes/TaffyTree.md)
+[View Documentation](./docs/classes/TaffyTree.md)
 
 ### Style
 
 Configuration object for node layout properties.
 
-[View Documentation](https://github.com/ByteLandTechnology/taffy-js/blob/main/docs/classes/Style.md)
+[View Documentation](./docs/classes/Style.md)
 
 ### Layout
 
 Read-only computed layout result.
 
-[View Documentation](https://github.com/ByteLandTechnology/taffy-js/blob/main/docs/classes/Layout.md)
+[View Documentation](./docs/classes/Layout.md)
 
 ### Enums
 
-[View Documentation](https://github.com/ByteLandTechnology/taffy-js/blob/main/docs/modules.md#enums)
+[View Documentation](./docs/index.md#enumerations)
 
 ### Types
 
-[View Documentation](https://github.com/ByteLandTechnology/taffy-js/blob/main/docs/modules.md#type-aliases)
+[View Documentation](./docs/index.md#type-aliases)
 
 ## 📐 Custom Text Measurement
 
@@ -151,7 +151,7 @@ try {
 
 ## 🌐 Browser Support
 
-Taffy-JS works in all modern browsers that support WebAssembly:
+Taffy Layout works in all modern browsers that support WebAssembly:
 
 - Chrome 57+
 - Firefox 52+
@@ -173,7 +173,7 @@ rowStyle.gap = { width: 10, height: 0 };
 ### CSS Grid Layout
 
 ```typescript
-import { Style, Display, GridAutoFlow } from "taffy-js";
+import { Style, Display, GridAutoFlow } from "taffy-layout";
 
 const gridStyle = new Style();
 gridStyle.display = Display.Grid;
@@ -239,8 +239,8 @@ imgStyle.size = { width: "100%", height: "auto" };
 
 ```bash
 # Clone the repository
-git clone https://github.com/ByteLandTechnology/taffy-js.git
-cd taffy-js
+git clone https://github.com/ByteLandTechnology/taffy-layout.git
+cd taffy-layout
 
 # Install dependencies
 npm install

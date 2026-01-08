@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / GridAutoFlow
+[Taffy Layout API Documentation](../index.md) / GridAutoFlow
 
 # Enumeration: GridAutoFlow
 
@@ -14,7 +14,7 @@ the sparse or dense packing algorithm is used.
 ## Example
 
 ```typescript
-import { Style, GridAutoFlow } from "taffy-js";
+import { Style, GridAutoFlow } from "taffy-layout";
 
 const style = new Style();
 style.gridAutoFlow = GridAutoFlow.Row; // Fill rows first

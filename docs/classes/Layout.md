@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Layout
+[Taffy Layout API Documentation](../index.md) / Layout
 
 # Class: Layout
 

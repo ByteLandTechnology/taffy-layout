@@ -5,7 +5,7 @@ edition = "2024"
 authors = ["ByteLandTechnology <github@byteland.app>"]
 rust-version = "1.85"
 license = "MIT"
-repository = "https://github.com/ByteLandTechnology/taffy-js"
+repository = "https://github.com/ByteLandTechnology/taffy-layout"
 description = "WebAssembly bindings for Taffy layout library"
 publish = false
 

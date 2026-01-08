@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Size
+[Taffy Layout API Documentation](../index.md) / Size
 
 # Type Alias: Size\<T\>
 
@@ -21,7 +21,7 @@ determines what kind of values are stored.
 ## Example
 
 ```typescript
-import type { Size, Dimension, AvailableSpace } from "taffy-js";
+import type { Size, Dimension, AvailableSpace } from "taffy-layout";
 
 // Size with explicit type parameters
 const pixelSize: Size<number> = { width: 200, height: 100 };

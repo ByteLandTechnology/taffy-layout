@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Line
+[Taffy Layout API Documentation](../index.md) / Line
 
 # Type Alias: Line\<T\>
 
@@ -21,7 +21,7 @@ shorthand properties.
 ## Example
 
 ```typescript
-import { Style, Display, type Line, type GridPlacement } from "taffy-js";
+import { Style, Display, type Line, type GridPlacement } from "taffy-layout";
 
 const style = new Style();
 style.display = Display.Grid;

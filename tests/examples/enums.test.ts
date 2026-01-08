@@ -31,7 +31,7 @@ import init, {
   TaffyError,
   Layout,
   MeasureFunction,
-} from "taffy-js";
+} from "taffy-layout";
 
 // Global init for the suite
 await init();

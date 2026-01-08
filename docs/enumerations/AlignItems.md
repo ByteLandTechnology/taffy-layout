@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / AlignItems
+[Taffy Layout API Documentation](../index.md) / AlignItems
 
 # Enumeration: AlignItems
 
@@ -14,7 +14,7 @@ This corresponds to the CSS `align-items` property.
 ## Example
 
 ```typescript
-import { Style, AlignItems } from "taffy-js";
+import { Style, AlignItems } from "taffy-layout";
 
 const style = new Style();
 style.alignItems = AlignItems.Center; // Center items on cross axis

@@ -39,7 +39,7 @@ const TS_APPEND_CONTENT: &'static str = r#"
  *
  * @example
  * ```typescript
- * import init, { TaffyTree, Style, type AvailableSpace, type Size } from 'taffy-js';
+ * import init, { TaffyTree, Style, type AvailableSpace, type Size } from 'taffy-layout';
  *
  * await init();
  * const tree = new TaffyTree();
@@ -75,7 +75,7 @@ export type AvailableSpace = number | "min-content" | "max-content";
  *
  * @example
  * ```typescript
- * import type { Size, Dimension, AvailableSpace } from 'taffy-js';
+ * import type { Size, Dimension, AvailableSpace } from 'taffy-layout';
  *
  * // Size with explicit type parameters
  * const pixelSize: Size<number> = { width: 200, height: 100 };
@@ -116,7 +116,7 @@ export type Size<T> = {
  *
  * @example
  * ```typescript
- * import init, { TaffyTree, Style, type MeasureFunction, type Size } from 'taffy-js';
+ * import init, { TaffyTree, Style, type MeasureFunction, type Size } from 'taffy-layout';
  *
  * interface TextContext {
  *   text: string;
@@ -177,7 +177,7 @@ export type MeasureFunction = (
  *
  * @example
  * ```typescript
- * import { Style, type Dimension, type Size } from 'taffy-js';
+ * import { Style, type Dimension, type Size } from 'taffy-layout';
  *
  * const style = new Style();
  *
@@ -213,7 +213,7 @@ export type Dimension = number | `${number}%` | "auto";
  *
  * @example
  * ```typescript
- * import { Style, type LengthPercentage, type Rect, type Size } from 'taffy-js';
+ * import { Style, type LengthPercentage, type Rect, type Size } from 'taffy-layout';
  *
  * const style = new Style();
  *
@@ -247,7 +247,7 @@ export type LengthPercentage = number | `${number}%`;
  *
  * @example
  * ```typescript
- * import { Style, type LengthPercentageAuto, type Rect } from 'taffy-js';
+ * import { Style, type LengthPercentageAuto, type Rect } from 'taffy-layout';
  *
  * const style = new Style();
  *
@@ -277,7 +277,7 @@ export type LengthPercentageAuto = number | `${number}%` | "auto";
  *
  * @example
  * ```typescript
- * import { Style, Overflow, type Point } from 'taffy-js';
+ * import { Style, Overflow, type Point } from 'taffy-layout';
  *
  * const style = new Style();
  *
@@ -310,7 +310,7 @@ export type Point<T> = {
  *
  * @example
  * ```typescript
- * import { Style, type Rect, type LengthPercentage, type LengthPercentageAuto } from 'taffy-js';
+ * import { Style, type Rect, type LengthPercentage, type LengthPercentageAuto } from 'taffy-layout';
  *
  * const style = new Style();
  *
@@ -356,7 +356,7 @@ export type Rect<T> = {
  *
  * @example
  * ```typescript
- * import { TaffyTree, Style, Display, type DetailedLayoutInfo, type DetailedGridInfo } from 'taffy-js';
+ * import { TaffyTree, Style, Display, type DetailedLayoutInfo, type DetailedGridInfo } from 'taffy-layout';
  *
  * const tree = new TaffyTree();
  * const style = new Style();
@@ -452,7 +452,7 @@ export type DetailedGridItemsInfo = {
  *
  * @example
  * ```typescript
- * import type { GridPlacement, Line } from 'taffy-js';
+ * import type { GridPlacement, Line } from 'taffy-layout';
  *
  * // Line index (CSS: grid-row-start: 2)
  * const lineIndex: GridPlacement = 2;
@@ -485,7 +485,7 @@ export type GridPlacement = "auto" | number | {line: number; ident: string} | {s
  *
  * @example
  * ```typescript
- * import { Style, Display, type Line, type GridPlacement } from 'taffy-js';
+ * import { Style, Display, type Line, type GridPlacement } from 'taffy-layout';
  *
  * const style = new Style();
  * style.display = Display.Grid;

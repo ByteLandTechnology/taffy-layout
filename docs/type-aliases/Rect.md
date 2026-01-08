@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Rect
+[Taffy Layout API Documentation](../index.md) / Rect
 
 # Type Alias: Rect\<T\>
 
@@ -27,7 +27,7 @@ import {
   type Rect,
   type LengthPercentage,
   type LengthPercentageAuto,
-} from "taffy-js";
+} from "taffy-layout";
 
 const style = new Style();
 

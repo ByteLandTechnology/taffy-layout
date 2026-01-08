@@ -7,7 +7,7 @@ import {
   AlignItems,
   JustifyContent,
   Position,
-} from "taffy-js";
+} from "taffy-layout";
 
 // Helper mocks
 const measureText = (text: string, width: any) => ({ width: 0, height: 0 });

@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / MeasureFunction
+[Taffy Layout API Documentation](../index.md) / MeasureFunction
 
 # Type Alias: MeasureFunction()
 
@@ -45,7 +45,7 @@ import init, {
   Style,
   type MeasureFunction,
   type Size,
-} from "taffy-js";
+} from "taffy-layout";
 
 interface TextContext {
   text: string;

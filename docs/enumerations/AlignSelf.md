@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / AlignSelf
+[Taffy Layout API Documentation](../index.md) / AlignSelf
 
 # Enumeration: AlignSelf
 
@@ -14,7 +14,7 @@ This corresponds to the CSS `align-self` property.
 ## Example
 
 ```typescript
-import { Style, AlignSelf } from "taffy-js";
+import { Style, AlignSelf } from "taffy-layout";
 
 const style = new Style();
 style.alignSelf = AlignSelf.Auto; // Use parent's align-items

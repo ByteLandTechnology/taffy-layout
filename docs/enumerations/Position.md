@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Position
+[Taffy Layout API Documentation](../index.md) / Position
 
 # Enumeration: Position
 
@@ -14,7 +14,7 @@ This corresponds to the CSS `position` property.
 ## Example
 
 ```typescript
-import { Style, Position } from "taffy-js";
+import { Style, Position } from "taffy-layout";
 
 const style = new Style();
 style.position = Position.Relative; // Normal document flow

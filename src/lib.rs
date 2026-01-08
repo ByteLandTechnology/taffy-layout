@@ -1,4 +1,4 @@
-//! # Taffy-JS: WebAssembly Bindings for Taffy Layout Engine
+//! # Taffy Layout: WebAssembly Bindings for Taffy Layout Engine
 //!
 //! This crate provides high-performance WebAssembly bindings for the [Taffy](https://github.com/DioxusLabs/taffy)
 //! layout engine, enabling JavaScript and TypeScript applications to leverage Flexbox and CSS Grid
@@ -6,7 +6,7 @@
 //!
 //! ## Overview
 //!
-//! Taffy-JS bridges the gap between Rust's powerful layout computation capabilities and the JavaScript
+//! Taffy Layout bridges the gap between Rust's powerful layout computation capabilities and the JavaScript
 //! ecosystem. It exposes a clean, idiomatic API that feels natural to JavaScript developers while
 //! maintaining the performance benefits of WebAssembly.
 //!
@@ -25,7 +25,7 @@
 //! @example
 //!
 //! ```typescript
-//! import { loadTaffy, TaffyTree, Style, Display, FlexDirection } from 'taffy-js';
+//! import { loadTaffy, TaffyTree, Style, Display, FlexDirection } from 'taffy-layout';
 //!
 //! await loadTaffy();
 //!
@@ -51,7 +51,7 @@
 //!
 //! ## Performance
 //!
-//! Taffy-JS leverages WebAssembly to achieve near-native performance for layout calculations.
+//! Taffy Layout leverages WebAssembly to achieve near-native performance for layout calculations.
 //! The library is particularly well-suited for:
 //!
 //! - Terminal UI frameworks (like Ink)

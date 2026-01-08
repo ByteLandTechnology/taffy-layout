@@ -4,7 +4,7 @@ import path from "path";
 export default defineConfig({
   test: {
     alias: {
-      "taffy-js": path.resolve(__dirname, "./src/index.ts"),
+      "taffy-layout": path.resolve(__dirname, "./src/index.ts"),
     },
   },
 });

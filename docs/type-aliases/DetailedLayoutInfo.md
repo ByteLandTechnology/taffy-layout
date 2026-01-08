@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / DetailedLayoutInfo
+[Taffy Layout API Documentation](../index.md) / DetailedLayoutInfo
 
 # Type Alias: DetailedLayoutInfo
 
@@ -28,7 +28,7 @@ import {
   Display,
   type DetailedLayoutInfo,
   type DetailedGridInfo,
-} from "taffy-js";
+} from "taffy-layout";
 
 const tree = new TaffyTree();
 const style = new Style();

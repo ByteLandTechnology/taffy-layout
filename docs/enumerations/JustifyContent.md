@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / JustifyContent
+[Taffy Layout API Documentation](../index.md) / JustifyContent
 
 # Enumeration: JustifyContent
 
@@ -14,7 +14,7 @@ This corresponds to the CSS `justify-content` property.
 ## Example
 
 ```typescript
-import { Style, JustifyContent } from "taffy-js";
+import { Style, JustifyContent } from "taffy-layout";
 
 const style = new Style();
 style.justifyContent = JustifyContent.Center; // Center items

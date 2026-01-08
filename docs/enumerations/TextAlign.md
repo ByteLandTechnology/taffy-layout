@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / TextAlign
+[Taffy Layout API Documentation](../index.md) / TextAlign
 
 # Enumeration: TextAlign
 
@@ -14,7 +14,7 @@ Used by block layout to implement the legacy behaviour of `<center>` and
 ## Example
 
 ```typescript
-import { Style, TextAlign } from "taffy-js";
+import { Style, TextAlign } from "taffy-layout";
 
 const style = new Style();
 style.textAlign = TextAlign.LegacyCenter; // Center block children

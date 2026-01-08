@@ -1,8 +1,8 @@
-**Taffy-JS API Documentation**
+**Taffy Layout API Documentation**
 
 ---
 
-# Taffy-JS API Documentation
+# Taffy Layout API Documentation
 
 ## Enumerations
 

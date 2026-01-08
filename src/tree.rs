@@ -32,7 +32,7 @@
 //!   type Size,
 //!   type AvailableSpace,
 //!   type Dimension
-//! } from 'taffy-js';
+//! } from 'taffy-layout';
 //!
 //! await init();
 //!

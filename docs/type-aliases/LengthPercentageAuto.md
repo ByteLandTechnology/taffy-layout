@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / LengthPercentageAuto
+[Taffy Layout API Documentation](../index.md) / LengthPercentageAuto
 
 # Type Alias: LengthPercentageAuto
 
@@ -23,7 +23,7 @@ Used for properties that support auto values, such as `margin` and `inset`.
 ## Example
 
 ```typescript
-import { Style, type LengthPercentageAuto, type Rect } from "taffy-js";
+import { Style, type LengthPercentageAuto, type Rect } from "taffy-layout";
 
 const style = new Style();
 

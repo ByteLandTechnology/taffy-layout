@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Dimension
+[Taffy Layout API Documentation](../index.md) / Dimension
 
 # Type Alias: Dimension
 
@@ -23,7 +23,7 @@ Used for sizing properties like `width`, `height`, `flexBasis`, etc.
 ## Example
 
 ```typescript
-import { Style, type Dimension, type Size } from "taffy-js";
+import { Style, type Dimension, type Size } from "taffy-layout";
 
 const style = new Style();
 

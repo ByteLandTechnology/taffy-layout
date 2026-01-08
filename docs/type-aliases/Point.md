@@ -1,8 +1,8 @@
-[**Taffy-JS API Documentation**](../index.md)
+[**Taffy Layout API Documentation**](../index.md)
 
 ---
 
-[Taffy-JS API Documentation](../index.md) / Point
+[Taffy Layout API Documentation](../index.md) / Point
 
 # Type Alias: Point\<T\>
 
@@ -21,7 +21,7 @@ such as `overflow`.
 ## Example
 
 ```typescript
-import { Style, Overflow, type Point } from "taffy-js";
+import { Style, Overflow, type Point } from "taffy-layout";
 
 const style = new Style();
 

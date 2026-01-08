@@ -1,6 +1,6 @@
 {
-  "name": "taffy-js",
-  "version": "0.2.12",
+  "name": "taffy-layout",
+  "version": "0.1.0",
   "description": "WebAssembly bindings for Taffy layout library",
   "keywords": [
     "layout",
@@ -11,13 +11,13 @@
     "wasm",
     "webassembly"
   ],
-  "homepage": "https://github.com/ByteLandTechnology/taffy-js#readme",
+  "homepage": "https://github.com/ByteLandTechnology/taffy-layout#readme",
   "bugs": {
-    "url": "https://github.com/ByteLandTechnology/taffy-js/issues"
+    "url": "https://github.com/ByteLandTechnology/taffy-layout/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ByteLandTechnology/taffy-js.git"
+    "url": "git+https://github.com/ByteLandTechnology/taffy-layout.git"
   },
   "license": "MIT",
   "author": "ByteLandTechnology <github@byteland.app>",
