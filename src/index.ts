@@ -26,17 +26,6 @@ import init, { initSync } from "../pkg/taffy_wasm.js";
 import type { InitOutput } from "../pkg/taffy_wasm.js";
 
 /**
- * Detects if running in a Node.js environment
- */
-function isNode(): boolean {
-  return (
-    typeof process !== "undefined" &&
-    process.versions != null &&
-    process.versions.node != null
-  );
-}
-
-/**
  * Universal initialization function for Taffy WASM module.
  *
  * Automatically detects the environment (Web or Node.js) and loads the WASM accordingly.
@@ -52,20 +41,16 @@ function isNode(): boolean {
  * ```
  */
 export async function loadTaffy(): Promise<InitOutput> {
-  if (isNode()) {
+  try {
     // Node.js environment - use fs to read the WASM file
     const fs = await import(/* webpackIgnore: true */ "fs");
-    const url = await import(/* webpackIgnore: true */ "url");
-    const path = await import(/* webpackIgnore: true */ "path");
 
     // Resolve WASM path relative to this module
-    const __filename = url.fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const wasmPath = path.join(__dirname, "..", "pkg", "taffy_wasm_bg.wasm");
+    const wasmUrl = new URL("../pkg/taffy_wasm_bg.wasm", import.meta.url);
 
-    const wasmBuffer = fs.readFileSync(wasmPath);
+    const wasmBuffer = fs.readFileSync(wasmUrl);
     return initSync({ module: wasmBuffer });
-  } else {
+  } catch {
     // Web environment - use fetch via the default init function
     return await init();
   }

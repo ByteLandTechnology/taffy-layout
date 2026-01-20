@@ -236,11 +236,11 @@ computeLayoutWithMeasure(
    measureFunc): void;
 ```
 
-Computes layout with a custom measure function for leaf nodes
+Updates the stored layout of the provided node and its children
 
-Use this when you have leaf nodes with dynamic content (like text)
-that needs to be measured during layout. The measure function is
-called for each leaf node that needs measurement.
+The measure function is called for leaf nodes (nodes without children) that
+require measurement according to the layout algorithm (Flexbox/Grid).
+For example, this is used for text nodes or other content that has intrinsic size.
 
 #### Parameters
 
