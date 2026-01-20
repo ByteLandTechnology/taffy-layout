@@ -5,24 +5,24 @@
 [![npm version](https://badge.fury.io/js/taffy-layout.svg)](https://www.npmjs.com/package/taffy-layout)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-High-performance WebAssembly bindings for the [Taffy](https://github.com/DioxusLabs/taffy) layout engine, bringing CSS Flexbox and Grid layout algorithms to JavaScript with near-native performance.
+WebAssembly で高速に動作する [Taffy](https://github.com/DioxusLabs/taffy) レイアウトエンジンの JavaScript バインディング。CSS の Flexbox と Grid をほぼネイティブ性能で利用できます。
 
-## ✨ Features
+## ✨ 特徴
 
-- **🚀 High Performance**: WebAssembly-powered layout calculations
-- **📦 Complete CSS Support**: Full Flexbox and CSS Grid implementation
-- **🔧 Custom Measurement**: Support for custom text/content measurement callbacks
-- **📝 TypeScript Ready**: Complete type definitions included
-- **🌳 Tree-Based API**: Efficient tree structure for complex layouts
-- **💡 Familiar API**: CSS-like property names and values
+- **🚀 高性能**：WebAssembly によるレイアウト計算
+- **📦 充実の CSS 対応**：Flexbox と CSS Grid を実装
+- **🔧 カスタム計測**：テキスト/コンテンツ計測用コールバックに対応
+- **📝 TypeScript 対応**：型定義を同梱
+- **🌳 ツリー型 API**：複雑な階層構造にも効率的
+- **💡 なじみやすい API**：CSS 風のプロパティ名と値
 
-## 📦 Installation
+## 📦 インストール
 
 ```bash
 npm install taffy-layout
 ```
 
-## 🚀 Quick Start
+## 🚀 クイックスタート
 
 ```typescript
 import {
@@ -34,13 +34,13 @@ import {
   AlignItems,
 } from "taffy-layout";
 
-// Initialize WebAssembly module
+// WebAssembly モジュールを初期化
 await loadTaffy();
 
-// Create a layout tree
+// レイアウトツリーを作成
 const tree = new TaffyTree();
 
-// Create container style
+// コンテナのスタイル
 const containerStyle = new Style();
 containerStyle.display = Display.Flex;
 containerStyle.flexDirection = FlexDirection.Column;
@@ -48,12 +48,12 @@ containerStyle.alignItems = AlignItems.Center;
 containerStyle.size = { width: 300, height: 200 };
 containerStyle.padding = { left: 10, right: 10, top: 10, bottom: 10 };
 
-// Create child styles
+// 子要素のスタイル
 const childStyle = new Style();
 childStyle.flexGrow = 1;
 childStyle.size = { width: "100%", height: "auto" };
 
-// Create nodes
+// ノードを生成
 const child1 = tree.newLeaf(childStyle);
 const child2 = tree.newLeaf(childStyle);
 const container = tree.newWithChildren(
@@ -61,10 +61,10 @@ const container = tree.newWithChildren(
   BigUint64Array.from([child1, child2]),
 );
 
-// Compute layout
+// レイアウト計算
 tree.computeLayout(container, { width: 300, height: 200 });
 
-// Read computed layouts
+// 計算結果を取得
 const containerLayout = tree.getLayout(container);
 const child1Layout = tree.getLayout(child1);
 const child2Layout = tree.getLayout(child2);
@@ -78,37 +78,37 @@ console.log(
 );
 ```
 
-## 📖 API Reference
+## 📖 API リファレンス
 
 ### TaffyTree
 
-The main class for managing layout trees.
+レイアウトツリーを管理するメインクラス。
 
-[View Documentation](./docs/classes/TaffyTree.md)
+[ドキュメントを見る](./docs/classes/TaffyTree.md)
 
 ### Style
 
-Configuration object for node layout properties.
+ノードのレイアウトプロパティを設定するオブジェクト。
 
-[View Documentation](./docs/classes/Style.md)
+[ドキュメントを見る](./docs/classes/Style.md)
 
 ### Layout
 
-Read-only computed layout result.
+計算後のレイアウト結果 (読み取り専用)。
 
-[View Documentation](./docs/classes/Layout.md)
+[ドキュメントを見る](./docs/classes/Layout.md)
 
-### Enums
+### 列挙型
 
-[View Documentation](./docs/index.md#enumerations)
+[ドキュメントを見る](./docs/index.md#enumerations)
 
-### Types
+### 型エイリアス
 
-[View Documentation](./docs/index.md#type-aliases)
+[ドキュメントを見る](./docs/index.md#type-aliases)
 
-## 📐 Custom Text Measurement
+## 📐 カスタムテキスト計測
 
-For text nodes or other content that needs dynamic measurement:
+テキストなど動的な計測が必要な場合は、測定コールバックを渡せます。
 
 ```typescript
 const tree = new TaffyTree();
@@ -124,7 +124,7 @@ tree.computeLayoutWithMeasure(
   { width: 800, height: "max-content" },
   (known, available, node, context, style) => {
     if (context?.text) {
-      // Your text measurement logic here
+      // ここに独自のテキスト計測ロジックを実装
       const width = measureTextWidth(context.text);
       const height = measureTextHeight(context.text, available.width as number);
       return { width, height };
@@ -134,9 +134,9 @@ tree.computeLayoutWithMeasure(
 );
 ```
 
-## 🔧 Error Handling
+## 🔧 エラーハンドリング
 
-Methods that can fail throw a `TaffyError` as a JavaScript exception. Use try-catch to handle errors:
+失敗する可能性のあるメソッドは `TaffyError` をスローします。try-catch で処理してください。
 
 ```typescript
 try {
@@ -151,18 +151,18 @@ try {
 }
 ```
 
-## 🌐 Browser Support
+## 🌐 ブラウザ対応
 
-Taffy Layout works in all modern browsers that support WebAssembly:
+WebAssembly をサポートするモダンブラウザで動作します。
 
 - Chrome 57+
 - Firefox 52+
 - Safari 11+
 - Edge 16+
 
-## 📚 Examples
+## 📚 サンプル
 
-### Flexbox Row Layout
+### Flexbox 行レイアウト
 
 ```typescript
 const rowStyle = new Style();
@@ -172,7 +172,7 @@ rowStyle.justifyContent = JustifyContent.SpaceBetween;
 rowStyle.gap = { width: 10, height: 0 };
 ```
 
-### CSS Grid Layout
+### CSS Grid レイアウト
 
 ```typescript
 import { Style, Display, GridAutoFlow } from "taffy-layout";
@@ -182,13 +182,13 @@ gridStyle.display = Display.Grid;
 gridStyle.gridAutoFlow = GridAutoFlow.Row;
 gridStyle.gap = { width: 10, height: 10 };
 
-// Grid item placement
+// グリッドアイテムの配置
 const itemStyle = new Style();
-itemStyle.gridRow = { start: 1, end: 3 }; // Spans 2 rows
-itemStyle.gridColumn = { start: 1, end: { span: 2 } }; // Spans 2 columns
+itemStyle.gridRow = { start: 1, end: 3 }; // 2 行分
+itemStyle.gridColumn = { start: 1, end: { span: 2 } }; // 2 列分
 ```
 
-### Grid Template Areas
+### グリッドテンプレート領域
 
 ```typescript
 const gridStyle = new Style();
@@ -200,7 +200,7 @@ gridStyle.gridTemplateAreas = [
   { name: "footer", rowStart: 4, rowEnd: 5, columnStart: 1, columnEnd: 4 },
 ];
 
-// Named grid lines
+// 名前付きグリッドライン
 gridStyle.gridTemplateRowNames = [
   ["header-start"],
   ["header-end", "content-start"],
@@ -209,7 +209,7 @@ gridStyle.gridTemplateRowNames = [
 ];
 ```
 
-### Absolute Positioning
+### 絶対配置
 
 ```typescript
 const absoluteStyle = new Style();
@@ -218,47 +218,47 @@ absoluteStyle.inset = { left: 10, top: 10, right: "auto", bottom: "auto" };
 absoluteStyle.size = { width: 100, height: 50 };
 ```
 
-### Percentage Sizing
+### パーセントサイズ
 
 ```typescript
 const percentStyle = new Style();
 percentStyle.size = {
-  width: "50%", // 50% of parent
-  height: "100%", // 100% of parent
+  width: "50%", // 親幅の 50%
+  height: "100%", // 親高の 100%
 };
 ```
 
-### Block Layout with Replaced Elements
+### 置換要素のブロックレイアウト
 
 ```typescript
 const imgStyle = new Style();
 imgStyle.itemIsReplaced = true;
-imgStyle.aspectRatio = 16 / 9; // 16:9 aspect ratio
+imgStyle.aspectRatio = 16 / 9; // 16:9
 imgStyle.size = { width: "100%", height: "auto" };
 ```
 
-## 🏗️ Building from Source
+## 🏗️ ソースからのビルド
 
 ```bash
-# Clone the repository
+# リポジトリを取得
 git clone https://github.com/ByteLandTechnology/taffy-layout.git
 cd taffy-layout
 
-# Install dependencies
+# 依存関係をインストール
 npm install
 
-# Build the WebAssembly module
+# WebAssembly モジュールをビルド
 npm run build
 
-# Run tests
+# テストを実行
 npm test
 ```
 
-## 📄 License
+## 📄 ライセンス
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - 詳細は [LICENSE](LICENSE) を参照してください。
 
-## 🙏 Acknowledgments
+## 🙏 謝辞
 
-- [Taffy](https://github.com/DioxusLabs/taffy) - The Rust layout engine this project wraps
-- [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) - Rust/WebAssembly interoperability
+- [Taffy](https://github.com/DioxusLabs/taffy) - 本プロジェクトがラップしている Rust 製レイアウトエンジン
+- [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) - Rust/WebAssembly の相互運用を支えるツール
