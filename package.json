@@ -1,6 +1,6 @@
 {
   "name": "taffy-layout",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "WebAssembly bindings for Taffy layout library",
   "keywords": [
     "layout",

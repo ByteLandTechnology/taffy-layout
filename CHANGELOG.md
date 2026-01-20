@@ -1,3 +1,13 @@
+## [1.0.1](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.0.0...v1.0.1) (2026-01-20)
+
+### 🐛 Bug Fixes
+
+- ignore node modules in webpack build ([9b0e70b](https://github.com/ByteLandTechnology/taffy-layout/commit/9b0e70b12042c5f585d609495189033a119ca231))
+
+### ♻️ Refactoring
+
+- use try-import pattern for isomorphic wasm loading ([510f3bf](https://github.com/ByteLandTechnology/taffy-layout/commit/510f3bf0d7809004b139dfff12cf616527c1d675))
+
 ## 1.0.0 (2026-01-20)
 
 ### ✨ Features
