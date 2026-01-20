@@ -54,9 +54,9 @@ function isNode(): boolean {
 export async function loadTaffy(): Promise<InitOutput> {
   if (isNode()) {
     // Node.js environment - use fs to read the WASM file
-    const fs = await import("fs");
-    const url = await import("url");
-    const path = await import("path");
+    const fs = await import(/* webpackIgnore: true */ "fs");
+    const url = await import(/* webpackIgnore: true */ "url");
+    const path = await import(/* webpackIgnore: true */ "path");
 
     // Resolve WASM path relative to this module
     const __filename = url.fileURLToPath(import.meta.url);
