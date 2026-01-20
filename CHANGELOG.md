@@ -1,3 +1,9 @@
+## [1.0.2](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.0.1...v1.0.2) (2026-01-20)
+
+### 📚 Documentation
+
+- add localized READMEs ([2422e71](https://github.com/ByteLandTechnology/taffy-layout/commit/2422e718e1d415f89c82efa0cbfae6aa64fe90cc))
+
 ## [1.0.1](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.0.0...v1.0.1) (2026-01-20)
 
 ### 🐛 Bug Fixes
