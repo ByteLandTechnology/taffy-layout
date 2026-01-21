@@ -1,4 +1,4 @@
-# Taffy Layout
+# ![Taffy Layout Logo](./taffy.svg) Taffy Layout
 
 [English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja-JP.md)
 
