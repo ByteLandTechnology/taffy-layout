@@ -1,3 +1,14 @@
+## [1.0.3](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.0.2...v1.0.3) (2026-01-21)
+
+### 📚 Documentation
+
+- add Taffy Layout logo and update READMEs ([a12bca1](https://github.com/ByteLandTechnology/taffy-layout/commit/a12bca12e65ffcaf46932ba7c9f139fdf0bd4458))
+
+### 🔧 Chores
+
+- add MIT LICENSE file ([95dbb9d](https://github.com/ByteLandTechnology/taffy-layout/commit/95dbb9d5f1d31e59ef09320696b3c1d0c82b2427))
+- update wasm-pack to ^0.14.0 ([eb41a97](https://github.com/ByteLandTechnology/taffy-layout/commit/eb41a9728a355cd70f25edc54eb7b980b586dad7))
+
 ## [1.0.2](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.0.1...v1.0.2) (2026-01-20)
 
 ### 📚 Documentation
