@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.1.0...v1.2.0) (2026-01-22)
+
+### ✨ Features
+
+- enforce strict TypeScript types for Style property keys ([7230bcf](https://github.com/ByteLandTechnology/taffy-layout/commit/7230bcfbed57c6a3d9dab5d70e1319b050768740))
+
 ## [1.1.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.0.3...v1.1.0) (2026-01-22)
 
 ### ✨ Features
