@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.2.0...v1.3.0) (2026-01-22)
+
+### ✨ Features
+
+- **layout:** add batch get method with type-safe property access ([351b5b2](https://github.com/ByteLandTechnology/taffy-layout/commit/351b5b26490d6ef870b7b4d2f2a00fedd577d3cd))
+
 ## [1.2.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.1.0...v1.2.0) (2026-01-22)
 
 ### ✨ Features
