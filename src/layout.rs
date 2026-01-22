@@ -11,19 +11,22 @@
 //!
 //! @example
 //! ```typescript
+//! import { TaffyTree, Style } from "taffy-layout";
+//!
 //! // Compute layout first
 //! const tree = new TaffyTree();
 //! const rootNode = tree.newLeaf(new Style());
-//! const nodeId = rootNode;
 //! tree.computeLayout(rootNode, { width: 800, height: 600 });
 //!
 //! // Get layout for a specific node
-//! const layout = tree.getLayout(nodeId);
+//! const layout = tree.getLayout(rootNode);
 //!
 //! // Access layout properties
 //! console.log(`Position: (${layout.x}, ${layout.y})`);
 //! console.log(`Size: ${layout.width} x ${layout.height}`);
 //! console.log(`Padding: top=${layout.paddingTop}, left=${layout.paddingLeft}`);
+//!
+//! tree.free();
 //! ```
 //!
 //! ## Coordinate System
@@ -33,6 +36,8 @@
 //! - Positive `y` is downward
 //! - For the root node, `x` and `y` are always 0
 
+use crate::types::*;
+use crate::utils::serialize;
 use taffy;
 use wasm_bindgen::prelude::*;
 
@@ -297,6 +302,348 @@ impl JsLayout {
     #[wasm_bindgen(getter, js_name = marginBottom)]
     pub fn margin_bottom(&self) -> f32 {
         self.inner.margin.bottom
+    }
+
+    // =========================================================================
+    // Compound Getters
+    // =========================================================================
+
+    /// Gets the position as a Point with x and y coordinates
+    ///
+    /// @returns - A Point with x and y coordinates in pixels
+    ///
+    /// @example
+    /// ```typescript
+    /// import { TaffyTree, Style } from "taffy-layout";
+    ///
+    /// const tree = new TaffyTree();
+    /// const root = tree.newLeaf(new Style());
+    /// tree.computeLayout(root, { width: 100, height: 100 });
+    /// const layout = tree.getLayout(root);
+    /// const pos = layout.position;
+    /// console.log(`Position: (${pos.x}, ${pos.y})`);
+    /// tree.free();
+    /// ```
+    #[wasm_bindgen(getter)]
+    pub fn position(&self) -> JsValue {
+        let p: PointDto<f32> = PointDto {
+            x: self.inner.location.x,
+            y: self.inner.location.y,
+        };
+        serialize(&p).unchecked_into()
+    }
+
+    /// Gets the size as a Size with width and height
+    ///
+    /// @returns - A Size with width and height in pixels
+    ///
+    /// @example
+    /// ```typescript
+    /// import { TaffyTree, Style } from "taffy-layout";
+    ///
+    /// const tree = new TaffyTree();
+    /// const root = tree.newLeaf(new Style());
+    /// tree.computeLayout(root, { width: 100, height: 100 });
+    /// const layout = tree.getLayout(root);
+    /// const size = layout.size;
+    /// console.log(`Size: ${size.width} x ${size.height}`);
+    /// tree.free();
+    /// ```
+    #[wasm_bindgen(getter)]
+    pub fn size(&self) -> JsValue {
+        let s: SizeDto<f32> = SizeDto {
+            width: self.inner.size.width,
+            height: self.inner.size.height,
+        };
+        serialize(&s).unchecked_into()
+    }
+
+    /// Gets the content size as a Size with contentWidth and contentHeight
+    ///
+    /// If the node has overflow content, this represents the total size of all content
+    /// (may exceed the node's width/height).
+    ///
+    /// @returns - A Size with contentWidth and contentHeight in pixels
+    ///
+    /// @example
+    /// ```typescript
+    /// import { TaffyTree, Style } from "taffy-layout";
+    ///
+    /// const tree = new TaffyTree();
+    /// const root = tree.newLeaf(new Style());
+    /// tree.computeLayout(root, { width: 100, height: 100 });
+    /// const layout = tree.getLayout(root);
+    /// const contentSize = layout.contentSize;
+    /// console.log(`Content: ${contentSize.width} x ${contentSize.height}`);
+    /// tree.free();
+    /// ```
+    #[wasm_bindgen(getter, js_name = contentSize)]
+    pub fn content_size(&self) -> JsValue {
+        let s: SizeDto<f32> = SizeDto {
+            width: self.inner.content_size.width,
+            height: self.inner.content_size.height,
+        };
+        serialize(&s).unchecked_into()
+    }
+
+    /// Gets the scrollbar size as a Size with scrollbarWidth and scrollbarHeight
+    ///
+    /// When overflow is set to scroll, this indicates the space reserved for scrollbars.
+    ///
+    /// @returns - A Size with scrollbarWidth and scrollbarHeight in pixels
+    ///
+    /// @example
+    /// ```typescript
+    /// import { TaffyTree, Style } from "taffy-layout";
+    ///
+    /// const tree = new TaffyTree();
+    /// const root = tree.newLeaf(new Style());
+    /// tree.computeLayout(root, { width: 100, height: 100 });
+    /// const layout = tree.getLayout(root);
+    /// const scrollbarSize = layout.scrollbarSize;
+    /// console.log(`Scrollbar: ${scrollbarSize.width} x ${scrollbarSize.height}`);
+    /// tree.free();
+    /// ```
+    #[wasm_bindgen(getter, js_name = scrollbarSize)]
+    pub fn scrollbar_size(&self) -> JsValue {
+        let s: SizeDto<f32> = SizeDto {
+            width: self.inner.scrollbar_size.width,
+            height: self.inner.scrollbar_size.height,
+        };
+        serialize(&s).unchecked_into()
+    }
+
+    /// Gets the border as a Rect with left, right, top, bottom border widths
+    ///
+    /// @returns - A Rect with border widths in pixels
+    ///
+    /// @example
+    /// ```typescript
+    /// import { TaffyTree, Style } from "taffy-layout";
+    ///
+    /// const tree = new TaffyTree();
+    /// const root = tree.newLeaf(new Style());
+    /// tree.computeLayout(root, { width: 100, height: 100 });
+    /// const layout = tree.getLayout(root);
+    /// const border = layout.border;
+    /// console.log(`Border: ${border.left} ${border.right} ${border.top} ${border.bottom}`);
+    /// tree.free();
+    /// ```
+    #[wasm_bindgen(getter)]
+    pub fn border(&self) -> JsValue {
+        let r: RectDto<f32> = RectDto {
+            left: self.inner.border.left,
+            right: self.inner.border.right,
+            top: self.inner.border.top,
+            bottom: self.inner.border.bottom,
+        };
+        serialize(&r).unchecked_into()
+    }
+
+    /// Gets the padding as a Rect with left, right, top, bottom padding
+    ///
+    /// @returns - A Rect with padding values in pixels
+    ///
+    /// @example
+    /// ```typescript
+    /// import { TaffyTree, Style } from "taffy-layout";
+    ///
+    /// const tree = new TaffyTree();
+    /// const root = tree.newLeaf(new Style());
+    /// tree.computeLayout(root, { width: 100, height: 100 });
+    /// const layout = tree.getLayout(root);
+    /// const padding = layout.padding;
+    /// console.log(`Padding: ${padding.left} ${padding.right} ${padding.top} ${padding.bottom}`);
+    /// tree.free();
+    /// ```
+    #[wasm_bindgen(getter)]
+    pub fn padding(&self) -> JsValue {
+        let r: RectDto<f32> = RectDto {
+            left: self.inner.padding.left,
+            right: self.inner.padding.right,
+            top: self.inner.padding.top,
+            bottom: self.inner.padding.bottom,
+        };
+        serialize(&r).unchecked_into()
+    }
+
+    /// Gets the margin as a Rect with left, right, top, bottom margins
+    ///
+    /// @returns - A Rect with margin values in pixels
+    ///
+    /// @example
+    /// ```typescript
+    /// import { TaffyTree, Style } from "taffy-layout";
+    ///
+    /// const tree = new TaffyTree();
+    /// const root = tree.newLeaf(new Style());
+    /// tree.computeLayout(root, { width: 100, height: 100 });
+    /// const layout = tree.getLayout(root);
+    /// const margin = layout.margin;
+    /// console.log(`Margin: ${margin.left} ${margin.right} ${margin.top} ${margin.bottom}`);
+    /// tree.free();
+    /// ```
+    #[wasm_bindgen(getter)]
+    pub fn margin(&self) -> JsValue {
+        let r: RectDto<f32> = RectDto {
+            left: self.inner.margin.left,
+            right: self.inner.margin.right,
+            top: self.inner.margin.top,
+            bottom: self.inner.margin.bottom,
+        };
+        serialize(&r).unchecked_into()
+    }
+
+    // =========================================================================
+    // Batch Property Reading
+    // =========================================================================
+
+    /// Reads multiple layout properties in a single WASM call.
+    ///
+    /// Supports both compound properties and individual flat properties.
+    ///
+    /// @throws Error if any property key is unknown.
+    ///
+    /// @param keys - Property keys to read
+    /// @returns - Single value if one key, array of values if multiple keys
+    ///
+    /// @example
+    /// ```typescript
+    /// import { TaffyTree, Style } from "taffy-layout";
+    ///
+    /// const tree = new TaffyTree();
+    /// const root = tree.newLeaf(new Style());
+    /// tree.computeLayout(root, { width: 800, height: 600 });
+    /// const layout = tree.getLayout(root);
+    ///
+    /// // Read single property
+    /// const width = layout.get("width");
+    ///
+    /// // Read compound property
+    /// const pos = layout.get("position");
+    ///
+    /// // Read multiple properties with destructuring
+    /// const [position, size] = layout.get("position", "size");
+    ///
+    /// tree.free();
+    /// ```
+    #[wasm_bindgen(variadic, skip_typescript)]
+    pub fn get(&self, keys: Vec<String>) -> JsValue {
+        if keys.is_empty() {
+            return JsValue::UNDEFINED;
+        }
+
+        let results: Vec<JsValue> = keys.iter().map(|key| self.get_property(key)).collect();
+
+        if results.len() == 1 {
+            results.into_iter().next().unwrap()
+        } else {
+            js_sys::Array::from_iter(results).into()
+        }
+    }
+
+    /// Internal helper to get a property value by its key
+    ///
+    /// @throws Error if the key is unknown.
+    fn get_property(&self, path: &str) -> JsValue {
+        match path {
+            // Rendering order
+            "order" => JsValue::from(self.inner.order),
+
+            // Position
+            "position" => {
+                let p: PointDto<f32> = PointDto {
+                    x: self.inner.location.x,
+                    y: self.inner.location.y,
+                };
+                serialize(&p)
+            }
+            "x" => JsValue::from(self.inner.location.x),
+            "y" => JsValue::from(self.inner.location.y),
+
+            // Size
+            "size" => {
+                let s: SizeDto<f32> = SizeDto {
+                    width: self.inner.size.width,
+                    height: self.inner.size.height,
+                };
+                serialize(&s)
+            }
+            "width" => JsValue::from(self.inner.size.width),
+            "height" => JsValue::from(self.inner.size.height),
+
+            // Content size
+            "contentSize" => {
+                let s: SizeDto<f32> = SizeDto {
+                    width: self.inner.content_size.width,
+                    height: self.inner.content_size.height,
+                };
+                serialize(&s)
+            }
+            "contentWidth" => JsValue::from(self.inner.content_size.width),
+            "contentHeight" => JsValue::from(self.inner.content_size.height),
+
+            // Scrollbar size
+            "scrollbarSize" => {
+                let s: SizeDto<f32> = SizeDto {
+                    width: self.inner.scrollbar_size.width,
+                    height: self.inner.scrollbar_size.height,
+                };
+                serialize(&s)
+            }
+            "scrollbarWidth" => JsValue::from(self.inner.scrollbar_size.width),
+            "scrollbarHeight" => JsValue::from(self.inner.scrollbar_size.height),
+
+            // Border
+            "border" => {
+                let r: RectDto<f32> = RectDto {
+                    left: self.inner.border.left,
+                    right: self.inner.border.right,
+                    top: self.inner.border.top,
+                    bottom: self.inner.border.bottom,
+                };
+                serialize(&r)
+            }
+            "borderLeft" => JsValue::from(self.inner.border.left),
+            "borderRight" => JsValue::from(self.inner.border.right),
+            "borderTop" => JsValue::from(self.inner.border.top),
+            "borderBottom" => JsValue::from(self.inner.border.bottom),
+
+            // Padding
+            "padding" => {
+                let r: RectDto<f32> = RectDto {
+                    left: self.inner.padding.left,
+                    right: self.inner.padding.right,
+                    top: self.inner.padding.top,
+                    bottom: self.inner.padding.bottom,
+                };
+                serialize(&r)
+            }
+            "paddingLeft" => JsValue::from(self.inner.padding.left),
+            "paddingRight" => JsValue::from(self.inner.padding.right),
+            "paddingTop" => JsValue::from(self.inner.padding.top),
+            "paddingBottom" => JsValue::from(self.inner.padding.bottom),
+
+            // Margin
+            "margin" => {
+                let r: RectDto<f32> = RectDto {
+                    left: self.inner.margin.left,
+                    right: self.inner.margin.right,
+                    top: self.inner.margin.top,
+                    bottom: self.inner.margin.bottom,
+                };
+                serialize(&r)
+            }
+            "marginLeft" => JsValue::from(self.inner.margin.left),
+            "marginRight" => JsValue::from(self.inner.margin.right),
+            "marginTop" => JsValue::from(self.inner.margin.top),
+            "marginBottom" => JsValue::from(self.inner.margin.bottom),
+
+            // Unknown property path
+            _ => {
+                wasm_bindgen::throw_str(&format!("Unknown property path: {}", path));
+            }
+        }
     }
 }
 

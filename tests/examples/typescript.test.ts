@@ -260,6 +260,23 @@ test("typescript example 12", async () => {
 });
 
 test("typescript example 13", async () => {
+  const tree = new TaffyTree();
+  const root = tree.newLeaf(new Style());
+  tree.computeLayout(root, { width: 100, height: 100 });
+  const layout = tree.getLayout(root);
+  // Object properties
+  layout.get("position", "size");
+
+  // Individual flat properties
+  layout.get("width", "height", "marginLeft");
+
+  // Mixed
+  layout.get("position", "width", "paddingTop");
+
+  tree.free();
+});
+
+test("typescript example 14", async () => {
   const style = new Style();
   style.display = Display.Flex;
 
@@ -283,7 +300,7 @@ test("typescript example 13", async () => {
   // values type is: (Display | Dimension | number | undefined)[]
 });
 
-test("typescript example 14", async () => {
+test("typescript example 15", async () => {
   const style = new Style();
   style.set({
     display: Display.Flex,
@@ -291,4 +308,27 @@ test("typescript example 14", async () => {
     marginLeft: 10,
     marginRight: "auto",
   });
+});
+
+test("typescript example 16", async () => {
+  const tree = new TaffyTree();
+  const root = tree.newLeaf(new Style());
+  tree.computeLayout(root, { width: 100, height: 100 });
+  const layout = tree.getLayout(root);
+
+  // Single property - returns exact type
+  const width = layout.get("width"); // number
+
+  // Two properties - returns tuple for destructuring
+  const [pos, size] = layout.get("position", "size");
+  // pos: Point<number>, size: Size<number>
+
+  // Three properties - returns tuple for destructuring
+  const [x, y, w] = layout.get("x", "y", "width");
+
+  // Four or more properties - returns array
+  const values = layout.get("x", "y", "width", "height");
+  // values type is: number[]
+
+  tree.free();
 });

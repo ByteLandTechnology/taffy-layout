@@ -627,6 +627,28 @@ where
 }
 
 // =============================================================================
+// Point DTO
+// =============================================================================
+
+/// Data Transfer Object for point coordinates
+///
+/// A generic container for x and y values. Used for positions and other 2D coordinates.
+///
+/// @typeParam T - The type of each coordinate (e.g., `f32`)
+///
+/// @example
+/// ```json
+/// { "x": 10, "y": 20 }
+/// ```
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct PointDto<T> {
+    /// The x coordinate
+    pub x: T,
+    /// The y coordinate
+    pub y: T,
+}
+
+// =============================================================================
 // Available Space DTOs
 // =============================================================================
 

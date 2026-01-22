@@ -23,24 +23,32 @@
 | <a id="__wbindgen_malloc"></a> `__wbindgen_malloc`                                     | `readonly` | (`a`, `b`) => `number`                                        |
 | <a id="__wbindgen_realloc"></a> `__wbindgen_realloc`                                   | `readonly` | (`a`, `b`, `c`, `d`) => `number`                              |
 | <a id="__wbindgen_start"></a> `__wbindgen_start`                                       | `readonly` | () => `void`                                                  |
+| <a id="layout_border"></a> `layout_border`                                             | `readonly` | (`a`) => `any`                                                |
 | <a id="layout_borderbottom"></a> `layout_borderBottom`                                 | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_borderleft"></a> `layout_borderLeft`                                     | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_borderright"></a> `layout_borderRight`                                   | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_bordertop"></a> `layout_borderTop`                                       | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_contentheight"></a> `layout_contentHeight`                               | `readonly` | (`a`) => `number`                                             |
+| <a id="layout_contentsize"></a> `layout_contentSize`                                   | `readonly` | (`a`) => `any`                                                |
 | <a id="layout_contentwidth"></a> `layout_contentWidth`                                 | `readonly` | (`a`) => `number`                                             |
+| <a id="layout_get"></a> `layout_get`                                                   | `readonly` | (`a`, `b`, `c`) => `any`                                      |
 | <a id="layout_height"></a> `layout_height`                                             | `readonly` | (`a`) => `number`                                             |
+| <a id="layout_margin"></a> `layout_margin`                                             | `readonly` | (`a`) => `any`                                                |
 | <a id="layout_marginbottom"></a> `layout_marginBottom`                                 | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_marginleft"></a> `layout_marginLeft`                                     | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_marginright"></a> `layout_marginRight`                                   | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_margintop"></a> `layout_marginTop`                                       | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_order"></a> `layout_order`                                               | `readonly` | (`a`) => `number`                                             |
+| <a id="layout_padding"></a> `layout_padding`                                           | `readonly` | (`a`) => `any`                                                |
 | <a id="layout_paddingbottom"></a> `layout_paddingBottom`                               | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_paddingleft"></a> `layout_paddingLeft`                                   | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_paddingright"></a> `layout_paddingRight`                                 | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_paddingtop"></a> `layout_paddingTop`                                     | `readonly` | (`a`) => `number`                                             |
+| <a id="layout_position"></a> `layout_position`                                         | `readonly` | (`a`) => `any`                                                |
 | <a id="layout_scrollbarheight"></a> `layout_scrollbarHeight`                           | `readonly` | (`a`) => `number`                                             |
+| <a id="layout_scrollbarsize"></a> `layout_scrollbarSize`                               | `readonly` | (`a`) => `any`                                                |
 | <a id="layout_scrollbarwidth"></a> `layout_scrollbarWidth`                             | `readonly` | (`a`) => `number`                                             |
+| <a id="layout_size"></a> `layout_size`                                                 | `readonly` | (`a`) => `any`                                                |
 | <a id="layout_width"></a> `layout_width`                                               | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_x"></a> `layout_x`                                                       | `readonly` | (`a`) => `number`                                             |
 | <a id="layout_y"></a> `layout_y`                                                       | `readonly` | (`a`) => `number`                                             |

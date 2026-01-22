@@ -623,6 +623,74 @@ export type StyleProperty =
   | "gridTemplateAreas" | "gridTemplateRowNames" | "gridTemplateColumnNames";
 
 /**
+ * Valid property keys for Layout.get() method.
+ *
+ * Supports both object properties and individual flat properties.
+ *
+ * @example
+ * ```typescript
+ * import { TaffyTree, Style } from "taffy-layout";
+ *
+ * const tree = new TaffyTree();
+ * const root = tree.newLeaf(new Style());
+ * tree.computeLayout(root, { width: 100, height: 100 });
+ * const layout = tree.getLayout(root);
+ * // Object properties
+ * layout.get("position", "size");
+ *
+ * // Individual flat properties
+ * layout.get("width", "height", "marginLeft");
+ *
+ * // Mixed
+ * layout.get("position", "width", "paddingTop");
+ *
+ * tree.free();
+ * ```
+ */
+export type LayoutProperty =
+  // Rendering order
+  | "order"
+  // Position
+  | "position" | "x" | "y"
+  // Size
+  | "size" | "width" | "height"
+  // Content size
+  | "contentSize" | "contentWidth" | "contentHeight"
+  // Scrollbar size
+  | "scrollbarSize" | "scrollbarWidth" | "scrollbarHeight"
+  // Border
+  | "border" | "borderLeft" | "borderRight" | "borderTop" | "borderBottom"
+  // Padding
+  | "padding" | "paddingLeft" | "paddingRight" | "paddingTop" | "paddingBottom"
+  // Margin
+  | "margin" | "marginLeft" | "marginRight" | "marginTop" | "marginBottom";
+
+/**
+ * Type-safe property values for Layout.get().
+ *
+ * Maps property paths to their expected value types.
+ */
+export type LayoutPropertyValues = {
+  [K in LayoutProperty]:
+    K extends "order" ? number :
+    K extends "position" ? Point<number> :
+    K extends "x" | "y" ? number :
+    K extends "size" ? Size<number> :
+    K extends "width" | "height" ? number :
+    K extends "contentSize" ? Size<number> :
+    K extends "contentWidth" | "contentHeight" ? number :
+    K extends "scrollbarSize" ? Size<number> :
+    K extends "scrollbarWidth" | "scrollbarHeight" ? number :
+    K extends "border" ? Rect<number> :
+    K extends "borderLeft" | "borderRight" | "borderTop" | "borderBottom" ? number :
+    K extends "padding" ? Rect<number> :
+    K extends "paddingLeft" | "paddingRight" | "paddingTop" | "paddingBottom" ? number :
+    K extends "margin" ? Rect<number> :
+    K extends "marginLeft" | "marginRight" | "marginTop" | "marginBottom" ? number :
+    unknown;
+};
+
+/**
  * Type-safe property values for batch setting.
  *
  * Maps property paths to their expected value types.
@@ -737,6 +805,56 @@ declare module "./taffy_wasm" {
      */
     set(props: StylePropertyValues): void;
   }
+
+  interface Layout {
+    /**
+     * Reads multiple layout properties in a single WASM call.
+     * Supports both object properties and individual flat properties.
+     *
+     * @returns Single value for one key, tuple for 2-3 keys, array for 4+ keys
+     *
+     * @throws Error if any property key is unknown.
+     *
+     * @remarks
+     * - Single property: returns exact value type
+     * - 2-3 properties: returns typed tuple for destructuring
+     * - 4+ properties: returns array of union types
+     *
+     * @example
+     * ```typescript
+     * import { TaffyTree, Style } from "taffy-layout";
+     *
+     * const tree = new TaffyTree();
+     * const root = tree.newLeaf(new Style());
+     * tree.computeLayout(root, { width: 100, height: 100 });
+     * const layout = tree.getLayout(root);
+     *
+     * // Single property - returns exact type
+     * const width = layout.get("width"); // number
+     *
+     * // Two properties - returns tuple for destructuring
+     * const [pos, size] = layout.get("position", "size");
+     * // pos: Point<number>, size: Size<number>
+     *
+     * // Three properties - returns tuple for destructuring
+     * const [x, y, w] = layout.get("x", "y", "width");
+     *
+     * // Four or more properties - returns array
+     * const values = layout.get("x", "y", "width", "height");
+     * // values type is: number[]
+     *
+     * tree.free();
+     * ```
+     */
+    get<K extends LayoutProperty>(...keys: [K]): LayoutPropertyValues[K];
+    get<K1 extends LayoutProperty, K2 extends LayoutProperty>(
+      ...keys: [K1, K2]
+    ): [LayoutPropertyValues[K1], LayoutPropertyValues[K2]];
+    get<K1 extends LayoutProperty, K2 extends LayoutProperty, K3 extends LayoutProperty>(
+      ...keys: [K1, K2, K3]
+    ): [LayoutPropertyValues[K1], LayoutPropertyValues[K2], LayoutPropertyValues[K3]];
+    get<Keys extends LayoutProperty[]>(...keys: Keys): LayoutPropertyArrayValues<Keys>;
+  }
 }
 
 /**
@@ -745,5 +863,12 @@ declare module "./taffy_wasm" {
  */
 type StylePropertyArrayValues<Keys extends StyleProperty[]> = {
   [K in keyof Keys]: Keys[K] extends StyleProperty ? StylePropertyValues[Keys[K]] : unknown;
+};
+
+/**
+ * Helper type to convert an array of layout property keys to an array of their value types.
+ */
+type LayoutPropertyArrayValues<Keys extends LayoutProperty[]> = {
+  [K in keyof Keys]: Keys[K] extends LayoutProperty ? LayoutPropertyValues[Keys[K]] : unknown;
 };
 "#;
