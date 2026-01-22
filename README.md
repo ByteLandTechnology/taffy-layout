@@ -45,13 +45,28 @@ const containerStyle = new Style();
 containerStyle.display = Display.Flex;
 containerStyle.flexDirection = FlexDirection.Column;
 containerStyle.alignItems = AlignItems.Center;
+
+// You can set size as an object
 containerStyle.size = { width: 300, height: 200 };
+
+// Or use individual width/height properties
+containerStyle.width = 300;
+containerStyle.height = 200;
+
+// Set padding as an object
 containerStyle.padding = { left: 10, right: 10, top: 10, bottom: 10 };
+
+// Or use individual padding properties
+containerStyle.paddingLeft = 10;
+containerStyle.paddingRight = 10;
+containerStyle.paddingTop = 10;
+containerStyle.paddingBottom = 10;
 
 // Create child styles
 const childStyle = new Style();
 childStyle.flexGrow = 1;
-childStyle.size = { width: "100%", height: "auto" };
+childStyle.width = "100%";
+childStyle.height = "auto";
 
 // Create nodes
 const child1 = tree.newLeaf(childStyle);

@@ -32,26 +32,26 @@ describe("Style Class Properties", () => {
       const style = new Style({
         display: Display.Grid,
         flexDirection: FlexDirection.Column,
-        "size.width": 200,
-        "margin.left": 10,
+        width: 200,
+        marginLeft: 10,
       });
       expect(style.display).toBe(Display.Grid);
       expect(style.flexDirection).toBe(FlexDirection.Column);
-      expect(style.get("size.width")).toBe(200);
-      expect(style.get("margin.left")).toBe(10);
+      expect(style.get("width")).toBe(200);
+      expect(style.get("marginLeft")).toBe(10);
     });
 
     it("creates Style with dot notation properties", () => {
       const style = new Style({
-        "size.width": 300,
-        "size.height": "50%",
-        "margin.left": 20,
-        "margin.right": "auto",
+        width: 300,
+        height: "50%",
+        marginLeft: 20,
+        marginRight: "auto",
       });
-      expect(style.get("size.width")).toBe(300);
-      expect(style.get("size.height")).toBe("50%");
-      expect(style.get("margin.left")).toBe(20);
-      expect(style.get("margin.right")).toBe("auto");
+      expect(style.get("width")).toBe(300);
+      expect(style.get("height")).toBe("50%");
+      expect(style.get("marginLeft")).toBe(20);
+      expect(style.get("marginRight")).toBe("auto");
     });
   });
 
@@ -979,18 +979,18 @@ describe("Style Class Properties", () => {
       const style = new Style();
       style.size = { width: 100, height: "50%" };
 
-      expect(style.get("size.width")).toBe(100);
-      expect(style.get("size.height")).toBe("50%");
+      expect(style.get("width")).toBe(100);
+      expect(style.get("height")).toBe("50%");
     });
 
     it("reads nested margin properties with dot notation", () => {
       const style = new Style();
       style.margin = { left: 10, right: "auto", top: "5%", bottom: 0 };
 
-      expect(style.get("margin.left")).toBe(10);
-      expect(style.get("margin.right")).toBe("auto");
-      expect(style.get("margin.top")).toBe("5%");
-      expect(style.get("margin.bottom")).toBe(0);
+      expect(style.get("marginLeft")).toBe(10);
+      expect(style.get("marginRight")).toBe("auto");
+      expect(style.get("marginTop")).toBe("5%");
+      expect(style.get("marginBottom")).toBe(0);
     });
 
     it("reads mixed top-level and nested properties", () => {
@@ -1002,8 +1002,8 @@ describe("Style Class Properties", () => {
 
       const [display, width, paddingLeft] = style.get(
         "display",
-        "size.width",
-        "padding.left",
+        "width",
+        "paddingLeft",
       );
       expect(display).toBe(Display.Flex);
       expect(width).toBe(200);
@@ -1023,16 +1023,16 @@ describe("Style Class Properties", () => {
       const style = new Style();
       style.overflow = { x: Overflow.Hidden, y: Overflow.Scroll };
 
-      expect(style.get("overflow.x")).toBe(Overflow.Hidden);
-      expect(style.get("overflow.y")).toBe(Overflow.Scroll);
+      expect(style.get("overflowX")).toBe(Overflow.Hidden);
+      expect(style.get("overflowY")).toBe(Overflow.Scroll);
     });
 
     it("reads gap nested properties", () => {
       const style = new Style();
       style.gap = { width: 10, height: "5%" };
 
-      expect(style.get("gap.width")).toBe(10);
-      expect(style.get("gap.height")).toBe("5%");
+      expect(style.get("columnGap")).toBe(10);
+      expect(style.get("rowGap")).toBe("5%");
     });
 
     it("reads boolean properties", () => {
@@ -1055,10 +1055,10 @@ describe("Style Class Properties", () => {
       style.gridRow = { start: 1, end: 3 };
       style.gridColumn = { start: 2, end: 4 };
 
-      expect(style.get("gridRow.start")).toBe(1);
-      expect(style.get("gridRow.end")).toBe(3);
-      expect(style.get("gridColumn.start")).toBe(2);
-      expect(style.get("gridColumn.end")).toBe(4);
+      expect(style.get("gridRowStart")).toBe(1);
+      expect(style.get("gridRowEnd")).toBe(3);
+      expect(style.get("gridColumnStart")).toBe(2);
+      expect(style.get("gridColumnEnd")).toBe(4);
     });
 
     it("returns undefined for empty keys array", () => {
@@ -1098,8 +1098,8 @@ describe("Style Class Properties", () => {
     it("sets nested size properties with dot notation", () => {
       const style = new Style();
       style.set({
-        "size.width": 100,
-        "size.height": "50%",
+        width: 100,
+        height: "50%",
       });
 
       expect(style.size.width).toBe(100);
@@ -1109,10 +1109,10 @@ describe("Style Class Properties", () => {
     it("sets nested margin properties with dot notation", () => {
       const style = new Style();
       style.set({
-        "margin.left": 10,
-        "margin.right": "auto",
-        "margin.top": "5%",
-        "margin.bottom": 0,
+        marginLeft: 10,
+        marginRight: "auto",
+        marginTop: "5%",
+        marginBottom: 0,
       });
 
       expect(style.margin.left).toBe(10);
@@ -1126,9 +1126,9 @@ describe("Style Class Properties", () => {
       style.set({
         display: Display.Flex,
         flexDirection: FlexDirection.Row,
-        "size.width": 200,
-        "padding.left": 10,
-        "padding.right": 10,
+        width: 200,
+        paddingLeft: 10,
+        paddingRight: 10,
       });
 
       expect(style.display).toBe(Display.Flex);
@@ -1151,8 +1151,8 @@ describe("Style Class Properties", () => {
     it("sets overflow nested properties", () => {
       const style = new Style();
       style.set({
-        "overflow.x": Overflow.Hidden,
-        "overflow.y": Overflow.Scroll,
+        overflowX: Overflow.Hidden,
+        overflowY: Overflow.Scroll,
       });
 
       expect(style.overflow.x).toBe(Overflow.Hidden);
@@ -1174,15 +1174,15 @@ describe("Style Class Properties", () => {
       const style = new Style();
       style.set({
         display: Display.Grid,
-        "size.width": 300,
-        "margin.left": 20,
+        width: 300,
+        marginLeft: 20,
         flexGrow: 1.5,
       });
 
       const [display, width, marginLeft, flexGrow] = style.get(
         "display",
-        "size.width",
-        "margin.left",
+        "width",
+        "marginLeft",
         "flexGrow",
       );
       expect(display).toBe(Display.Grid);
@@ -1194,16 +1194,585 @@ describe("Style Class Properties", () => {
     it("handles grid row/column properties", () => {
       const style = new Style();
       style.set({
-        "gridRow.start": 1,
-        "gridRow.end": 3,
-        "gridColumn.start": 2,
-        "gridColumn.end": 4,
+        gridRowStart: 1,
+        gridRowEnd: 3,
+        gridColumnStart: 2,
+        gridColumnEnd: 4,
       });
 
       expect(style.gridRow.start).toBe(1);
       expect(style.gridRow.end).toBe(3);
       expect(style.gridColumn.start).toBe(2);
       expect(style.gridColumn.end).toBe(4);
+    });
+  });
+
+  describe("Individual Property Getters and Setters", () => {
+    describe("Overflow Individual Properties", () => {
+      it("overflowX: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.overflowX).toBe(Overflow.Visible);
+
+        style.overflowX = Overflow.Hidden;
+        expect(style.overflowX).toBe(Overflow.Hidden);
+
+        style.overflowX = Overflow.Scroll;
+        expect(style.overflowX).toBe(Overflow.Scroll);
+
+        // Setting overflowX should not affect overflowY
+        style.overflowY = Overflow.Clip;
+        expect(style.overflowX).toBe(Overflow.Scroll);
+        expect(style.overflowY).toBe(Overflow.Clip);
+      });
+
+      it("overflowY: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.overflowY).toBe(Overflow.Visible);
+
+        style.overflowY = Overflow.Hidden;
+        expect(style.overflowY).toBe(Overflow.Hidden);
+
+        style.overflowY = Overflow.Scroll;
+        expect(style.overflowY).toBe(Overflow.Scroll);
+      });
+
+      it("overflowX and overflowY: independent of each other", () => {
+        const style = new Style();
+        style.overflowX = Overflow.Hidden;
+        style.overflowY = Overflow.Scroll;
+
+        expect(style.overflowX).toBe(Overflow.Hidden);
+        expect(style.overflowY).toBe(Overflow.Scroll);
+        expect(style.overflow.x).toBe(Overflow.Hidden);
+        expect(style.overflow.y).toBe(Overflow.Scroll);
+      });
+    });
+
+    describe("Size Individual Properties", () => {
+      it("width: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.width).toBe("auto");
+
+        style.width = 200;
+        expect(style.width).toBe(200);
+
+        style.width = "50%";
+        expect(style.width).toBe("50%");
+
+        style.width = "auto";
+        expect(style.width).toBe("auto");
+      });
+
+      it("height: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.height).toBe("auto");
+
+        style.height = 100;
+        expect(style.height).toBe(100);
+
+        style.height = "75%";
+        expect(style.height).toBe("75%");
+
+        style.height = "auto";
+        expect(style.height).toBe("auto");
+      });
+
+      it("width and height: independent of each other", () => {
+        const style = new Style();
+        style.width = 300;
+        style.height = "50%";
+
+        expect(style.width).toBe(300);
+        expect(style.height).toBe("50%");
+        expect(style.size.width).toBe(300);
+        expect(style.size.height).toBe("50%");
+      });
+
+      it("minWidth: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.minWidth).toBe("auto");
+
+        style.minWidth = 100;
+        expect(style.minWidth).toBe(100);
+
+        style.minWidth = "10%";
+        expect(style.minWidth).toBe("10%");
+
+        style.minWidth = "auto";
+        expect(style.minWidth).toBe("auto");
+      });
+
+      it("minHeight: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.minHeight).toBe("auto");
+
+        style.minHeight = 50;
+        expect(style.minHeight).toBe(50);
+
+        style.minHeight = "auto";
+        expect(style.minHeight).toBe("auto");
+      });
+
+      it("maxWidth: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.maxWidth).toBe("auto");
+
+        style.maxWidth = 500;
+        expect(style.maxWidth).toBe(500);
+
+        style.maxWidth = "100%";
+        expect(style.maxWidth).toBe("100%");
+
+        style.maxWidth = "auto";
+        expect(style.maxWidth).toBe("auto");
+      });
+
+      it("maxHeight: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.maxHeight).toBe("auto");
+
+        style.maxHeight = 300;
+        expect(style.maxHeight).toBe(300);
+
+        style.maxHeight = "auto";
+        expect(style.maxHeight).toBe("auto");
+      });
+
+      it("min/max width/height: all independent", () => {
+        const style = new Style();
+        style.minWidth = 100;
+        style.maxWidth = 500;
+        style.minHeight = 50;
+        style.maxHeight = 300;
+
+        expect(style.minWidth).toBe(100);
+        expect(style.maxWidth).toBe(500);
+        expect(style.minHeight).toBe(50);
+        expect(style.maxHeight).toBe(300);
+      });
+    });
+
+    describe("Margin Individual Properties", () => {
+      it("marginLeft: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.marginLeft).toBe(0);
+
+        style.marginLeft = 10;
+        expect(style.marginLeft).toBe(10);
+
+        style.marginLeft = "5%";
+        expect(style.marginLeft).toBe("5%");
+
+        style.marginLeft = "auto";
+        expect(style.marginLeft).toBe("auto");
+      });
+
+      it("marginRight: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.marginRight).toBe(0);
+
+        style.marginRight = 20;
+        expect(style.marginRight).toBe(20);
+
+        style.marginRight = "auto";
+        expect(style.marginRight).toBe("auto");
+      });
+
+      it("marginTop: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.marginTop).toBe(0);
+
+        style.marginTop = 5;
+        expect(style.marginTop).toBe(5);
+
+        style.marginTop = "10%";
+        expect(style.marginTop).toBe("10%");
+      });
+
+      it("marginBottom: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.marginBottom).toBe(0);
+
+        style.marginBottom = 15;
+        expect(style.marginBottom).toBe(15);
+
+        style.marginBottom = "auto";
+        expect(style.marginBottom).toBe("auto");
+      });
+
+      it("all margin properties: independent of each other", () => {
+        const style = new Style();
+        style.marginLeft = 10;
+        style.marginRight = "auto";
+        style.marginTop = "5%";
+        style.marginBottom = 0;
+
+        expect(style.marginLeft).toBe(10);
+        expect(style.marginRight).toBe("auto");
+        expect(style.marginTop).toBe("5%");
+        expect(style.marginBottom).toBe(0);
+        expect(style.margin.left).toBe(10);
+        expect(style.margin.right).toBe("auto");
+        expect(style.margin.top).toBe("5%");
+        expect(style.margin.bottom).toBe(0);
+      });
+    });
+
+    describe("Padding Individual Properties", () => {
+      it("paddingLeft: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.paddingLeft).toBe(0);
+
+        style.paddingLeft = 20;
+        expect(style.paddingLeft).toBe(20);
+
+        style.paddingLeft = "10%";
+        expect(style.paddingLeft).toBe("10%");
+      });
+
+      it("paddingRight: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.paddingRight).toBe(0);
+
+        style.paddingRight = 25;
+        expect(style.paddingRight).toBe(25);
+      });
+
+      it("paddingTop: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.paddingTop).toBe(0);
+
+        style.paddingTop = 10;
+        expect(style.paddingTop).toBe(10);
+
+        style.paddingTop = "5%";
+        expect(style.paddingTop).toBe("5%");
+      });
+
+      it("paddingBottom: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.paddingBottom).toBe(0);
+
+        style.paddingBottom = 15;
+        expect(style.paddingBottom).toBe(15);
+      });
+
+      it("all padding properties: independent of each other", () => {
+        const style = new Style();
+        style.paddingLeft = 20;
+        style.paddingRight = 30;
+        style.paddingTop = "5%";
+        style.paddingBottom = 10;
+
+        expect(style.paddingLeft).toBe(20);
+        expect(style.paddingRight).toBe(30);
+        expect(style.paddingTop).toBe("5%");
+        expect(style.paddingBottom).toBe(10);
+      });
+    });
+
+    describe("Border Individual Properties", () => {
+      it("borderLeft: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.borderLeft).toBe(0);
+
+        style.borderLeft = 1;
+        expect(style.borderLeft).toBe(1);
+
+        style.borderLeft = "2%";
+        expect(style.borderLeft).toBe("2%");
+      });
+
+      it("borderRight: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.borderRight).toBe(0);
+
+        style.borderRight = 2;
+        expect(style.borderRight).toBe(2);
+      });
+
+      it("borderTop: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.borderTop).toBe(0);
+
+        style.borderTop = 1;
+        expect(style.borderTop).toBe(1);
+      });
+
+      it("borderBottom: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.borderBottom).toBe(0);
+
+        style.borderBottom = 3;
+        expect(style.borderBottom).toBe(3);
+      });
+
+      it("all border properties: independent of each other", () => {
+        const style = new Style();
+        style.borderLeft = 1;
+        style.borderRight = 2;
+        style.borderTop = 3;
+        style.borderBottom = 4;
+
+        expect(style.borderLeft).toBe(1);
+        expect(style.borderRight).toBe(2);
+        expect(style.borderTop).toBe(3);
+        expect(style.borderBottom).toBe(4);
+      });
+    });
+
+    describe("Inset Individual Properties", () => {
+      it("left: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.left).toBe("auto");
+
+        style.position = Position.Absolute;
+        style.left = 0;
+        expect(style.left).toBe(0);
+
+        style.left = "10%";
+        expect(style.left).toBe("10%");
+
+        style.left = "auto";
+        expect(style.left).toBe("auto");
+      });
+
+      it("right: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.right).toBe("auto");
+
+        style.position = Position.Absolute;
+        style.right = 20;
+        expect(style.right).toBe(20);
+
+        style.right = "auto";
+        expect(style.right).toBe("auto");
+      });
+
+      it("top: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.top).toBe("auto");
+
+        style.position = Position.Absolute;
+        style.top = 0;
+        expect(style.top).toBe(0);
+
+        style.top = "5%";
+        expect(style.top).toBe("5%");
+      });
+
+      it("bottom: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.bottom).toBe("auto");
+
+        style.position = Position.Absolute;
+        style.bottom = 10;
+        expect(style.bottom).toBe(10);
+
+        style.bottom = "auto";
+        expect(style.bottom).toBe("auto");
+      });
+
+      it("all inset properties: independent of each other", () => {
+        const style = new Style();
+        style.position = Position.Absolute;
+        style.left = 0;
+        style.right = 20;
+        style.top = "10%";
+        style.bottom = "auto";
+
+        expect(style.left).toBe(0);
+        expect(style.right).toBe(20);
+        expect(style.top).toBe("10%");
+        expect(style.bottom).toBe("auto");
+        expect(style.inset.left).toBe(0);
+        expect(style.inset.right).toBe(20);
+        expect(style.inset.top).toBe("10%");
+        expect(style.inset.bottom).toBe("auto");
+      });
+    });
+
+    describe("Gap Individual Properties", () => {
+      it("columnGap: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.columnGap).toBe(0);
+
+        style.columnGap = 10;
+        expect(style.columnGap).toBe(10);
+
+        style.columnGap = "5%";
+        expect(style.columnGap).toBe("5%");
+      });
+
+      it("rowGap: sets and gets correctly", () => {
+        const style = new Style();
+        expect(style.rowGap).toBe(0);
+
+        style.rowGap = 15;
+        expect(style.rowGap).toBe(15);
+
+        style.rowGap = "10%";
+        expect(style.rowGap).toBe("10%");
+      });
+
+      it("columnGap and rowGap: independent of each other", () => {
+        const style = new Style();
+        style.columnGap = 10;
+        style.rowGap = "5%";
+
+        expect(style.columnGap).toBe(10);
+        expect(style.rowGap).toBe("5%");
+        expect(style.gap.width).toBe(10);
+        expect(style.gap.height).toBe("5%");
+      });
+    });
+
+    describe("Grid Row/Column Individual Properties", () => {
+      it("gridRowStart: sets and gets correctly", () => {
+        const style = new Style();
+        style.display = Display.Grid;
+        expect(style.gridRowStart).toBe("auto");
+
+        style.gridRowStart = 1;
+        expect(style.gridRowStart).toBe(1);
+
+        style.gridRowStart = "auto";
+        expect(style.gridRowStart).toBe("auto");
+
+        style.gridRowStart = { span: 2 };
+        const start = style.gridRowStart;
+        if (start instanceof Map) {
+          expect(start.get("span")).toBe(2);
+        } else {
+          expect(start).toEqual({ span: 2 });
+        }
+      });
+
+      it("gridRowEnd: sets and gets correctly", () => {
+        const style = new Style();
+        style.display = Display.Grid;
+        expect(style.gridRowEnd).toBe("auto");
+
+        style.gridRowEnd = 3;
+        expect(style.gridRowEnd).toBe(3);
+
+        style.gridRowEnd = { span: 2 };
+        const end = style.gridRowEnd;
+        if (end instanceof Map) {
+          expect(end.get("span")).toBe(2);
+        } else {
+          expect(end).toEqual({ span: 2 });
+        }
+      });
+
+      it("gridColumnStart: sets and gets correctly", () => {
+        const style = new Style();
+        style.display = Display.Grid;
+        expect(style.gridColumnStart).toBe("auto");
+
+        style.gridColumnStart = 1;
+        expect(style.gridColumnStart).toBe(1);
+
+        style.gridColumnStart = "auto";
+        expect(style.gridColumnStart).toBe("auto");
+      });
+
+      it("gridColumnEnd: sets and gets correctly", () => {
+        const style = new Style();
+        style.display = Display.Grid;
+        expect(style.gridColumnEnd).toBe("auto");
+
+        style.gridColumnEnd = 4;
+        expect(style.gridColumnEnd).toBe(4);
+
+        style.gridColumnEnd = { span: 3 };
+        const end = style.gridColumnEnd;
+        if (end instanceof Map) {
+          expect(end.get("span")).toBe(3);
+        } else {
+          expect(end).toEqual({ span: 3 });
+        }
+      });
+
+      it("all grid row/column properties: independent of each other", () => {
+        const style = new Style();
+        style.display = Display.Grid;
+        style.gridRowStart = 1;
+        style.gridRowEnd = 3;
+        style.gridColumnStart = 2;
+        style.gridColumnEnd = 4;
+
+        expect(style.gridRowStart).toBe(1);
+        expect(style.gridRowEnd).toBe(3);
+        expect(style.gridColumnStart).toBe(2);
+        expect(style.gridColumnEnd).toBe(4);
+        expect(style.gridRow.start).toBe(1);
+        expect(style.gridRow.end).toBe(3);
+        expect(style.gridColumn.start).toBe(2);
+        expect(style.gridColumn.end).toBe(4);
+      });
+    });
+
+    describe("Individual Properties with Batch get/set", () => {
+      it("get() works with new individual property names", () => {
+        const style = new Style();
+        style.width = 200;
+        style.marginLeft = 10;
+        style.paddingTop = 5;
+        style.overflowX = Overflow.Hidden;
+
+        expect(style.get("width")).toBe(200);
+        expect(style.get("marginLeft")).toBe(10);
+        expect(style.get("paddingTop")).toBe(5);
+        expect(style.get("overflowX")).toBe(Overflow.Hidden);
+      });
+
+      it("set() works with new individual property names", () => {
+        const style = new Style();
+        style.set({
+          width: 300,
+          height: "50%",
+          marginLeft: 20,
+          marginRight: "auto",
+          paddingTop: 10,
+          paddingBottom: 15,
+          borderLeft: 1,
+          borderRight: 2,
+          overflowX: Overflow.Scroll,
+          overflowY: Overflow.Hidden,
+        });
+
+        expect(style.width).toBe(300);
+        expect(style.height).toBe("50%");
+        expect(style.marginLeft).toBe(20);
+        expect(style.marginRight).toBe("auto");
+        expect(style.paddingTop).toBe(10);
+        expect(style.paddingBottom).toBe(15);
+        expect(style.borderLeft).toBe(1);
+        expect(style.borderRight).toBe(2);
+        expect(style.overflowX).toBe(Overflow.Scroll);
+        expect(style.overflowY).toBe(Overflow.Hidden);
+      });
+
+      it("get() multiple individual properties at once", () => {
+        const style = new Style();
+        style.width = 200;
+        style.height = 100;
+        style.marginLeft = 10;
+        style.paddingTop = 5;
+
+        const [width, height, marginLeft, paddingTop] = style.get(
+          "width",
+          "height",
+          "marginLeft",
+          "paddingTop",
+        );
+
+        expect(width).toBe(200);
+        expect(height).toBe(100);
+        expect(marginLeft).toBe(10);
+        expect(paddingTop).toBe(5);
+      });
     });
   });
 });

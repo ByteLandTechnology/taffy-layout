@@ -12,8 +12,8 @@ type StyleProperty =
   | "position"
   | "boxSizing"
   | "overflow"
-  | "overflow.x"
-  | "overflow.y"
+  | "overflowX"
+  | "overflowY"
   | "flexDirection"
   | "flexWrap"
   | "flexGrow"
@@ -27,48 +27,48 @@ type StyleProperty =
   | "justifySelf"
   | "aspectRatio"
   | "size"
-  | "size.width"
-  | "size.height"
+  | "width"
+  | "height"
   | "minSize"
-  | "minSize.width"
-  | "minSize.height"
+  | "minWidth"
+  | "minHeight"
   | "maxSize"
-  | "maxSize.width"
-  | "maxSize.height"
+  | "maxWidth"
+  | "maxHeight"
   | "margin"
-  | "margin.left"
-  | "margin.right"
-  | "margin.top"
-  | "margin.bottom"
+  | "marginLeft"
+  | "marginRight"
+  | "marginTop"
+  | "marginBottom"
   | "padding"
-  | "padding.left"
-  | "padding.right"
-  | "padding.top"
-  | "padding.bottom"
+  | "paddingLeft"
+  | "paddingRight"
+  | "paddingTop"
+  | "paddingBottom"
   | "border"
-  | "border.left"
-  | "border.right"
-  | "border.top"
-  | "border.bottom"
+  | "borderLeft"
+  | "borderRight"
+  | "borderTop"
+  | "borderBottom"
   | "inset"
-  | "inset.left"
-  | "inset.right"
-  | "inset.top"
-  | "inset.bottom"
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
   | "gap"
-  | "gap.width"
-  | "gap.height"
+  | "columnGap"
+  | "rowGap"
   | "itemIsTable"
   | "itemIsReplaced"
   | "scrollbarWidth"
   | "textAlign"
   | "gridAutoFlow"
   | "gridRow"
-  | "gridRow.start"
-  | "gridRow.end"
+  | "gridRowStart"
+  | "gridRowEnd"
   | "gridColumn"
-  | "gridColumn.start"
-  | "gridColumn.end"
+  | "gridColumnStart"
+  | "gridColumnEnd"
   | "gridTemplateRows"
   | "gridTemplateColumns"
   | "gridAutoRows"
@@ -80,7 +80,7 @@ type StyleProperty =
 
 Valid property paths for Style.get() method.
 
-Supports dot notation for nested properties.
+Supports both object properties and individual flat properties.
 
 ## Example
 
@@ -89,6 +89,9 @@ const style = new Style();
 // Top-level properties
 style.get("display", "flexGrow");
 
-// Nested properties with dot notation
-style.get("size.width", "margin.left");
+// Individual flat properties
+style.get("width", "marginLeft", "paddingTop");
+
+// Object properties
+style.get("size", "margin");
 ```

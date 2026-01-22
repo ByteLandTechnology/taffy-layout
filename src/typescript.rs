@@ -576,7 +576,7 @@ export type GridTemplateArea = {
 /**
  * Valid property paths for Style.get() method.
  *
- * Supports dot notation for nested properties.
+ * Supports both object properties and individual flat properties.
  *
  * @example
  * ```typescript
@@ -584,15 +584,18 @@ export type GridTemplateArea = {
  * // Top-level properties
  * style.get("display", "flexGrow");
  *
- * // Nested properties with dot notation
- * style.get("size.width", "margin.left");
+ * // Individual flat properties
+ * style.get("width", "marginLeft", "paddingTop");
+ * 
+ * // Object properties
+ * style.get("size", "margin");
  * ```
  */
 export type StyleProperty =
   // Layout Mode
   | "display" | "position" | "boxSizing"
   // Overflow
-  | "overflow" | "overflow.x" | "overflow.y"
+  | "overflow" | "overflowX" | "overflowY"
   // Flexbox
   | "flexDirection" | "flexWrap" | "flexGrow" | "flexShrink" | "flexBasis"
   // Alignment
@@ -600,21 +603,21 @@ export type StyleProperty =
   | "justifyContent" | "justifyItems" | "justifySelf"
   // Sizing
   | "aspectRatio"
-  | "size" | "size.width" | "size.height"
-  | "minSize" | "minSize.width" | "minSize.height"
-  | "maxSize" | "maxSize.width" | "maxSize.height"
+  | "size" | "width" | "height"
+  | "minSize" | "minWidth" | "minHeight"
+  | "maxSize" | "maxWidth" | "maxHeight"
   // Spacing
-  | "margin" | "margin.left" | "margin.right" | "margin.top" | "margin.bottom"
-  | "padding" | "padding.left" | "padding.right" | "padding.top" | "padding.bottom"
-  | "border" | "border.left" | "border.right" | "border.top" | "border.bottom"
-  | "inset" | "inset.left" | "inset.right" | "inset.top" | "inset.bottom"
-  | "gap" | "gap.width" | "gap.height"
+  | "margin" | "marginLeft" | "marginRight" | "marginTop" | "marginBottom"
+  | "padding" | "paddingLeft" | "paddingRight" | "paddingTop" | "paddingBottom"
+  | "border" | "borderLeft" | "borderRight" | "borderTop" | "borderBottom"
+  | "inset" | "left" | "right" | "top" | "bottom"
+  | "gap" | "columnGap" | "rowGap"
   // Block layout
   | "itemIsTable" | "itemIsReplaced" | "scrollbarWidth" | "textAlign"
   // Grid layout
   | "gridAutoFlow"
-  | "gridRow" | "gridRow.start" | "gridRow.end"
-  | "gridColumn" | "gridColumn.start" | "gridColumn.end"
+  | "gridRow" | "gridRowStart" | "gridRowEnd"
+  | "gridColumn" | "gridColumnStart" | "gridColumnEnd"
   | "gridTemplateRows" | "gridTemplateColumns"
   | "gridAutoRows" | "gridAutoColumns"
   | "gridTemplateAreas" | "gridTemplateRowNames" | "gridTemplateColumnNames";
@@ -630,7 +633,7 @@ export type StylePropertyValues = {
     K extends "position" ? Position :
     K extends "boxSizing" ? BoxSizing :
     K extends "overflow" ? Point<Overflow> :
-    K extends "overflow.x" | "overflow.y" ? Overflow :
+    K extends "overflowX" | "overflowY" ? Overflow :
     K extends "flexDirection" ? FlexDirection :
     K extends "flexWrap" ? FlexWrap :
     K extends "flexGrow" | "flexShrink" | "scrollbarWidth" ? number :
@@ -641,18 +644,18 @@ export type StylePropertyValues = {
     K extends "justifyContent" ? JustifyContent | undefined :
     K extends "aspectRatio" ? number | undefined :
     K extends "size" | "minSize" | "maxSize" ? Size<Dimension> :
-    K extends `${"size" | "minSize" | "maxSize"}.${"width" | "height"}` ? Dimension :
+    K extends "width" | "height" | "minWidth" | "minHeight" | "maxWidth" | "maxHeight" ? Dimension :
     K extends "margin" | "inset" ? Rect<LengthPercentageAuto> :
-    K extends `${"margin" | "inset"}.${"left" | "right" | "top" | "bottom"}` ? LengthPercentageAuto :
+    K extends "marginLeft" | "marginRight" | "marginTop" | "marginBottom" | "left" | "right" | "top" | "bottom" ? LengthPercentageAuto :
     K extends "padding" | "border" ? Rect<LengthPercentage> :
-    K extends `${"padding" | "border"}.${"left" | "right" | "top" | "bottom"}` ? LengthPercentage :
+    K extends "paddingLeft" | "paddingRight" | "paddingTop" | "paddingBottom" | "borderLeft" | "borderRight" | "borderTop" | "borderBottom" ? LengthPercentage :
     K extends "gap" ? Size<LengthPercentage> :
-    K extends `gap.${"width" | "height"}` ? LengthPercentage :
+    K extends "columnGap" | "rowGap" ? LengthPercentage :
     K extends "itemIsTable" | "itemIsReplaced" ? boolean :
     K extends "textAlign" ? TextAlign :
     K extends "gridAutoFlow" ? GridAutoFlow :
     K extends "gridRow" | "gridColumn" ? Line<GridPlacement> :
-    K extends `${"gridRow" | "gridColumn"}.${"start" | "end"}` ? GridPlacement :
+    K extends "gridRowStart" | "gridRowEnd" | "gridColumnStart" | "gridColumnEnd" ? GridPlacement :
     K extends "gridTemplateRows" | "gridTemplateColumns" ? GridTemplateComponent[] :
     K extends "gridAutoRows" | "gridAutoColumns" ? TrackSizingFunction[] :
     K extends "gridTemplateAreas" ? GridTemplateArea[] :
@@ -665,7 +668,7 @@ declare module "./taffy_wasm" {
   interface Style {
     /**
      * Reads multiple style properties in a single WASM call.
-     * Supports dot notation for nested properties.
+     * Supports both object properties and individual flat properties.
      *
      * @returns Single value for one key, tuple for 2-3 keys, array for 4+ keys
      *
@@ -682,20 +685,20 @@ declare module "./taffy_wasm" {
      * // Single property - returns exact type (includes undefined for optional properties)
      * const display = style.get("display"); // Display | undefined
      *
-     * // Nested property - returns exact type
-     * const width = style.get("size.width"); // Dimension
+     * // Individual flat property - returns exact type
+     * const width = style.get("width"); // Dimension
      *
      * // Optional properties return undefined when not set
      * const alignItems = style.get("alignItems"); // AlignItems | undefined
      *
      * // Two properties - returns tuple for destructuring
-     * const [d, w] = style.get("display", "size.width"); // [Display | undefined, Dimension]
+     * const [d, w] = style.get("display", "width"); // [Display | undefined, Dimension]
      *
      * // Three properties - returns tuple for destructuring
-     * const [d2, w2, f] = style.get("display", "size.width", "flexGrow");
+     * const [d2, w2, f] = style.get("display", "width", "flexGrow");
      *
      * // Four or more properties - returns array
-     * const values = style.get("display", "size.width", "flexGrow", "flexShrink");
+     * const values = style.get("display", "width", "flexGrow", "flexShrink");
      * // values type is: (Display | Dimension | number | undefined)[]
      * ```
      */
@@ -710,7 +713,7 @@ declare module "./taffy_wasm" {
 
     /**
      * Sets multiple style properties in a single WASM call.
-     * Supports dot notation for nested properties.
+     * Supports both object properties and individual flat properties.
      *
      * @param props - Object mapping property paths to their values
      *
@@ -723,9 +726,9 @@ declare module "./taffy_wasm" {
      * const style = new Style();
      * style.set({
      *   display: Display.Flex,
-     *   "size.width": 200,
-     *   "margin.left": 10,
-     *   "margin.right": "auto"
+     *   width: 200,
+     *   marginLeft: 10,
+     *   marginRight: "auto"
      * });
      * ```
      */

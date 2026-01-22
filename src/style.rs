@@ -549,6 +549,50 @@ impl JsStyle {
         }
     }
 
+    /// Gets the horizontal overflow behavior
+    ///
+    /// @returns - The current [`Overflow`](JsOverflow) value for the x-axis
+    #[wasm_bindgen(getter, js_name = overflowX)]
+    pub fn overflow_x(&self) -> JsOverflow {
+        self.inner.overflow.x.into()
+    }
+
+    /// Sets the horizontal overflow behavior
+    ///
+    /// @param val - The new overflow value for the x-axis
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.overflowX = Overflow.Hidden;
+    /// ```
+    #[wasm_bindgen(setter, js_name = overflowX)]
+    pub fn set_overflow_x(&mut self, val: JsOverflow) {
+        self.inner.overflow.x = val.into();
+    }
+
+    /// Gets the vertical overflow behavior
+    ///
+    /// @returns - The current [`Overflow`](JsOverflow) value for the y-axis
+    #[wasm_bindgen(getter, js_name = overflowY)]
+    pub fn overflow_y(&self) -> JsOverflow {
+        self.inner.overflow.y.into()
+    }
+
+    /// Sets the vertical overflow behavior
+    ///
+    /// @param val - The new overflow value for the y-axis
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.overflowY = Overflow.Scroll;
+    /// ```
+    #[wasm_bindgen(setter, js_name = overflowY)]
+    pub fn set_overflow_y(&mut self, val: JsOverflow) {
+        self.inner.overflow.y = val.into();
+    }
+
     /// Gets the box sizing mode
     ///
     /// Determines whether padding and border are included in dimensions.
@@ -703,6 +747,170 @@ impl JsStyle {
         }
     }
 
+    /// Gets the width
+    ///
+    /// @returns - The current width as a [`Dimension`](JsDimension)
+    #[wasm_bindgen(getter)]
+    pub fn width(&self) -> JsDimension {
+        let d: DimensionDto = self.inner.size.width.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the width
+    ///
+    /// @param val - The new width value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.width = 200;
+    /// style.width = "50%";
+    /// style.width = "auto";
+    /// ```
+    #[wasm_bindgen(setter)]
+    pub fn set_width(&mut self, val: JsDimension) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(val) {
+            self.inner.size.width = d.into();
+        }
+    }
+
+    /// Gets the height
+    ///
+    /// @returns - The current height as a [`Dimension`](JsDimension)
+    #[wasm_bindgen(getter)]
+    pub fn height(&self) -> JsDimension {
+        let d: DimensionDto = self.inner.size.height.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the height
+    ///
+    /// @param val - The new height value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.height = 100;
+    /// style.height = "75%";
+    /// style.height = "auto";
+    /// ```
+    #[wasm_bindgen(setter)]
+    pub fn set_height(&mut self, val: JsDimension) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(val) {
+            self.inner.size.height = d.into();
+        }
+    }
+
+    /// Gets the minimum width
+    ///
+    /// @returns - The current minimum width as a [`Dimension`](JsDimension)
+    #[wasm_bindgen(getter, js_name = minWidth)]
+    pub fn min_width(&self) -> JsDimension {
+        let d: DimensionDto = self.inner.min_size.width.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the minimum width
+    ///
+    /// @param val - The new minimum width value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.minWidth = 100;
+    /// style.minWidth = "auto";
+    /// ```
+    #[wasm_bindgen(setter, js_name = minWidth)]
+    pub fn set_min_width(&mut self, val: JsDimension) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(val) {
+            self.inner.min_size.width = d.into();
+        }
+    }
+
+    /// Gets the minimum height
+    ///
+    /// @returns - The current minimum height as a [`Dimension`](JsDimension)
+    #[wasm_bindgen(getter, js_name = minHeight)]
+    pub fn min_height(&self) -> JsDimension {
+        let d: DimensionDto = self.inner.min_size.height.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the minimum height
+    ///
+    /// @param val - The new minimum height value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.minHeight = 50;
+    /// style.minHeight = "auto";
+    /// ```
+    #[wasm_bindgen(setter, js_name = minHeight)]
+    pub fn set_min_height(&mut self, val: JsDimension) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(val) {
+            self.inner.min_size.height = d.into();
+        }
+    }
+
+    /// Gets the maximum width
+    ///
+    /// @returns - The current maximum width as a [`Dimension`](JsDimension)
+    #[wasm_bindgen(getter, js_name = maxWidth)]
+    pub fn max_width(&self) -> JsDimension {
+        let d: DimensionDto = self.inner.max_size.width.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the maximum width
+    ///
+    /// @param val - The new maximum width value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.maxWidth = 500;
+    /// style.maxWidth = "auto";
+    /// ```
+    #[wasm_bindgen(setter, js_name = maxWidth)]
+    pub fn set_max_width(&mut self, val: JsDimension) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(val) {
+            self.inner.max_size.width = d.into();
+        }
+    }
+
+    /// Gets the maximum height
+    ///
+    /// @returns - The current maximum height as a [`Dimension`](JsDimension)
+    #[wasm_bindgen(getter, js_name = maxHeight)]
+    pub fn max_height(&self) -> JsDimension {
+        let d: DimensionDto = self.inner.max_size.height.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the maximum height
+    ///
+    /// @param val - The new maximum height value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.maxHeight = 300;
+    /// style.maxHeight = "auto";
+    /// ```
+    #[wasm_bindgen(setter, js_name = maxHeight)]
+    pub fn set_max_height(&mut self, val: JsDimension) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(val) {
+            self.inner.max_size.height = d.into();
+        }
+    }
+
     // =========================================================================
     // Spacing Properties
     // =========================================================================
@@ -740,6 +948,118 @@ impl JsStyle {
         }
     }
 
+    /// Gets the left margin
+    ///
+    /// @returns - The current left margin as a [`LengthPercentageAuto`](JsLengthPercentageAuto)
+    #[wasm_bindgen(getter, js_name = marginLeft)]
+    pub fn margin_left(&self) -> JsValue {
+        let d: LengthPercentageAutoDto = self.inner.margin.left.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the left margin
+    ///
+    /// @param val - The new left margin value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.marginLeft = 10;
+    /// style.marginLeft = "5%";
+    /// style.marginLeft = "auto";
+    /// ```
+    #[wasm_bindgen(setter, js_name = marginLeft)]
+    pub fn set_margin_left(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(val) {
+            self.inner.margin.left = d.into();
+        }
+    }
+
+    /// Gets the right margin
+    ///
+    /// @returns - The current right margin as a [`LengthPercentageAuto`](JsLengthPercentageAuto)
+    #[wasm_bindgen(getter, js_name = marginRight)]
+    pub fn margin_right(&self) -> JsValue {
+        let d: LengthPercentageAutoDto = self.inner.margin.right.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the right margin
+    ///
+    /// @param val - The new right margin value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.marginRight = 10;
+    /// style.marginRight = "5%";
+    /// style.marginRight = "auto";
+    /// ```
+    #[wasm_bindgen(setter, js_name = marginRight)]
+    pub fn set_margin_right(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(val) {
+            self.inner.margin.right = d.into();
+        }
+    }
+
+    /// Gets the top margin
+    ///
+    /// @returns - The current top margin as a [`LengthPercentageAuto`](JsLengthPercentageAuto)
+    #[wasm_bindgen(getter, js_name = marginTop)]
+    pub fn margin_top(&self) -> JsValue {
+        let d: LengthPercentageAutoDto = self.inner.margin.top.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the top margin
+    ///
+    /// @param val - The new top margin value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.marginTop = 5;
+    /// style.marginTop = "10%";
+    /// style.marginTop = "auto";
+    /// ```
+    #[wasm_bindgen(setter, js_name = marginTop)]
+    pub fn set_margin_top(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(val) {
+            self.inner.margin.top = d.into();
+        }
+    }
+
+    /// Gets the bottom margin
+    ///
+    /// @returns - The current bottom margin as a [`LengthPercentageAuto`](JsLengthPercentageAuto)
+    #[wasm_bindgen(getter, js_name = marginBottom)]
+    pub fn margin_bottom(&self) -> JsValue {
+        let d: LengthPercentageAutoDto = self.inner.margin.bottom.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the bottom margin
+    ///
+    /// @param val - The new bottom margin value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.marginBottom = 5;
+    /// style.marginBottom = "10%";
+    /// style.marginBottom = "auto";
+    /// ```
+    #[wasm_bindgen(setter, js_name = marginBottom)]
+    pub fn set_margin_bottom(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(val) {
+            self.inner.margin.bottom = d.into();
+        }
+    }
+
     /// Gets the padding
     ///
     /// Inner spacing between the element's border and content.
@@ -770,6 +1090,114 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         if let Ok(p) = serde_wasm_bindgen::from_value::<RectDto<LengthPercentageDto>>(val) {
             self.inner.padding = p.into();
+        }
+    }
+
+    /// Gets the left padding
+    ///
+    /// @returns - The current left padding as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = paddingLeft)]
+    pub fn padding_left(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.padding.left.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the left padding
+    ///
+    /// @param val - The new left padding value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.paddingLeft = 20;
+    /// style.paddingLeft = "10%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = paddingLeft)]
+    pub fn set_padding_left(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.padding.left = d.into();
+        }
+    }
+
+    /// Gets the right padding
+    ///
+    /// @returns - The current right padding as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = paddingRight)]
+    pub fn padding_right(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.padding.right.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the right padding
+    ///
+    /// @param val - The new right padding value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.paddingRight = 20;
+    /// style.paddingRight = "10%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = paddingRight)]
+    pub fn set_padding_right(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.padding.right = d.into();
+        }
+    }
+
+    /// Gets the top padding
+    ///
+    /// @returns - The current top padding as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = paddingTop)]
+    pub fn padding_top(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.padding.top.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the top padding
+    ///
+    /// @param val - The new top padding value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.paddingTop = 10;
+    /// style.paddingTop = "5%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = paddingTop)]
+    pub fn set_padding_top(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.padding.top = d.into();
+        }
+    }
+
+    /// Gets the bottom padding
+    ///
+    /// @returns - The current bottom padding as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = paddingBottom)]
+    pub fn padding_bottom(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.padding.bottom.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the bottom padding
+    ///
+    /// @param val - The new bottom padding value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.paddingBottom = 10;
+    /// style.paddingBottom = "5%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = paddingBottom)]
+    pub fn set_padding_bottom(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.padding.bottom = d.into();
         }
     }
 
@@ -806,6 +1234,114 @@ impl JsStyle {
         }
     }
 
+    /// Gets the left border width
+    ///
+    /// @returns - The current left border width as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = borderLeft)]
+    pub fn border_left(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.border.left.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the left border width
+    ///
+    /// @param val - The new left border width value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.borderLeft = 1;
+    /// style.borderLeft = "2%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = borderLeft)]
+    pub fn set_border_left(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.border.left = d.into();
+        }
+    }
+
+    /// Gets the right border width
+    ///
+    /// @returns - The current right border width as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = borderRight)]
+    pub fn border_right(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.border.right.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the right border width
+    ///
+    /// @param val - The new right border width value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.borderRight = 1;
+    /// style.borderRight = "2%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = borderRight)]
+    pub fn set_border_right(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.border.right = d.into();
+        }
+    }
+
+    /// Gets the top border width
+    ///
+    /// @returns - The current top border width as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = borderTop)]
+    pub fn border_top(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.border.top.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the top border width
+    ///
+    /// @param val - The new top border width value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.borderTop = 1;
+    /// style.borderTop = "2%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = borderTop)]
+    pub fn set_border_top(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.border.top = d.into();
+        }
+    }
+
+    /// Gets the bottom border width
+    ///
+    /// @returns - The current bottom border width as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = borderBottom)]
+    pub fn border_bottom(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.border.bottom.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the bottom border width
+    ///
+    /// @param val - The new bottom border width value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.borderBottom = 1;
+    /// style.borderBottom = "2%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = borderBottom)]
+    pub fn set_border_bottom(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.border.bottom = d.into();
+        }
+    }
+
     /// Gets the gap
     ///
     /// Spacing between flex/grid items.
@@ -834,6 +1370,60 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         if let Ok(g) = serde_wasm_bindgen::from_value::<SizeDto<LengthPercentageDto>>(val) {
             self.inner.gap = g.into();
+        }
+    }
+
+    /// Gets the column gap (horizontal spacing between items)
+    ///
+    /// @returns - The current column gap as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = columnGap)]
+    pub fn column_gap(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.gap.width.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the column gap (horizontal spacing between items)
+    ///
+    /// @param val - The new column gap value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.columnGap = 10;
+    /// style.columnGap = "5%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = columnGap)]
+    pub fn set_column_gap(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.gap.width = d.into();
+        }
+    }
+
+    /// Gets the row gap (vertical spacing between items)
+    ///
+    /// @returns - The current row gap as a [`LengthPercentage`](JsLengthPercentage)
+    #[wasm_bindgen(getter, js_name = rowGap)]
+    pub fn row_gap(&self) -> JsValue {
+        let d: LengthPercentageDto = self.inner.gap.height.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the row gap (vertical spacing between items)
+    ///
+    /// @param val - The new row gap value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.rowGap = 10;
+    /// style.rowGap = "5%";
+    /// ```
+    #[wasm_bindgen(setter, js_name = rowGap)]
+    pub fn set_row_gap(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(val) {
+            self.inner.gap.height = d.into();
         }
     }
 
@@ -868,6 +1458,122 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         if let Ok(i) = serde_wasm_bindgen::from_value::<RectDto<LengthPercentageAutoDto>>(val) {
             self.inner.inset = i.into();
+        }
+    }
+
+    /// Gets the left inset offset
+    ///
+    /// @returns - The current left offset as a [`LengthPercentageAuto`](JsLengthPercentageAuto)
+    #[wasm_bindgen(getter)]
+    pub fn left(&self) -> JsValue {
+        let d: LengthPercentageAutoDto = self.inner.inset.left.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the left inset offset
+    ///
+    /// @param val - The new left offset value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.position = Position.Absolute;
+    /// style.left = 0;
+    /// style.left = "10%";
+    /// style.left = "auto";
+    /// ```
+    #[wasm_bindgen(setter)]
+    pub fn set_left(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(val) {
+            self.inner.inset.left = d.into();
+        }
+    }
+
+    /// Gets the right inset offset
+    ///
+    /// @returns - The current right offset as a [`LengthPercentageAuto`](JsLengthPercentageAuto)
+    #[wasm_bindgen(getter)]
+    pub fn right(&self) -> JsValue {
+        let d: LengthPercentageAutoDto = self.inner.inset.right.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the right inset offset
+    ///
+    /// @param val - The new right offset value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.position = Position.Absolute;
+    /// style.right = 0;
+    /// style.right = "10%";
+    /// style.right = "auto";
+    /// ```
+    #[wasm_bindgen(setter)]
+    pub fn set_right(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(val) {
+            self.inner.inset.right = d.into();
+        }
+    }
+
+    /// Gets the top inset offset
+    ///
+    /// @returns - The current top offset as a [`LengthPercentageAuto`](JsLengthPercentageAuto)
+    #[wasm_bindgen(getter)]
+    pub fn top(&self) -> JsValue {
+        let d: LengthPercentageAutoDto = self.inner.inset.top.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the top inset offset
+    ///
+    /// @param val - The new top offset value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.position = Position.Absolute;
+    /// style.top = 0;
+    /// style.top = "10%";
+    /// style.top = "auto";
+    /// ```
+    #[wasm_bindgen(setter)]
+    pub fn set_top(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(val) {
+            self.inner.inset.top = d.into();
+        }
+    }
+
+    /// Gets the bottom inset offset
+    ///
+    /// @returns - The current bottom offset as a [`LengthPercentageAuto`](JsLengthPercentageAuto)
+    #[wasm_bindgen(getter)]
+    pub fn bottom(&self) -> JsValue {
+        let d: LengthPercentageAutoDto = self.inner.inset.bottom.into();
+        serialize(&d).unchecked_into()
+    }
+
+    /// Sets the bottom inset offset
+    ///
+    /// @param val - The new bottom offset value
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.position = Position.Absolute;
+    /// style.bottom = 0;
+    /// style.bottom = "10%";
+    /// style.bottom = "auto";
+    /// ```
+    #[wasm_bindgen(setter)]
+    pub fn set_bottom(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(val) {
+            self.inner.inset.bottom = d.into();
         }
     }
 
@@ -1137,6 +1843,122 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         if let Ok(dto) = serde_wasm_bindgen::from_value::<LineGridPlacementDto>(val) {
             self.inner.grid_column = dto.into();
+        }
+    }
+
+    /// Gets the grid-row-start property
+    ///
+    /// @returns - The current grid row start placement as a [`GridPlacement`](JsGridPlacement)
+    #[wasm_bindgen(getter, js_name = gridRowStart)]
+    pub fn grid_row_start(&self) -> JsValue {
+        let dto: GridPlacementDto = self.inner.grid_row.start.clone().into();
+        serialize(&dto).unchecked_into()
+    }
+
+    /// Sets the grid-row-start property
+    ///
+    /// @param val - The new grid row start placement
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.display = Display.Grid;
+    /// style.gridRowStart = 1;
+    /// style.gridRowStart = "auto";
+    /// style.gridRowStart = { span: 2 };
+    /// ```
+    #[wasm_bindgen(setter, js_name = gridRowStart)]
+    pub fn set_grid_row_start(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(val) {
+            self.inner.grid_row.start = dto.into();
+        }
+    }
+
+    /// Gets the grid-row-end property
+    ///
+    /// @returns - The current grid row end placement as a [`GridPlacement`](JsGridPlacement)
+    #[wasm_bindgen(getter, js_name = gridRowEnd)]
+    pub fn grid_row_end(&self) -> JsValue {
+        let dto: GridPlacementDto = self.inner.grid_row.end.clone().into();
+        serialize(&dto).unchecked_into()
+    }
+
+    /// Sets the grid-row-end property
+    ///
+    /// @param val - The new grid row end placement
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.display = Display.Grid;
+    /// style.gridRowEnd = 3;
+    /// style.gridRowEnd = "auto";
+    /// style.gridRowEnd = { span: 2 };
+    /// ```
+    #[wasm_bindgen(setter, js_name = gridRowEnd)]
+    pub fn set_grid_row_end(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(val) {
+            self.inner.grid_row.end = dto.into();
+        }
+    }
+
+    /// Gets the grid-column-start property
+    ///
+    /// @returns - The current grid column start placement as a [`GridPlacement`](JsGridPlacement)
+    #[wasm_bindgen(getter, js_name = gridColumnStart)]
+    pub fn grid_column_start(&self) -> JsValue {
+        let dto: GridPlacementDto = self.inner.grid_column.start.clone().into();
+        serialize(&dto).unchecked_into()
+    }
+
+    /// Sets the grid-column-start property
+    ///
+    /// @param val - The new grid column start placement
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.display = Display.Grid;
+    /// style.gridColumnStart = 1;
+    /// style.gridColumnStart = "auto";
+    /// style.gridColumnStart = { span: 2 };
+    /// ```
+    #[wasm_bindgen(setter, js_name = gridColumnStart)]
+    pub fn set_grid_column_start(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(val) {
+            self.inner.grid_column.start = dto.into();
+        }
+    }
+
+    /// Gets the grid-column-end property
+    ///
+    /// @returns - The current grid column end placement as a [`GridPlacement`](JsGridPlacement)
+    #[wasm_bindgen(getter, js_name = gridColumnEnd)]
+    pub fn grid_column_end(&self) -> JsValue {
+        let dto: GridPlacementDto = self.inner.grid_column.end.clone().into();
+        serialize(&dto).unchecked_into()
+    }
+
+    /// Sets the grid-column-end property
+    ///
+    /// @param val - The new grid column end placement
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.display = Display.Grid;
+    /// style.gridColumnEnd = 4;
+    /// style.gridColumnEnd = "auto";
+    /// style.gridColumnEnd = { span: 3 };
+    /// ```
+    #[wasm_bindgen(setter, js_name = gridColumnEnd)]
+    pub fn set_grid_column_end(&mut self, val: JsValue) {
+        let val: JsValue = val.unchecked_into();
+        if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(val) {
+            self.inner.grid_column.end = dto.into();
         }
     }
 
@@ -1422,10 +2244,7 @@ impl JsStyle {
             return JsValue::UNDEFINED;
         }
 
-        let results: Vec<JsValue> = keys
-            .iter()
-            .map(|key| self.get_property_by_path(key))
-            .collect();
+        let results: Vec<JsValue> = keys.iter().map(|key| self.get_property(key)).collect();
 
         if results.len() == 1 {
             results.into_iter().next().unwrap()
@@ -1435,120 +2254,119 @@ impl JsStyle {
     }
 
     /// Internal helper to get a property value by its path
-    fn get_property_by_path(&self, path: &str) -> JsValue {
-        let parts: Vec<&str> = path.split('.').collect();
-        match parts.as_slice() {
+    fn get_property(&self, path: &str) -> JsValue {
+        match path {
             // Layout Mode
-            ["display"] => JsValue::from(self.inner.display as u8),
-            ["position"] => JsValue::from(self.inner.position as u8),
-            ["boxSizing"] => JsValue::from(self.inner.box_sizing as u8),
+            "display" => JsValue::from(self.inner.display as u8),
+            "position" => JsValue::from(self.inner.position as u8),
+            "boxSizing" => JsValue::from(self.inner.box_sizing as u8),
 
             // Overflow
-            ["overflow"] => {
+            "overflow" => {
                 let s = PointOverflowDto {
                     x: self.inner.overflow.x as u8,
                     y: self.inner.overflow.y as u8,
                 };
                 serialize(&s)
             }
-            ["overflow", "x"] => JsValue::from(self.inner.overflow.x as u8),
-            ["overflow", "y"] => JsValue::from(self.inner.overflow.y as u8),
+            "overflowX" => JsValue::from(self.inner.overflow.x as u8),
+            "overflowY" => JsValue::from(self.inner.overflow.y as u8),
 
             // Flexbox
-            ["flexDirection"] => JsValue::from(self.inner.flex_direction as u8),
-            ["flexWrap"] => JsValue::from(self.inner.flex_wrap as u8),
-            ["flexGrow"] => JsValue::from(self.inner.flex_grow),
-            ["flexShrink"] => JsValue::from(self.inner.flex_shrink),
-            ["flexBasis"] => {
+            "flexDirection" => JsValue::from(self.inner.flex_direction as u8),
+            "flexWrap" => JsValue::from(self.inner.flex_wrap as u8),
+            "flexGrow" => JsValue::from(self.inner.flex_grow),
+            "flexShrink" => JsValue::from(self.inner.flex_shrink),
+            "flexBasis" => {
                 let d: DimensionDto = self.inner.flex_basis.into();
                 serialize(&d)
             }
 
             // Alignment
-            ["alignItems"] => match self.inner.align_items {
+            "alignItems" => match self.inner.align_items {
                 Some(v) => JsValue::from(v as u8),
                 None => JsValue::UNDEFINED,
             },
-            ["alignSelf"] => match self.inner.align_self {
+            "alignSelf" => match self.inner.align_self {
                 Some(v) => JsValue::from(v as u8),
                 None => JsValue::UNDEFINED,
             },
-            ["alignContent"] => match self.inner.align_content {
+            "alignContent" => match self.inner.align_content {
                 Some(v) => JsValue::from(v as u8),
                 None => JsValue::UNDEFINED,
             },
-            ["justifyContent"] => match self.inner.justify_content {
+            "justifyContent" => match self.inner.justify_content {
                 Some(v) => JsValue::from(v as u8),
                 None => JsValue::UNDEFINED,
             },
-            ["justifyItems"] => match self.inner.justify_items {
+            "justifyItems" => match self.inner.justify_items {
                 Some(v) => JsValue::from(v as u8),
                 None => JsValue::UNDEFINED,
             },
-            ["justifySelf"] => match self.inner.justify_self {
+            "justifySelf" => match self.inner.justify_self {
                 Some(v) => JsValue::from(v as u8),
                 None => JsValue::UNDEFINED,
             },
 
             // Sizing - aspectRatio
-            ["aspectRatio"] => match self.inner.aspect_ratio {
+            "aspectRatio" => match self.inner.aspect_ratio {
                 Some(v) => JsValue::from(v),
                 None => JsValue::UNDEFINED,
             },
 
             // Sizing - size
-            ["size"] => {
+            "size" => {
                 let s: SizeDto<DimensionDto> = SizeDto {
                     width: self.inner.size.width.into(),
                     height: self.inner.size.height.into(),
                 };
                 serialize(&s)
             }
-            ["size", "width"] => {
+            "width" => {
                 let d: DimensionDto = self.inner.size.width.into();
                 serialize(&d)
             }
-            ["size", "height"] => {
+            "height" => {
                 let d: DimensionDto = self.inner.size.height.into();
                 serialize(&d)
             }
 
             // Sizing - minSize
-            ["minSize"] => {
+            "minSize" => {
                 let s: SizeDto<DimensionDto> = SizeDto {
                     width: self.inner.min_size.width.into(),
                     height: self.inner.min_size.height.into(),
                 };
                 serialize(&s)
             }
-            ["minSize", "width"] => {
+            "minWidth" => {
                 let d: DimensionDto = self.inner.min_size.width.into();
                 serialize(&d)
             }
-            ["minSize", "height"] => {
+            "minHeight" => {
                 let d: DimensionDto = self.inner.min_size.height.into();
                 serialize(&d)
             }
 
             // Sizing - maxSize
-            ["maxSize"] => {
+            "maxSize" => {
                 let s: SizeDto<DimensionDto> = SizeDto {
                     width: self.inner.max_size.width.into(),
                     height: self.inner.max_size.height.into(),
                 };
                 serialize(&s)
             }
-            ["maxSize", "width"] => {
+            "maxWidth" => {
                 let d: DimensionDto = self.inner.max_size.width.into();
                 serialize(&d)
             }
-            ["maxSize", "height"] => {
+            "maxHeight" => {
                 let d: DimensionDto = self.inner.max_size.height.into();
                 serialize(&d)
             }
 
             // Spacing - margin
-            ["margin"] => {
+            "margin" => {
                 let r: RectDto<LengthPercentageAutoDto> = RectDto {
                     left: self.inner.margin.left.into(),
                     right: self.inner.margin.right.into(),
@@ -1557,25 +2375,25 @@ impl JsStyle {
                 };
                 serialize(&r)
             }
-            ["margin", "left"] => {
+            "marginLeft" => {
                 let d: LengthPercentageAutoDto = self.inner.margin.left.into();
                 serialize(&d)
             }
-            ["margin", "right"] => {
+            "marginRight" => {
                 let d: LengthPercentageAutoDto = self.inner.margin.right.into();
                 serialize(&d)
             }
-            ["margin", "top"] => {
+            "marginTop" => {
                 let d: LengthPercentageAutoDto = self.inner.margin.top.into();
                 serialize(&d)
             }
-            ["margin", "bottom"] => {
+            "marginBottom" => {
                 let d: LengthPercentageAutoDto = self.inner.margin.bottom.into();
                 serialize(&d)
             }
 
             // Spacing - padding
-            ["padding"] => {
+            "padding" => {
                 let r: RectDto<LengthPercentageDto> = RectDto {
                     left: self.inner.padding.left.into(),
                     right: self.inner.padding.right.into(),
@@ -1584,25 +2402,25 @@ impl JsStyle {
                 };
                 serialize(&r)
             }
-            ["padding", "left"] => {
+            "paddingLeft" => {
                 let d: LengthPercentageDto = self.inner.padding.left.into();
                 serialize(&d)
             }
-            ["padding", "right"] => {
+            "paddingRight" => {
                 let d: LengthPercentageDto = self.inner.padding.right.into();
                 serialize(&d)
             }
-            ["padding", "top"] => {
+            "paddingTop" => {
                 let d: LengthPercentageDto = self.inner.padding.top.into();
                 serialize(&d)
             }
-            ["padding", "bottom"] => {
+            "paddingBottom" => {
                 let d: LengthPercentageDto = self.inner.padding.bottom.into();
                 serialize(&d)
             }
 
             // Spacing - border
-            ["border"] => {
+            "border" => {
                 let r: RectDto<LengthPercentageDto> = RectDto {
                     left: self.inner.border.left.into(),
                     right: self.inner.border.right.into(),
@@ -1611,25 +2429,25 @@ impl JsStyle {
                 };
                 serialize(&r)
             }
-            ["border", "left"] => {
+            "borderLeft" => {
                 let d: LengthPercentageDto = self.inner.border.left.into();
                 serialize(&d)
             }
-            ["border", "right"] => {
+            "borderRight" => {
                 let d: LengthPercentageDto = self.inner.border.right.into();
                 serialize(&d)
             }
-            ["border", "top"] => {
+            "borderTop" => {
                 let d: LengthPercentageDto = self.inner.border.top.into();
                 serialize(&d)
             }
-            ["border", "bottom"] => {
+            "borderBottom" => {
                 let d: LengthPercentageDto = self.inner.border.bottom.into();
                 serialize(&d)
             }
 
             // Spacing - inset
-            ["inset"] => {
+            "inset" => {
                 let r: RectDto<LengthPercentageAutoDto> = RectDto {
                     left: self.inner.inset.left.into(),
                     right: self.inner.inset.right.into(),
@@ -1638,76 +2456,76 @@ impl JsStyle {
                 };
                 serialize(&r)
             }
-            ["inset", "left"] => {
+            "left" => {
                 let d: LengthPercentageAutoDto = self.inner.inset.left.into();
                 serialize(&d)
             }
-            ["inset", "right"] => {
+            "right" => {
                 let d: LengthPercentageAutoDto = self.inner.inset.right.into();
                 serialize(&d)
             }
-            ["inset", "top"] => {
+            "top" => {
                 let d: LengthPercentageAutoDto = self.inner.inset.top.into();
                 serialize(&d)
             }
-            ["inset", "bottom"] => {
+            "bottom" => {
                 let d: LengthPercentageAutoDto = self.inner.inset.bottom.into();
                 serialize(&d)
             }
 
             // Spacing - gap
-            ["gap"] => {
+            "gap" => {
                 let s: SizeDto<LengthPercentageDto> = SizeDto {
                     width: self.inner.gap.width.into(),
                     height: self.inner.gap.height.into(),
                 };
                 serialize(&s)
             }
-            ["gap", "width"] => {
+            "columnGap" => {
                 let d: LengthPercentageDto = self.inner.gap.width.into();
                 serialize(&d)
             }
-            ["gap", "height"] => {
+            "rowGap" => {
                 let d: LengthPercentageDto = self.inner.gap.height.into();
                 serialize(&d)
             }
 
             // Block layout
-            ["itemIsTable"] => JsValue::from(self.inner.item_is_table),
-            ["itemIsReplaced"] => JsValue::from(self.inner.item_is_replaced),
-            ["scrollbarWidth"] => JsValue::from(self.inner.scrollbar_width),
-            ["textAlign"] => JsValue::from(self.inner.text_align as u8),
+            "itemIsTable" => JsValue::from(self.inner.item_is_table),
+            "itemIsReplaced" => JsValue::from(self.inner.item_is_replaced),
+            "scrollbarWidth" => JsValue::from(self.inner.scrollbar_width),
+            "textAlign" => JsValue::from(self.inner.text_align as u8),
 
             // Grid layout
-            ["gridAutoFlow"] => JsValue::from(self.inner.grid_auto_flow as u8),
+            "gridAutoFlow" => JsValue::from(self.inner.grid_auto_flow as u8),
 
-            ["gridRow"] => {
+            "gridRow" => {
                 let dto: LineGridPlacementDto = self.inner.grid_row.clone().into();
                 serialize(&dto)
             }
-            ["gridRow", "start"] => {
+            "gridRowStart" => {
                 let dto: GridPlacementDto = self.inner.grid_row.start.clone().into();
                 serialize(&dto)
             }
-            ["gridRow", "end"] => {
+            "gridRowEnd" => {
                 let dto: GridPlacementDto = self.inner.grid_row.end.clone().into();
                 serialize(&dto)
             }
 
-            ["gridColumn"] => {
+            "gridColumn" => {
                 let dto: LineGridPlacementDto = self.inner.grid_column.clone().into();
                 serialize(&dto)
             }
-            ["gridColumn", "start"] => {
+            "gridColumnStart" => {
                 let dto: GridPlacementDto = self.inner.grid_column.start.clone().into();
                 serialize(&dto)
             }
-            ["gridColumn", "end"] => {
+            "gridColumnEnd" => {
                 let dto: GridPlacementDto = self.inner.grid_column.end.clone().into();
                 serialize(&dto)
             }
 
-            ["gridTemplateRows"] => {
+            "gridTemplateRows" => {
                 let tracks: Vec<GridTemplateComponentDto> = self
                     .inner
                     .grid_template_rows
@@ -1718,7 +2536,7 @@ impl JsStyle {
                 serialize(&tracks)
             }
 
-            ["gridTemplateColumns"] => {
+            "gridTemplateColumns" => {
                 let tracks: Vec<GridTemplateComponentDto> = self
                     .inner
                     .grid_template_columns
@@ -1729,7 +2547,7 @@ impl JsStyle {
                 serialize(&tracks)
             }
 
-            ["gridAutoRows"] => {
+            "gridAutoRows" => {
                 let tracks: Vec<TrackSizingFunctionDto> = self
                     .inner
                     .grid_auto_rows
@@ -1740,7 +2558,7 @@ impl JsStyle {
                 serialize(&tracks)
             }
 
-            ["gridAutoColumns"] => {
+            "gridAutoColumns" => {
                 let tracks: Vec<TrackSizingFunctionDto> = self
                     .inner
                     .grid_auto_columns
@@ -1751,7 +2569,7 @@ impl JsStyle {
                 serialize(&tracks)
             }
 
-            ["gridTemplateAreas"] => {
+            "gridTemplateAreas" => {
                 let areas: Vec<crate::types::GridTemplateAreaDto> = self
                     .inner
                     .grid_template_areas
@@ -1762,7 +2580,7 @@ impl JsStyle {
                 serialize(&areas)
             }
 
-            ["gridTemplateRowNames"] => {
+            "gridTemplateRowNames" => {
                 let names: Vec<Vec<String>> = self
                     .inner
                     .grid_template_row_names
@@ -1776,7 +2594,7 @@ impl JsStyle {
                 serialize(&names)
             }
 
-            ["gridTemplateColumnNames"] => {
+            "gridTemplateColumnNames" => {
                 let names: Vec<Vec<String>> = self
                     .inner
                     .grid_template_column_names
@@ -1840,30 +2658,29 @@ impl JsStyle {
                 let key = arr.get(0);
                 let value = arr.get(1);
                 if let Some(key_str) = key.as_string() {
-                    self.set_property_by_path(&key_str, value);
+                    self.set_property(&key_str, value);
                 }
             }
         }
     }
 
     /// Internal helper to set a property value by its path
-    fn set_property_by_path(&mut self, path: &str, value: JsValue) {
-        let parts: Vec<&str> = path.split('.').collect();
-        match parts.as_slice() {
+    fn set_property(&mut self, path: &str, value: JsValue) {
+        match path {
             // Layout Mode
-            ["display"] => {
+            "display" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.display =
                         unsafe { std::mem::transmute::<u8, JsDisplay>(n as u8) }.into();
                 }
             }
-            ["position"] => {
+            "position" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.position =
                         unsafe { std::mem::transmute::<u8, JsPosition>(n as u8) }.into();
                 }
             }
-            ["boxSizing"] => {
+            "boxSizing" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.box_sizing =
                         unsafe { std::mem::transmute::<u8, JsBoxSizing>(n as u8) }.into();
@@ -1871,18 +2688,18 @@ impl JsStyle {
             }
 
             // Overflow
-            ["overflow"] => {
+            "overflow" => {
                 if let Ok(s) = serde_wasm_bindgen::from_value::<PointOverflowDto>(value) {
                     self.inner.overflow = s.into();
                 }
             }
-            ["overflow", "x"] => {
+            "overflowX" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.overflow.x =
                         unsafe { std::mem::transmute::<u8, JsOverflow>(n as u8) }.into();
                 }
             }
-            ["overflow", "y"] => {
+            "overflowY" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.overflow.y =
                         unsafe { std::mem::transmute::<u8, JsOverflow>(n as u8) }.into();
@@ -1890,36 +2707,36 @@ impl JsStyle {
             }
 
             // Flexbox
-            ["flexDirection"] => {
+            "flexDirection" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.flex_direction =
                         unsafe { std::mem::transmute::<u8, JsFlexDirection>(n as u8) }.into();
                 }
             }
-            ["flexWrap"] => {
+            "flexWrap" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.flex_wrap =
                         unsafe { std::mem::transmute::<u8, JsFlexWrap>(n as u8) }.into();
                 }
             }
-            ["flexGrow"] => {
+            "flexGrow" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.flex_grow = n as f32;
                 }
             }
-            ["flexShrink"] => {
+            "flexShrink" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.flex_shrink = n as f32;
                 }
             }
-            ["flexBasis"] => {
+            "flexBasis" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
                     self.inner.flex_basis = d.into();
                 }
             }
 
             // Alignment
-            ["alignItems"] => {
+            "alignItems" => {
                 if value.is_undefined() {
                     self.inner.align_items = None;
                 } else if let Some(n) = value.as_f64() {
@@ -1927,7 +2744,7 @@ impl JsStyle {
                         Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into());
                 }
             }
-            ["alignSelf"] => {
+            "alignSelf" => {
                 if value.is_undefined() {
                     self.inner.align_self = None;
                 } else if let Some(n) = value.as_f64() {
@@ -1938,7 +2755,7 @@ impl JsStyle {
                     };
                 }
             }
-            ["alignContent"] => {
+            "alignContent" => {
                 if value.is_undefined() {
                     self.inner.align_content = None;
                 } else if let Some(n) = value.as_f64() {
@@ -1946,7 +2763,7 @@ impl JsStyle {
                         Some(unsafe { std::mem::transmute::<u8, JsAlignContent>(n as u8) }.into());
                 }
             }
-            ["justifyContent"] => {
+            "justifyContent" => {
                 if value.is_undefined() {
                     self.inner.justify_content = None;
                 } else if let Some(n) = value.as_f64() {
@@ -1955,7 +2772,7 @@ impl JsStyle {
                     );
                 }
             }
-            ["justifyItems"] => {
+            "justifyItems" => {
                 if value.is_undefined() {
                     self.inner.justify_items = None;
                 } else if let Some(n) = value.as_f64() {
@@ -1963,7 +2780,7 @@ impl JsStyle {
                         Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into());
                 }
             }
-            ["justifySelf"] => {
+            "justifySelf" => {
                 if value.is_undefined() {
                     self.inner.justify_self = None;
                 } else if let Some(n) = value.as_f64() {
@@ -1976,7 +2793,7 @@ impl JsStyle {
             }
 
             // Sizing - aspectRatio
-            ["aspectRatio"] => {
+            "aspectRatio" => {
                 if value.is_undefined() || value.is_null() {
                     self.inner.aspect_ratio = None;
                 } else if let Some(n) = value.as_f64() {
@@ -1985,205 +2802,205 @@ impl JsStyle {
             }
 
             // Sizing - size
-            ["size"] => {
+            "size" => {
                 if let Ok(s) = serde_wasm_bindgen::from_value::<SizeDto<DimensionDto>>(value) {
                     self.inner.size = s.into();
                 }
             }
-            ["size", "width"] => {
+            "width" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
                     self.inner.size.width = d.into();
                 }
             }
-            ["size", "height"] => {
+            "height" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
                     self.inner.size.height = d.into();
                 }
             }
 
             // Sizing - minSize
-            ["minSize"] => {
+            "minSize" => {
                 if let Ok(s) = serde_wasm_bindgen::from_value::<SizeDto<DimensionDto>>(value) {
                     self.inner.min_size = s.into();
                 }
             }
-            ["minSize", "width"] => {
+            "minWidth" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
                     self.inner.min_size.width = d.into();
                 }
             }
-            ["minSize", "height"] => {
+            "minHeight" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
                     self.inner.min_size.height = d.into();
                 }
             }
 
             // Sizing - maxSize
-            ["maxSize"] => {
+            "maxSize" => {
                 if let Ok(s) = serde_wasm_bindgen::from_value::<SizeDto<DimensionDto>>(value) {
                     self.inner.max_size = s.into();
                 }
             }
-            ["maxSize", "width"] => {
+            "maxWidth" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
                     self.inner.max_size.width = d.into();
                 }
             }
-            ["maxSize", "height"] => {
+            "maxHeight" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
                     self.inner.max_size.height = d.into();
                 }
             }
 
             // Spacing - margin
-            ["margin"] => {
+            "margin" => {
                 if let Ok(r) =
                     serde_wasm_bindgen::from_value::<RectDto<LengthPercentageAutoDto>>(value)
                 {
                     self.inner.margin = r.into();
                 }
             }
-            ["margin", "left"] => {
+            "marginLeft" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
                     self.inner.margin.left = d.into();
                 }
             }
-            ["margin", "right"] => {
+            "marginRight" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
                     self.inner.margin.right = d.into();
                 }
             }
-            ["margin", "top"] => {
+            "marginTop" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
                     self.inner.margin.top = d.into();
                 }
             }
-            ["margin", "bottom"] => {
+            "marginBottom" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
                     self.inner.margin.bottom = d.into();
                 }
             }
 
             // Spacing - padding
-            ["padding"] => {
+            "padding" => {
                 if let Ok(r) = serde_wasm_bindgen::from_value::<RectDto<LengthPercentageDto>>(value)
                 {
                     self.inner.padding = r.into();
                 }
             }
-            ["padding", "left"] => {
+            "paddingLeft" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.padding.left = d.into();
                 }
             }
-            ["padding", "right"] => {
+            "paddingRight" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.padding.right = d.into();
                 }
             }
-            ["padding", "top"] => {
+            "paddingTop" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.padding.top = d.into();
                 }
             }
-            ["padding", "bottom"] => {
+            "paddingBottom" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.padding.bottom = d.into();
                 }
             }
 
             // Spacing - border
-            ["border"] => {
+            "border" => {
                 if let Ok(r) = serde_wasm_bindgen::from_value::<RectDto<LengthPercentageDto>>(value)
                 {
                     self.inner.border = r.into();
                 }
             }
-            ["border", "left"] => {
+            "borderLeft" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.border.left = d.into();
                 }
             }
-            ["border", "right"] => {
+            "borderRight" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.border.right = d.into();
                 }
             }
-            ["border", "top"] => {
+            "borderTop" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.border.top = d.into();
                 }
             }
-            ["border", "bottom"] => {
+            "borderBottom" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.border.bottom = d.into();
                 }
             }
 
             // Spacing - inset
-            ["inset"] => {
+            "inset" => {
                 if let Ok(r) =
                     serde_wasm_bindgen::from_value::<RectDto<LengthPercentageAutoDto>>(value)
                 {
                     self.inner.inset = r.into();
                 }
             }
-            ["inset", "left"] => {
+            "left" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
                     self.inner.inset.left = d.into();
                 }
             }
-            ["inset", "right"] => {
+            "right" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
                     self.inner.inset.right = d.into();
                 }
             }
-            ["inset", "top"] => {
+            "top" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
                     self.inner.inset.top = d.into();
                 }
             }
-            ["inset", "bottom"] => {
+            "bottom" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
                     self.inner.inset.bottom = d.into();
                 }
             }
 
             // Spacing - gap
-            ["gap"] => {
+            "gap" => {
                 if let Ok(s) = serde_wasm_bindgen::from_value::<SizeDto<LengthPercentageDto>>(value)
                 {
                     self.inner.gap = s.into();
                 }
             }
-            ["gap", "width"] => {
+            "columnGap" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.gap.width = d.into();
                 }
             }
-            ["gap", "height"] => {
+            "rowGap" => {
                 if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
                     self.inner.gap.height = d.into();
                 }
             }
 
             // Block layout
-            ["itemIsTable"] => {
+            "itemIsTable" => {
                 if let Some(b) = value.as_bool() {
                     self.inner.item_is_table = b;
                 }
             }
-            ["itemIsReplaced"] => {
+            "itemIsReplaced" => {
                 if let Some(b) = value.as_bool() {
                     self.inner.item_is_replaced = b;
                 }
             }
-            ["scrollbarWidth"] => {
+            "scrollbarWidth" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.scrollbar_width = n as f32;
                 }
             }
-            ["textAlign"] => {
+            "textAlign" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.text_align =
                         unsafe { std::mem::transmute::<u8, JsTextAlign>(n as u8) }.into();
@@ -2191,46 +3008,46 @@ impl JsStyle {
             }
 
             // Grid layout
-            ["gridAutoFlow"] => {
+            "gridAutoFlow" => {
                 if let Some(n) = value.as_f64() {
                     self.inner.grid_auto_flow =
                         unsafe { std::mem::transmute::<u8, JsGridAutoFlow>(n as u8) }.into();
                 }
             }
 
-            ["gridRow"] => {
+            "gridRow" => {
                 if let Ok(dto) = serde_wasm_bindgen::from_value::<LineGridPlacementDto>(value) {
                     self.inner.grid_row = dto.into();
                 }
             }
-            ["gridRow", "start"] => {
+            "gridRowStart" => {
                 if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(value) {
                     self.inner.grid_row.start = dto.into();
                 }
             }
-            ["gridRow", "end"] => {
+            "gridRowEnd" => {
                 if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(value) {
                     self.inner.grid_row.end = dto.into();
                 }
             }
 
-            ["gridColumn"] => {
+            "gridColumn" => {
                 if let Ok(dto) = serde_wasm_bindgen::from_value::<LineGridPlacementDto>(value) {
                     self.inner.grid_column = dto.into();
                 }
             }
-            ["gridColumn", "start"] => {
+            "gridColumnStart" => {
                 if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(value) {
                     self.inner.grid_column.start = dto.into();
                 }
             }
-            ["gridColumn", "end"] => {
+            "gridColumnEnd" => {
                 if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(value) {
                     self.inner.grid_column.end = dto.into();
                 }
             }
 
-            ["gridTemplateRows"] => {
+            "gridTemplateRows" => {
                 if let Ok(tracks) =
                     serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(value)
                 {
@@ -2238,7 +3055,7 @@ impl JsStyle {
                 }
             }
 
-            ["gridTemplateColumns"] => {
+            "gridTemplateColumns" => {
                 if let Ok(tracks) =
                     serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(value)
                 {
@@ -2247,7 +3064,7 @@ impl JsStyle {
                 }
             }
 
-            ["gridAutoRows"] => {
+            "gridAutoRows" => {
                 if let Ok(tracks) =
                     serde_wasm_bindgen::from_value::<Vec<TrackSizingFunctionDto>>(value)
                 {
@@ -2255,7 +3072,7 @@ impl JsStyle {
                 }
             }
 
-            ["gridAutoColumns"] => {
+            "gridAutoColumns" => {
                 if let Ok(tracks) =
                     serde_wasm_bindgen::from_value::<Vec<TrackSizingFunctionDto>>(value)
                 {
@@ -2263,7 +3080,7 @@ impl JsStyle {
                 }
             }
 
-            ["gridTemplateAreas"] => {
+            "gridTemplateAreas" => {
                 if let Ok(areas) =
                     serde_wasm_bindgen::from_value::<Vec<crate::types::GridTemplateAreaDto>>(value)
                 {
@@ -2271,7 +3088,7 @@ impl JsStyle {
                 }
             }
 
-            ["gridTemplateRowNames"] => {
+            "gridTemplateRowNames" => {
                 if let Ok(names) = serde_wasm_bindgen::from_value::<Vec<Vec<String>>>(value) {
                     self.inner.grid_template_row_names = names
                         .into_iter()
@@ -2280,7 +3097,7 @@ impl JsStyle {
                 }
             }
 
-            ["gridTemplateColumnNames"] => {
+            "gridTemplateColumnNames" => {
                 if let Ok(names) = serde_wasm_bindgen::from_value::<Vec<Vec<String>>>(value) {
                     self.inner.grid_template_column_names = names
                         .into_iter()

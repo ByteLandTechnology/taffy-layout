@@ -252,8 +252,11 @@ test("typescript example 12", async () => {
   // Top-level properties
   style.get("display", "flexGrow");
 
-  // Nested properties with dot notation
-  style.get("size.width", "margin.left");
+  // Individual flat properties
+  style.get("width", "marginLeft", "paddingTop");
+
+  // Object properties
+  style.get("size", "margin");
 });
 
 test("typescript example 13", async () => {
@@ -263,20 +266,20 @@ test("typescript example 13", async () => {
   // Single property - returns exact type (includes undefined for optional properties)
   const display = style.get("display"); // Display | undefined
 
-  // Nested property - returns exact type
-  const width = style.get("size.width"); // Dimension
+  // Individual flat property - returns exact type
+  const width = style.get("width"); // Dimension
 
   // Optional properties return undefined when not set
   const alignItems = style.get("alignItems"); // AlignItems | undefined
 
   // Two properties - returns tuple for destructuring
-  const [d, w] = style.get("display", "size.width"); // [Display | undefined, Dimension]
+  const [d, w] = style.get("display", "width"); // [Display | undefined, Dimension]
 
   // Three properties - returns tuple for destructuring
-  const [d2, w2, f] = style.get("display", "size.width", "flexGrow");
+  const [d2, w2, f] = style.get("display", "width", "flexGrow");
 
   // Four or more properties - returns array
-  const values = style.get("display", "size.width", "flexGrow", "flexShrink");
+  const values = style.get("display", "width", "flexGrow", "flexShrink");
   // values type is: (Display | Dimension | number | undefined)[]
 });
 
@@ -284,8 +287,8 @@ test("typescript example 14", async () => {
   const style = new Style();
   style.set({
     display: Display.Flex,
-    "size.width": 200,
-    "margin.left": 10,
-    "margin.right": "auto",
+    width: 200,
+    marginLeft: 10,
+    marginRight: "auto",
   });
 });

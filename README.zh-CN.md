@@ -45,13 +45,28 @@ const containerStyle = new Style();
 containerStyle.display = Display.Flex;
 containerStyle.flexDirection = FlexDirection.Column;
 containerStyle.alignItems = AlignItems.Center;
+
+// 可以设置 size 对象
 containerStyle.size = { width: 300, height: 200 };
+
+// 或使用独立的 width/height 属性
+containerStyle.width = 300;
+containerStyle.height = 200;
+
+// 设置 padding 对象
 containerStyle.padding = { left: 10, right: 10, top: 10, bottom: 10 };
+
+// 或使用独立的 padding 属性
+containerStyle.paddingLeft = 10;
+containerStyle.paddingRight = 10;
+containerStyle.paddingTop = 10;
+containerStyle.paddingBottom = 10;
 
 // 子元素样式
 const childStyle = new Style();
 childStyle.flexGrow = 1;
-childStyle.size = { width: "100%", height: "auto" };
+childStyle.width = "100%";
+childStyle.height = "auto";
 
 // 创建节点
 const child1 = tree.newLeaf(childStyle);

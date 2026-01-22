@@ -45,13 +45,28 @@ const containerStyle = new Style();
 containerStyle.display = Display.Flex;
 containerStyle.flexDirection = FlexDirection.Column;
 containerStyle.alignItems = AlignItems.Center;
+
+// size オブジェクトで設定
 containerStyle.size = { width: 300, height: 200 };
+
+// または個別の width/height プロパティを使用
+containerStyle.width = 300;
+containerStyle.height = 200;
+
+// padding オブジェクトで設定
 containerStyle.padding = { left: 10, right: 10, top: 10, bottom: 10 };
+
+// または個別の padding プロパティを使用
+containerStyle.paddingLeft = 10;
+containerStyle.paddingRight = 10;
+containerStyle.paddingTop = 10;
+containerStyle.paddingBottom = 10;
 
 // 子要素のスタイル
 const childStyle = new Style();
 childStyle.flexGrow = 1;
-childStyle.size = { width: "100%", height: "auto" };
+childStyle.width = "100%";
+childStyle.height = "auto";
 
 // ノードを生成
 const child1 = tree.newLeaf(childStyle);

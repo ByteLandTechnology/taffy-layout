@@ -50,7 +50,13 @@
 | <a id="style_alignself"></a> `style_alignSelf`                                         | `readonly` | (`a`) => `number`                                             |
 | <a id="style_aspectratio"></a> `style_aspectRatio`                                     | `readonly` | (`a`) => `number`                                             |
 | <a id="style_border"></a> `style_border`                                               | `readonly` | (`a`) => `any`                                                |
+| <a id="style_borderbottom"></a> `style_borderBottom`                                   | `readonly` | (`a`) => `any`                                                |
+| <a id="style_borderleft"></a> `style_borderLeft`                                       | `readonly` | (`a`) => `any`                                                |
+| <a id="style_borderright"></a> `style_borderRight`                                     | `readonly` | (`a`) => `any`                                                |
+| <a id="style_bordertop"></a> `style_borderTop`                                         | `readonly` | (`a`) => `any`                                                |
+| <a id="style_bottom"></a> `style_bottom`                                               | `readonly` | (`a`) => `any`                                                |
 | <a id="style_boxsizing"></a> `style_boxSizing`                                         | `readonly` | (`a`) => `number`                                             |
+| <a id="style_columngap"></a> `style_columnGap`                                         | `readonly` | (`a`) => `any`                                                |
 | <a id="style_display"></a> `style_display`                                             | `readonly` | (`a`) => `number`                                             |
 | <a id="style_flexbasis"></a> `style_flexBasis`                                         | `readonly` | (`a`) => `any`                                                |
 | <a id="style_flexdirection"></a> `style_flexDirection`                                 | `readonly` | (`a`) => `number`                                             |
@@ -63,25 +69,47 @@
 | <a id="style_gridautoflow"></a> `style_gridAutoFlow`                                   | `readonly` | (`a`) => `number`                                             |
 | <a id="style_gridautorows"></a> `style_gridAutoRows`                                   | `readonly` | (`a`) => `any`                                                |
 | <a id="style_gridcolumn"></a> `style_gridColumn`                                       | `readonly` | (`a`) => `any`                                                |
+| <a id="style_gridcolumnend"></a> `style_gridColumnEnd`                                 | `readonly` | (`a`) => `any`                                                |
+| <a id="style_gridcolumnstart"></a> `style_gridColumnStart`                             | `readonly` | (`a`) => `any`                                                |
 | <a id="style_gridrow"></a> `style_gridRow`                                             | `readonly` | (`a`) => `any`                                                |
+| <a id="style_gridrowend"></a> `style_gridRowEnd`                                       | `readonly` | (`a`) => `any`                                                |
+| <a id="style_gridrowstart"></a> `style_gridRowStart`                                   | `readonly` | (`a`) => `any`                                                |
 | <a id="style_gridtemplateareas"></a> `style_gridTemplateAreas`                         | `readonly` | (`a`) => `any`                                                |
 | <a id="style_gridtemplatecolumnnames"></a> `style_gridTemplateColumnNames`             | `readonly` | (`a`) => `any`                                                |
 | <a id="style_gridtemplatecolumns"></a> `style_gridTemplateColumns`                     | `readonly` | (`a`) => `any`                                                |
 | <a id="style_gridtemplaterownames"></a> `style_gridTemplateRowNames`                   | `readonly` | (`a`) => `any`                                                |
 | <a id="style_gridtemplaterows"></a> `style_gridTemplateRows`                           | `readonly` | (`a`) => `any`                                                |
+| <a id="style_height"></a> `style_height`                                               | `readonly` | (`a`) => `any`                                                |
 | <a id="style_inset"></a> `style_inset`                                                 | `readonly` | (`a`) => `any`                                                |
 | <a id="style_itemisreplaced"></a> `style_itemIsReplaced`                               | `readonly` | (`a`) => `number`                                             |
 | <a id="style_itemistable"></a> `style_itemIsTable`                                     | `readonly` | (`a`) => `number`                                             |
 | <a id="style_justifycontent"></a> `style_justifyContent`                               | `readonly` | (`a`) => `number`                                             |
 | <a id="style_justifyitems"></a> `style_justifyItems`                                   | `readonly` | (`a`) => `number`                                             |
 | <a id="style_justifyself"></a> `style_justifySelf`                                     | `readonly` | (`a`) => `number`                                             |
+| <a id="style_left"></a> `style_left`                                                   | `readonly` | (`a`) => `any`                                                |
 | <a id="style_margin"></a> `style_margin`                                               | `readonly` | (`a`) => `any`                                                |
+| <a id="style_marginbottom"></a> `style_marginBottom`                                   | `readonly` | (`a`) => `any`                                                |
+| <a id="style_marginleft"></a> `style_marginLeft`                                       | `readonly` | (`a`) => `any`                                                |
+| <a id="style_marginright"></a> `style_marginRight`                                     | `readonly` | (`a`) => `any`                                                |
+| <a id="style_margintop"></a> `style_marginTop`                                         | `readonly` | (`a`) => `any`                                                |
+| <a id="style_maxheight"></a> `style_maxHeight`                                         | `readonly` | (`a`) => `any`                                                |
 | <a id="style_maxsize"></a> `style_maxSize`                                             | `readonly` | (`a`) => `any`                                                |
+| <a id="style_maxwidth"></a> `style_maxWidth`                                           | `readonly` | (`a`) => `any`                                                |
+| <a id="style_minheight"></a> `style_minHeight`                                         | `readonly` | (`a`) => `any`                                                |
 | <a id="style_minsize"></a> `style_minSize`                                             | `readonly` | (`a`) => `any`                                                |
+| <a id="style_minwidth"></a> `style_minWidth`                                           | `readonly` | (`a`) => `any`                                                |
 | <a id="style_new"></a> `style_new`                                                     | `readonly` | (`a`) => `number`                                             |
 | <a id="style_overflow"></a> `style_overflow`                                           | `readonly` | (`a`) => `any`                                                |
+| <a id="style_overflowx"></a> `style_overflowX`                                         | `readonly` | (`a`) => `number`                                             |
+| <a id="style_overflowy"></a> `style_overflowY`                                         | `readonly` | (`a`) => `number`                                             |
 | <a id="style_padding"></a> `style_padding`                                             | `readonly` | (`a`) => `any`                                                |
+| <a id="style_paddingbottom"></a> `style_paddingBottom`                                 | `readonly` | (`a`) => `any`                                                |
+| <a id="style_paddingleft"></a> `style_paddingLeft`                                     | `readonly` | (`a`) => `any`                                                |
+| <a id="style_paddingright"></a> `style_paddingRight`                                   | `readonly` | (`a`) => `any`                                                |
+| <a id="style_paddingtop"></a> `style_paddingTop`                                       | `readonly` | (`a`) => `any`                                                |
 | <a id="style_position"></a> `style_position`                                           | `readonly` | (`a`) => `number`                                             |
+| <a id="style_right"></a> `style_right`                                                 | `readonly` | (`a`) => `any`                                                |
+| <a id="style_rowgap"></a> `style_rowGap`                                               | `readonly` | (`a`) => `any`                                                |
 | <a id="style_scrollbarwidth"></a> `style_scrollbarWidth`                               | `readonly` | (`a`) => `number`                                             |
 | <a id="style_set"></a> `style_set`                                                     | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_aligncontent"></a> `style_set_alignContent`                           | `readonly` | (`a`, `b`) => `void`                                          |
@@ -89,7 +117,13 @@
 | <a id="style_set_alignself"></a> `style_set_alignSelf`                                 | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_aspectratio"></a> `style_set_aspectRatio`                             | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_border"></a> `style_set_border`                                       | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_borderbottom"></a> `style_set_borderBottom`                           | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_borderleft"></a> `style_set_borderLeft`                               | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_borderright"></a> `style_set_borderRight`                             | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_bordertop"></a> `style_set_borderTop`                                 | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_bottom"></a> `style_set_bottom`                                       | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_boxsizing"></a> `style_set_boxSizing`                                 | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_columngap"></a> `style_set_columnGap`                                 | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_display"></a> `style_set_display`                                     | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_flexbasis"></a> `style_set_flexBasis`                                 | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_flexdirection"></a> `style_set_flexDirection`                         | `readonly` | (`a`, `b`) => `void`                                          |
@@ -101,29 +135,55 @@
 | <a id="style_set_gridautoflow"></a> `style_set_gridAutoFlow`                           | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_gridautorows"></a> `style_set_gridAutoRows`                           | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_gridcolumn"></a> `style_set_gridColumn`                               | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_gridcolumnend"></a> `style_set_gridColumnEnd`                         | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_gridcolumnstart"></a> `style_set_gridColumnStart`                     | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_gridrow"></a> `style_set_gridRow`                                     | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_gridrowend"></a> `style_set_gridRowEnd`                               | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_gridrowstart"></a> `style_set_gridRowStart`                           | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_gridtemplateareas"></a> `style_set_gridTemplateAreas`                 | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_gridtemplatecolumnnames"></a> `style_set_gridTemplateColumnNames`     | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_gridtemplatecolumns"></a> `style_set_gridTemplateColumns`             | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_gridtemplaterownames"></a> `style_set_gridTemplateRowNames`           | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_gridtemplaterows"></a> `style_set_gridTemplateRows`                   | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_height"></a> `style_set_height`                                       | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_inset"></a> `style_set_inset`                                         | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_itemisreplaced"></a> `style_set_itemIsReplaced`                       | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_itemistable"></a> `style_set_itemIsTable`                             | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_justifycontent"></a> `style_set_justifyContent`                       | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_justifyitems"></a> `style_set_justifyItems`                           | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_justifyself"></a> `style_set_justifySelf`                             | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_left"></a> `style_set_left`                                           | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_margin"></a> `style_set_margin`                                       | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_marginbottom"></a> `style_set_marginBottom`                           | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_marginleft"></a> `style_set_marginLeft`                               | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_marginright"></a> `style_set_marginRight`                             | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_margintop"></a> `style_set_marginTop`                                 | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_maxheight"></a> `style_set_maxHeight`                                 | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_maxsize"></a> `style_set_maxSize`                                     | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_maxwidth"></a> `style_set_maxWidth`                                   | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_minheight"></a> `style_set_minHeight`                                 | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_minsize"></a> `style_set_minSize`                                     | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_minwidth"></a> `style_set_minWidth`                                   | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_overflow"></a> `style_set_overflow`                                   | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_overflowx"></a> `style_set_overflowX`                                 | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_overflowy"></a> `style_set_overflowY`                                 | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_padding"></a> `style_set_padding`                                     | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_paddingbottom"></a> `style_set_paddingBottom`                         | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_paddingleft"></a> `style_set_paddingLeft`                             | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_paddingright"></a> `style_set_paddingRight`                           | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_paddingtop"></a> `style_set_paddingTop`                               | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_position"></a> `style_set_position`                                   | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_right"></a> `style_set_right`                                         | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_rowgap"></a> `style_set_rowGap`                                       | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_scrollbarwidth"></a> `style_set_scrollbarWidth`                       | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_size"></a> `style_set_size`                                           | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_textalign"></a> `style_set_textAlign`                                 | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_top"></a> `style_set_top`                                             | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="style_set_width"></a> `style_set_width`                                         | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_size"></a> `style_size`                                                   | `readonly` | (`a`) => `any`                                                |
 | <a id="style_textalign"></a> `style_textAlign`                                         | `readonly` | (`a`) => `number`                                             |
+| <a id="style_top"></a> `style_top`                                                     | `readonly` | (`a`) => `any`                                                |
+| <a id="style_width"></a> `style_width`                                                 | `readonly` | (`a`) => `any`                                                |
 | <a id="taffyerror_message"></a> `taffyerror_message`                                   | `readonly` | (`a`) => \[`number`, `number`\]                               |
 | <a id="taffytree_addchild"></a> `taffytree_addChild`                                   | `readonly` | (`a`, `b`, `c`) => \[`number`, `number`\]                     |
 | <a id="taffytree_childcount"></a> `taffytree_childCount`                               | `readonly` | (`a`, `b`) => `number`                                        |
