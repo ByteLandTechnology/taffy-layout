@@ -52,6 +52,43 @@
 //! const nodeId: bigint = tree.newLeaf(style);
 //! ```
 //!
+//! ## Constructor with Initial Properties
+//!
+//! You can also create a `Style` with initial properties:
+//!
+//! ```typescript
+//! const style = new Style({
+//!   display: Display.Flex,
+//!   flexDirection: FlexDirection.Column,
+//!   "size.width": 200,
+//!   "margin.left": 10
+//! });
+//! ```
+//!
+//! ## Batch Property Operations
+//!
+//! The `Style.get()` and `Style.set()` methods allow reading and writing multiple
+//! properties in a single WASM call for better performance.
+//!
+//! @example
+//! ```typescript
+//! const style = new Style();
+//!
+//! // Set multiple properties at once
+//! style.set({
+//!   display: Display.Flex,
+//!   flexDirection: FlexDirection.Column,
+//!   "size.width": 200,
+//!   "margin.left": 10
+//! });
+//!
+//! // Get a single property
+//! const d = style.get("display");
+//!
+//! // Get multiple properties with destructuring
+//! const [display, flexDirection, width] = style.get("display", "flexDirection", "size.width");
+//! ```
+//!
 //! ## Property Categories
 //!
 //! | Category | Properties |
@@ -114,18 +151,36 @@ impl JsStyle {
 
     /// Creates a new Style instance with default values
     ///
+    /// @param props - Optional object with initial style properties
     /// @returns - A new `Style` object with all properties set to CSS defaults
     ///
     /// @example
     /// ```typescript
+    /// // Create with defaults
     /// const style = new Style();
     /// console.log(style.display);  // Display.Block
+    ///
+    /// // Create with initial properties
+    /// const style2 = new Style({
+    ///   display: Display.Flex,
+    ///   flexDirection: FlexDirection.Column,
+    ///   "size.width": 200,
+    ///   "margin.left": 10
+    /// });
     /// ```
     #[wasm_bindgen(constructor)]
-    pub fn new() -> JsStyle {
-        JsStyle {
+    pub fn new(props: Option<JsValue>) -> JsStyle {
+        let mut style = JsStyle {
             inner: TaffyStyle::Style::default(),
+        };
+
+        if let Some(props_value) = props {
+            if props_value.is_object() {
+                style.set(props_value);
+            }
         }
+
+        style
     }
 
     // =========================================================================
@@ -1332,6 +1387,912 @@ impl JsStyle {
                 .into_iter()
                 .map(|v| v.into_iter().map(|s| s.into()).collect())
                 .collect();
+        }
+    }
+
+    // =========================================================================
+    // Batch Property Reading
+    // =========================================================================
+
+    /// Reads multiple style properties in a single WASM call.
+    ///
+    /// Supports dot notation for nested properties (e.g., `"size.width"`, `"margin.left"`).
+    ///
+    /// @param keys - Property paths to read
+    /// @returns - Single value if one key, array of values if multiple keys
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    /// style.display = Display.Flex;
+    /// style.size = { width: 100, height: "50%" };
+    ///
+    /// // Read single property
+    /// const d = style.get("display");
+    ///
+    /// // Read nested property
+    /// const w = style.get("size.width");
+    ///
+    /// // Read multiple properties with destructuring
+    /// const [display, width, margin] = style.get("display", "size.width", "margin.left");
+    /// ```
+    #[wasm_bindgen(variadic)]
+    pub fn get(&self, keys: Vec<String>) -> JsValue {
+        if keys.is_empty() {
+            return JsValue::UNDEFINED;
+        }
+
+        let results: Vec<JsValue> = keys
+            .iter()
+            .map(|key| self.get_property_by_path(key))
+            .collect();
+
+        if results.len() == 1 {
+            results.into_iter().next().unwrap()
+        } else {
+            js_sys::Array::from_iter(results).into()
+        }
+    }
+
+    /// Internal helper to get a property value by its path
+    fn get_property_by_path(&self, path: &str) -> JsValue {
+        let parts: Vec<&str> = path.split('.').collect();
+        match parts.as_slice() {
+            // Layout Mode
+            ["display"] => JsValue::from(self.inner.display as u8),
+            ["position"] => JsValue::from(self.inner.position as u8),
+            ["boxSizing"] => JsValue::from(self.inner.box_sizing as u8),
+
+            // Overflow
+            ["overflow"] => {
+                let s = PointOverflowDto {
+                    x: self.inner.overflow.x as u8,
+                    y: self.inner.overflow.y as u8,
+                };
+                serialize(&s)
+            }
+            ["overflow", "x"] => JsValue::from(self.inner.overflow.x as u8),
+            ["overflow", "y"] => JsValue::from(self.inner.overflow.y as u8),
+
+            // Flexbox
+            ["flexDirection"] => JsValue::from(self.inner.flex_direction as u8),
+            ["flexWrap"] => JsValue::from(self.inner.flex_wrap as u8),
+            ["flexGrow"] => JsValue::from(self.inner.flex_grow),
+            ["flexShrink"] => JsValue::from(self.inner.flex_shrink),
+            ["flexBasis"] => {
+                let d: DimensionDto = self.inner.flex_basis.into();
+                serialize(&d)
+            }
+
+            // Alignment
+            ["alignItems"] => match self.inner.align_items {
+                Some(v) => JsValue::from(v as u8),
+                None => JsValue::UNDEFINED,
+            },
+            ["alignSelf"] => match self.inner.align_self {
+                Some(v) => JsValue::from(v as u8),
+                None => JsValue::UNDEFINED,
+            },
+            ["alignContent"] => match self.inner.align_content {
+                Some(v) => JsValue::from(v as u8),
+                None => JsValue::UNDEFINED,
+            },
+            ["justifyContent"] => match self.inner.justify_content {
+                Some(v) => JsValue::from(v as u8),
+                None => JsValue::UNDEFINED,
+            },
+            ["justifyItems"] => match self.inner.justify_items {
+                Some(v) => JsValue::from(v as u8),
+                None => JsValue::UNDEFINED,
+            },
+            ["justifySelf"] => match self.inner.justify_self {
+                Some(v) => JsValue::from(v as u8),
+                None => JsValue::UNDEFINED,
+            },
+
+            // Sizing - aspectRatio
+            ["aspectRatio"] => match self.inner.aspect_ratio {
+                Some(v) => JsValue::from(v),
+                None => JsValue::UNDEFINED,
+            },
+
+            // Sizing - size
+            ["size"] => {
+                let s: SizeDto<DimensionDto> = SizeDto {
+                    width: self.inner.size.width.into(),
+                    height: self.inner.size.height.into(),
+                };
+                serialize(&s)
+            }
+            ["size", "width"] => {
+                let d: DimensionDto = self.inner.size.width.into();
+                serialize(&d)
+            }
+            ["size", "height"] => {
+                let d: DimensionDto = self.inner.size.height.into();
+                serialize(&d)
+            }
+
+            // Sizing - minSize
+            ["minSize"] => {
+                let s: SizeDto<DimensionDto> = SizeDto {
+                    width: self.inner.min_size.width.into(),
+                    height: self.inner.min_size.height.into(),
+                };
+                serialize(&s)
+            }
+            ["minSize", "width"] => {
+                let d: DimensionDto = self.inner.min_size.width.into();
+                serialize(&d)
+            }
+            ["minSize", "height"] => {
+                let d: DimensionDto = self.inner.min_size.height.into();
+                serialize(&d)
+            }
+
+            // Sizing - maxSize
+            ["maxSize"] => {
+                let s: SizeDto<DimensionDto> = SizeDto {
+                    width: self.inner.max_size.width.into(),
+                    height: self.inner.max_size.height.into(),
+                };
+                serialize(&s)
+            }
+            ["maxSize", "width"] => {
+                let d: DimensionDto = self.inner.max_size.width.into();
+                serialize(&d)
+            }
+            ["maxSize", "height"] => {
+                let d: DimensionDto = self.inner.max_size.height.into();
+                serialize(&d)
+            }
+
+            // Spacing - margin
+            ["margin"] => {
+                let r: RectDto<LengthPercentageAutoDto> = RectDto {
+                    left: self.inner.margin.left.into(),
+                    right: self.inner.margin.right.into(),
+                    top: self.inner.margin.top.into(),
+                    bottom: self.inner.margin.bottom.into(),
+                };
+                serialize(&r)
+            }
+            ["margin", "left"] => {
+                let d: LengthPercentageAutoDto = self.inner.margin.left.into();
+                serialize(&d)
+            }
+            ["margin", "right"] => {
+                let d: LengthPercentageAutoDto = self.inner.margin.right.into();
+                serialize(&d)
+            }
+            ["margin", "top"] => {
+                let d: LengthPercentageAutoDto = self.inner.margin.top.into();
+                serialize(&d)
+            }
+            ["margin", "bottom"] => {
+                let d: LengthPercentageAutoDto = self.inner.margin.bottom.into();
+                serialize(&d)
+            }
+
+            // Spacing - padding
+            ["padding"] => {
+                let r: RectDto<LengthPercentageDto> = RectDto {
+                    left: self.inner.padding.left.into(),
+                    right: self.inner.padding.right.into(),
+                    top: self.inner.padding.top.into(),
+                    bottom: self.inner.padding.bottom.into(),
+                };
+                serialize(&r)
+            }
+            ["padding", "left"] => {
+                let d: LengthPercentageDto = self.inner.padding.left.into();
+                serialize(&d)
+            }
+            ["padding", "right"] => {
+                let d: LengthPercentageDto = self.inner.padding.right.into();
+                serialize(&d)
+            }
+            ["padding", "top"] => {
+                let d: LengthPercentageDto = self.inner.padding.top.into();
+                serialize(&d)
+            }
+            ["padding", "bottom"] => {
+                let d: LengthPercentageDto = self.inner.padding.bottom.into();
+                serialize(&d)
+            }
+
+            // Spacing - border
+            ["border"] => {
+                let r: RectDto<LengthPercentageDto> = RectDto {
+                    left: self.inner.border.left.into(),
+                    right: self.inner.border.right.into(),
+                    top: self.inner.border.top.into(),
+                    bottom: self.inner.border.bottom.into(),
+                };
+                serialize(&r)
+            }
+            ["border", "left"] => {
+                let d: LengthPercentageDto = self.inner.border.left.into();
+                serialize(&d)
+            }
+            ["border", "right"] => {
+                let d: LengthPercentageDto = self.inner.border.right.into();
+                serialize(&d)
+            }
+            ["border", "top"] => {
+                let d: LengthPercentageDto = self.inner.border.top.into();
+                serialize(&d)
+            }
+            ["border", "bottom"] => {
+                let d: LengthPercentageDto = self.inner.border.bottom.into();
+                serialize(&d)
+            }
+
+            // Spacing - inset
+            ["inset"] => {
+                let r: RectDto<LengthPercentageAutoDto> = RectDto {
+                    left: self.inner.inset.left.into(),
+                    right: self.inner.inset.right.into(),
+                    top: self.inner.inset.top.into(),
+                    bottom: self.inner.inset.bottom.into(),
+                };
+                serialize(&r)
+            }
+            ["inset", "left"] => {
+                let d: LengthPercentageAutoDto = self.inner.inset.left.into();
+                serialize(&d)
+            }
+            ["inset", "right"] => {
+                let d: LengthPercentageAutoDto = self.inner.inset.right.into();
+                serialize(&d)
+            }
+            ["inset", "top"] => {
+                let d: LengthPercentageAutoDto = self.inner.inset.top.into();
+                serialize(&d)
+            }
+            ["inset", "bottom"] => {
+                let d: LengthPercentageAutoDto = self.inner.inset.bottom.into();
+                serialize(&d)
+            }
+
+            // Spacing - gap
+            ["gap"] => {
+                let s: SizeDto<LengthPercentageDto> = SizeDto {
+                    width: self.inner.gap.width.into(),
+                    height: self.inner.gap.height.into(),
+                };
+                serialize(&s)
+            }
+            ["gap", "width"] => {
+                let d: LengthPercentageDto = self.inner.gap.width.into();
+                serialize(&d)
+            }
+            ["gap", "height"] => {
+                let d: LengthPercentageDto = self.inner.gap.height.into();
+                serialize(&d)
+            }
+
+            // Block layout
+            ["itemIsTable"] => JsValue::from(self.inner.item_is_table),
+            ["itemIsReplaced"] => JsValue::from(self.inner.item_is_replaced),
+            ["scrollbarWidth"] => JsValue::from(self.inner.scrollbar_width),
+            ["textAlign"] => JsValue::from(self.inner.text_align as u8),
+
+            // Grid layout
+            ["gridAutoFlow"] => JsValue::from(self.inner.grid_auto_flow as u8),
+
+            ["gridRow"] => {
+                let dto: LineGridPlacementDto = self.inner.grid_row.clone().into();
+                serialize(&dto)
+            }
+            ["gridRow", "start"] => {
+                let dto: GridPlacementDto = self.inner.grid_row.start.clone().into();
+                serialize(&dto)
+            }
+            ["gridRow", "end"] => {
+                let dto: GridPlacementDto = self.inner.grid_row.end.clone().into();
+                serialize(&dto)
+            }
+
+            ["gridColumn"] => {
+                let dto: LineGridPlacementDto = self.inner.grid_column.clone().into();
+                serialize(&dto)
+            }
+            ["gridColumn", "start"] => {
+                let dto: GridPlacementDto = self.inner.grid_column.start.clone().into();
+                serialize(&dto)
+            }
+            ["gridColumn", "end"] => {
+                let dto: GridPlacementDto = self.inner.grid_column.end.clone().into();
+                serialize(&dto)
+            }
+
+            ["gridTemplateRows"] => {
+                let tracks: Vec<GridTemplateComponentDto> = self
+                    .inner
+                    .grid_template_rows
+                    .iter()
+                    .cloned()
+                    .map(|t| t.into())
+                    .collect();
+                serialize(&tracks)
+            }
+
+            ["gridTemplateColumns"] => {
+                let tracks: Vec<GridTemplateComponentDto> = self
+                    .inner
+                    .grid_template_columns
+                    .iter()
+                    .cloned()
+                    .map(|t| t.into())
+                    .collect();
+                serialize(&tracks)
+            }
+
+            ["gridAutoRows"] => {
+                let tracks: Vec<TrackSizingFunctionDto> = self
+                    .inner
+                    .grid_auto_rows
+                    .iter()
+                    .cloned()
+                    .map(|t| t.into())
+                    .collect();
+                serialize(&tracks)
+            }
+
+            ["gridAutoColumns"] => {
+                let tracks: Vec<TrackSizingFunctionDto> = self
+                    .inner
+                    .grid_auto_columns
+                    .iter()
+                    .cloned()
+                    .map(|t| t.into())
+                    .collect();
+                serialize(&tracks)
+            }
+
+            ["gridTemplateAreas"] => {
+                let areas: Vec<crate::types::GridTemplateAreaDto> = self
+                    .inner
+                    .grid_template_areas
+                    .iter()
+                    .cloned()
+                    .map(|a| a.into())
+                    .collect();
+                serialize(&areas)
+            }
+
+            ["gridTemplateRowNames"] => {
+                let names: Vec<Vec<String>> = self
+                    .inner
+                    .grid_template_row_names
+                    .iter()
+                    .map(|v| {
+                        v.iter()
+                            .map(|s| AsRef::<str>::as_ref(s).to_string())
+                            .collect()
+                    })
+                    .collect();
+                serialize(&names)
+            }
+
+            ["gridTemplateColumnNames"] => {
+                let names: Vec<Vec<String>> = self
+                    .inner
+                    .grid_template_column_names
+                    .iter()
+                    .map(|v| {
+                        v.iter()
+                            .map(|s| AsRef::<str>::as_ref(s).to_string())
+                            .collect()
+                    })
+                    .collect();
+                serialize(&names)
+            }
+
+            // Unknown property path
+            _ => {
+                log(&format!("Unknown property path: {}", path));
+                JsValue::UNDEFINED
+            }
+        }
+    }
+
+    // =========================================================================
+    // Batch Property Writing
+    // =========================================================================
+
+    /// Sets multiple style properties in a single WASM call.
+    ///
+    /// Accepts an object where keys are property paths (supporting dot notation)
+    /// and values are the new property values.
+    ///
+    /// @param props - Object with property paths as keys and values to set
+    ///
+    /// @example
+    /// ```typescript
+    /// const style = new Style();
+    ///
+    /// // Set multiple properties at once
+    /// style.set({
+    ///   display: Display.Flex,
+    ///   flexDirection: FlexDirection.Column,
+    ///   "size.width": 200,
+    ///   "size.height": "50%",
+    ///   "margin.left": 10,
+    ///   "margin.right": "auto"
+    /// });
+    /// ```
+    #[wasm_bindgen]
+    pub fn set(&mut self, props: JsValue) {
+        if !props.is_object() {
+            log("set() requires an object argument");
+            return;
+        }
+
+        let obj = js_sys::Object::from(props);
+        let entries = js_sys::Object::entries(&obj);
+
+        for i in 0..entries.length() {
+            let entry = entries.get(i);
+            let arr = js_sys::Array::from(&entry);
+            if arr.length() >= 2 {
+                let key = arr.get(0);
+                let value = arr.get(1);
+                if let Some(key_str) = key.as_string() {
+                    self.set_property_by_path(&key_str, value);
+                }
+            }
+        }
+    }
+
+    /// Internal helper to set a property value by its path
+    fn set_property_by_path(&mut self, path: &str, value: JsValue) {
+        let parts: Vec<&str> = path.split('.').collect();
+        match parts.as_slice() {
+            // Layout Mode
+            ["display"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.display =
+                        unsafe { std::mem::transmute::<u8, JsDisplay>(n as u8) }.into();
+                }
+            }
+            ["position"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.position =
+                        unsafe { std::mem::transmute::<u8, JsPosition>(n as u8) }.into();
+                }
+            }
+            ["boxSizing"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.box_sizing =
+                        unsafe { std::mem::transmute::<u8, JsBoxSizing>(n as u8) }.into();
+                }
+            }
+
+            // Overflow
+            ["overflow"] => {
+                if let Ok(s) = serde_wasm_bindgen::from_value::<PointOverflowDto>(value) {
+                    self.inner.overflow = s.into();
+                }
+            }
+            ["overflow", "x"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.overflow.x =
+                        unsafe { std::mem::transmute::<u8, JsOverflow>(n as u8) }.into();
+                }
+            }
+            ["overflow", "y"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.overflow.y =
+                        unsafe { std::mem::transmute::<u8, JsOverflow>(n as u8) }.into();
+                }
+            }
+
+            // Flexbox
+            ["flexDirection"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.flex_direction =
+                        unsafe { std::mem::transmute::<u8, JsFlexDirection>(n as u8) }.into();
+                }
+            }
+            ["flexWrap"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.flex_wrap =
+                        unsafe { std::mem::transmute::<u8, JsFlexWrap>(n as u8) }.into();
+                }
+            }
+            ["flexGrow"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.flex_grow = n as f32;
+                }
+            }
+            ["flexShrink"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.flex_shrink = n as f32;
+                }
+            }
+            ["flexBasis"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
+                    self.inner.flex_basis = d.into();
+                }
+            }
+
+            // Alignment
+            ["alignItems"] => {
+                if value.is_undefined() {
+                    self.inner.align_items = None;
+                } else if let Some(n) = value.as_f64() {
+                    self.inner.align_items =
+                        Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into());
+                }
+            }
+            ["alignSelf"] => {
+                if value.is_undefined() {
+                    self.inner.align_self = None;
+                } else if let Some(n) = value.as_f64() {
+                    let js_val = unsafe { std::mem::transmute::<u8, JsAlignSelf>(n as u8) };
+                    self.inner.align_self = match js_val {
+                        JsAlignSelf::Auto => None,
+                        _ => Some(js_val.into()),
+                    };
+                }
+            }
+            ["alignContent"] => {
+                if value.is_undefined() {
+                    self.inner.align_content = None;
+                } else if let Some(n) = value.as_f64() {
+                    self.inner.align_content =
+                        Some(unsafe { std::mem::transmute::<u8, JsAlignContent>(n as u8) }.into());
+                }
+            }
+            ["justifyContent"] => {
+                if value.is_undefined() {
+                    self.inner.justify_content = None;
+                } else if let Some(n) = value.as_f64() {
+                    self.inner.justify_content = Some(
+                        unsafe { std::mem::transmute::<u8, JsJustifyContent>(n as u8) }.into(),
+                    );
+                }
+            }
+            ["justifyItems"] => {
+                if value.is_undefined() {
+                    self.inner.justify_items = None;
+                } else if let Some(n) = value.as_f64() {
+                    self.inner.justify_items =
+                        Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into());
+                }
+            }
+            ["justifySelf"] => {
+                if value.is_undefined() {
+                    self.inner.justify_self = None;
+                } else if let Some(n) = value.as_f64() {
+                    let js_val = unsafe { std::mem::transmute::<u8, JsAlignSelf>(n as u8) };
+                    self.inner.justify_self = match js_val {
+                        JsAlignSelf::Auto => None,
+                        _ => Some(js_val.into()),
+                    };
+                }
+            }
+
+            // Sizing - aspectRatio
+            ["aspectRatio"] => {
+                if value.is_undefined() || value.is_null() {
+                    self.inner.aspect_ratio = None;
+                } else if let Some(n) = value.as_f64() {
+                    self.inner.aspect_ratio = Some(n as f32);
+                }
+            }
+
+            // Sizing - size
+            ["size"] => {
+                if let Ok(s) = serde_wasm_bindgen::from_value::<SizeDto<DimensionDto>>(value) {
+                    self.inner.size = s.into();
+                }
+            }
+            ["size", "width"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
+                    self.inner.size.width = d.into();
+                }
+            }
+            ["size", "height"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
+                    self.inner.size.height = d.into();
+                }
+            }
+
+            // Sizing - minSize
+            ["minSize"] => {
+                if let Ok(s) = serde_wasm_bindgen::from_value::<SizeDto<DimensionDto>>(value) {
+                    self.inner.min_size = s.into();
+                }
+            }
+            ["minSize", "width"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
+                    self.inner.min_size.width = d.into();
+                }
+            }
+            ["minSize", "height"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
+                    self.inner.min_size.height = d.into();
+                }
+            }
+
+            // Sizing - maxSize
+            ["maxSize"] => {
+                if let Ok(s) = serde_wasm_bindgen::from_value::<SizeDto<DimensionDto>>(value) {
+                    self.inner.max_size = s.into();
+                }
+            }
+            ["maxSize", "width"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
+                    self.inner.max_size.width = d.into();
+                }
+            }
+            ["maxSize", "height"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<DimensionDto>(value) {
+                    self.inner.max_size.height = d.into();
+                }
+            }
+
+            // Spacing - margin
+            ["margin"] => {
+                if let Ok(r) =
+                    serde_wasm_bindgen::from_value::<RectDto<LengthPercentageAutoDto>>(value)
+                {
+                    self.inner.margin = r.into();
+                }
+            }
+            ["margin", "left"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
+                    self.inner.margin.left = d.into();
+                }
+            }
+            ["margin", "right"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
+                    self.inner.margin.right = d.into();
+                }
+            }
+            ["margin", "top"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
+                    self.inner.margin.top = d.into();
+                }
+            }
+            ["margin", "bottom"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
+                    self.inner.margin.bottom = d.into();
+                }
+            }
+
+            // Spacing - padding
+            ["padding"] => {
+                if let Ok(r) = serde_wasm_bindgen::from_value::<RectDto<LengthPercentageDto>>(value)
+                {
+                    self.inner.padding = r.into();
+                }
+            }
+            ["padding", "left"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.padding.left = d.into();
+                }
+            }
+            ["padding", "right"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.padding.right = d.into();
+                }
+            }
+            ["padding", "top"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.padding.top = d.into();
+                }
+            }
+            ["padding", "bottom"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.padding.bottom = d.into();
+                }
+            }
+
+            // Spacing - border
+            ["border"] => {
+                if let Ok(r) = serde_wasm_bindgen::from_value::<RectDto<LengthPercentageDto>>(value)
+                {
+                    self.inner.border = r.into();
+                }
+            }
+            ["border", "left"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.border.left = d.into();
+                }
+            }
+            ["border", "right"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.border.right = d.into();
+                }
+            }
+            ["border", "top"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.border.top = d.into();
+                }
+            }
+            ["border", "bottom"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.border.bottom = d.into();
+                }
+            }
+
+            // Spacing - inset
+            ["inset"] => {
+                if let Ok(r) =
+                    serde_wasm_bindgen::from_value::<RectDto<LengthPercentageAutoDto>>(value)
+                {
+                    self.inner.inset = r.into();
+                }
+            }
+            ["inset", "left"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
+                    self.inner.inset.left = d.into();
+                }
+            }
+            ["inset", "right"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
+                    self.inner.inset.right = d.into();
+                }
+            }
+            ["inset", "top"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
+                    self.inner.inset.top = d.into();
+                }
+            }
+            ["inset", "bottom"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageAutoDto>(value) {
+                    self.inner.inset.bottom = d.into();
+                }
+            }
+
+            // Spacing - gap
+            ["gap"] => {
+                if let Ok(s) = serde_wasm_bindgen::from_value::<SizeDto<LengthPercentageDto>>(value)
+                {
+                    self.inner.gap = s.into();
+                }
+            }
+            ["gap", "width"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.gap.width = d.into();
+                }
+            }
+            ["gap", "height"] => {
+                if let Ok(d) = serde_wasm_bindgen::from_value::<LengthPercentageDto>(value) {
+                    self.inner.gap.height = d.into();
+                }
+            }
+
+            // Block layout
+            ["itemIsTable"] => {
+                if let Some(b) = value.as_bool() {
+                    self.inner.item_is_table = b;
+                }
+            }
+            ["itemIsReplaced"] => {
+                if let Some(b) = value.as_bool() {
+                    self.inner.item_is_replaced = b;
+                }
+            }
+            ["scrollbarWidth"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.scrollbar_width = n as f32;
+                }
+            }
+            ["textAlign"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.text_align =
+                        unsafe { std::mem::transmute::<u8, JsTextAlign>(n as u8) }.into();
+                }
+            }
+
+            // Grid layout
+            ["gridAutoFlow"] => {
+                if let Some(n) = value.as_f64() {
+                    self.inner.grid_auto_flow =
+                        unsafe { std::mem::transmute::<u8, JsGridAutoFlow>(n as u8) }.into();
+                }
+            }
+
+            ["gridRow"] => {
+                if let Ok(dto) = serde_wasm_bindgen::from_value::<LineGridPlacementDto>(value) {
+                    self.inner.grid_row = dto.into();
+                }
+            }
+            ["gridRow", "start"] => {
+                if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(value) {
+                    self.inner.grid_row.start = dto.into();
+                }
+            }
+            ["gridRow", "end"] => {
+                if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(value) {
+                    self.inner.grid_row.end = dto.into();
+                }
+            }
+
+            ["gridColumn"] => {
+                if let Ok(dto) = serde_wasm_bindgen::from_value::<LineGridPlacementDto>(value) {
+                    self.inner.grid_column = dto.into();
+                }
+            }
+            ["gridColumn", "start"] => {
+                if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(value) {
+                    self.inner.grid_column.start = dto.into();
+                }
+            }
+            ["gridColumn", "end"] => {
+                if let Ok(dto) = serde_wasm_bindgen::from_value::<GridPlacementDto>(value) {
+                    self.inner.grid_column.end = dto.into();
+                }
+            }
+
+            ["gridTemplateRows"] => {
+                if let Ok(tracks) =
+                    serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(value)
+                {
+                    self.inner.grid_template_rows = tracks.into_iter().map(|t| t.into()).collect();
+                }
+            }
+
+            ["gridTemplateColumns"] => {
+                if let Ok(tracks) =
+                    serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(value)
+                {
+                    self.inner.grid_template_columns =
+                        tracks.into_iter().map(|t| t.into()).collect();
+                }
+            }
+
+            ["gridAutoRows"] => {
+                if let Ok(tracks) =
+                    serde_wasm_bindgen::from_value::<Vec<TrackSizingFunctionDto>>(value)
+                {
+                    self.inner.grid_auto_rows = tracks.into_iter().map(|t| t.into()).collect();
+                }
+            }
+
+            ["gridAutoColumns"] => {
+                if let Ok(tracks) =
+                    serde_wasm_bindgen::from_value::<Vec<TrackSizingFunctionDto>>(value)
+                {
+                    self.inner.grid_auto_columns = tracks.into_iter().map(|t| t.into()).collect();
+                }
+            }
+
+            ["gridTemplateAreas"] => {
+                if let Ok(areas) =
+                    serde_wasm_bindgen::from_value::<Vec<crate::types::GridTemplateAreaDto>>(value)
+                {
+                    self.inner.grid_template_areas = areas.into_iter().map(|a| a.into()).collect();
+                }
+            }
+
+            ["gridTemplateRowNames"] => {
+                if let Ok(names) = serde_wasm_bindgen::from_value::<Vec<Vec<String>>>(value) {
+                    self.inner.grid_template_row_names = names
+                        .into_iter()
+                        .map(|v| v.into_iter().map(|s| s.into()).collect())
+                        .collect();
+                }
+            }
+
+            ["gridTemplateColumnNames"] => {
+                if let Ok(names) = serde_wasm_bindgen::from_value::<Vec<Vec<String>>>(value) {
+                    self.inner.grid_template_column_names = names
+                        .into_iter()
+                        .map(|v| v.into_iter().map(|s| s.into()).collect())
+                        .collect();
+                }
+            }
+
+            // Unknown property path
+            _ => {
+                log(&format!("Unknown property path for set: {}", path));
+            }
         }
     }
 }

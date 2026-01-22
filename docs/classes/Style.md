@@ -30,10 +30,16 @@ When created, all properties are set to their CSS default values:
 ### Constructor
 
 ```ts
-new Style(): Style;
+new Style(props?): Style;
 ```
 
 Creates a new Style instance with default values
+
+#### Parameters
+
+| Parameter | Type  | Description                                   |
+| --------- | ----- | --------------------------------------------- |
+| `props?`  | `any` | Optional object with initial style properties |
 
 #### Returns
 
@@ -44,8 +50,17 @@ Creates a new Style instance with default values
 #### Example
 
 ```typescript
+// Create with defaults
 const style = new Style();
 console.log(style.display); // Display.Block
+
+// Create with initial properties
+const style2 = new Style({
+  display: Display.Flex,
+  flexDirection: FlexDirection.Column,
+  "size.width": 200,
+  "margin.left": 10,
+});
 ```
 
 ## Properties
@@ -114,3 +129,255 @@ free(): void;
 #### Returns
 
 `void`
+
+---
+
+### get()
+
+#### Call Signature
+
+```ts
+get(...keys): any;
+```
+
+Reads multiple style properties in a single WASM call.
+
+Supports dot notation for nested properties (e.g., `"size.width"`, `"margin.left"`).
+
+##### Parameters
+
+| Parameter | Type       | Description            |
+| --------- | ---------- | ---------------------- |
+| ...`keys` | `string`[] | Property paths to read |
+
+##### Returns
+
+`any`
+
+- Single value if one key, array of values if multiple keys
+
+##### Example
+
+```typescript
+const style = new Style();
+style.display = Display.Flex;
+style.size = { width: 100, height: "50%" };
+
+// Read single property
+const d = style.get("display");
+
+// Read nested property
+const w = style.get("size.width");
+
+// Read multiple properties with destructuring
+const [display, width, margin] = style.get(
+  "display",
+  "size.width",
+  "margin.left",
+);
+```
+
+#### Call Signature
+
+```ts
+get<K>(...keys): StylePropertyValues[K];
+```
+
+Reads multiple style properties in a single WASM call.
+Supports dot notation for nested properties.
+
+##### Type Parameters
+
+| Type Parameter                                                    |
+| ----------------------------------------------------------------- |
+| `K` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+
+##### Parameters
+
+| Parameter | Type    |
+| --------- | ------- |
+| ...`keys` | \[`K`\] |
+
+##### Returns
+
+[`StylePropertyValues`](../type-aliases/StylePropertyValues.md)\[`K`\]
+
+Single value for one key, tuple for 2-3 keys, array for 4+ keys
+
+##### Remarks
+
+- Single property: returns exact value type (including `undefined` for optional properties)
+- 2-3 properties: returns typed tuple for destructuring
+- 4+ properties: returns array of union types
+
+##### Example
+
+```typescript
+const style = new Style();
+style.display = Display.Flex;
+
+// Single property - returns exact type (includes undefined for optional properties)
+const display = style.get("display"); // Display | undefined
+
+// Nested property - returns exact type
+const width = style.get("size.width"); // Dimension
+
+// Optional properties return undefined when not set
+const alignItems = style.get("alignItems"); // AlignItems | undefined
+
+// Two properties - returns tuple for destructuring
+const [d, w] = style.get("display", "size.width"); // [Display | undefined, Dimension]
+
+// Three properties - returns tuple for destructuring
+const [d2, w2, f] = style.get("display", "size.width", "flexGrow");
+
+// Four or more properties - returns array
+const values = style.get("display", "size.width", "flexGrow", "flexShrink");
+// values type is: (Display | Dimension | number | undefined)[]
+```
+
+#### Call Signature
+
+```ts
+get<K1, K2>(...keys): [StylePropertyValues[K1], StylePropertyValues[K2]];
+```
+
+##### Type Parameters
+
+| Type Parameter                                                     |
+| ------------------------------------------------------------------ |
+| `K1` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| `K2` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+
+##### Parameters
+
+| Parameter | Type           |
+| --------- | -------------- |
+| ...`keys` | \[`K1`, `K2`\] |
+
+##### Returns
+
+\[[`StylePropertyValues`](../type-aliases/StylePropertyValues.md)\[`K1`\], [`StylePropertyValues`](../type-aliases/StylePropertyValues.md)\[`K2`\]\]
+
+#### Call Signature
+
+```ts
+get<K1, K2, K3>(...keys): [StylePropertyValues[K1], StylePropertyValues[K2], StylePropertyValues[K3]];
+```
+
+##### Type Parameters
+
+| Type Parameter                                                     |
+| ------------------------------------------------------------------ |
+| `K1` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| `K2` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| `K3` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+
+##### Parameters
+
+| Parameter | Type                 |
+| --------- | -------------------- |
+| ...`keys` | \[`K1`, `K2`, `K3`\] |
+
+##### Returns
+
+\[[`StylePropertyValues`](../type-aliases/StylePropertyValues.md)\[`K1`\], [`StylePropertyValues`](../type-aliases/StylePropertyValues.md)\[`K2`\], [`StylePropertyValues`](../type-aliases/StylePropertyValues.md)\[`K3`\]\]
+
+#### Call Signature
+
+```ts
+get<Keys>(...keys): StylePropertyArrayValues<Keys>;
+```
+
+##### Type Parameters
+
+| Type Parameter                                                         |
+| ---------------------------------------------------------------------- |
+| `Keys` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md)[] |
+
+##### Parameters
+
+| Parameter | Type   |
+| --------- | ------ |
+| ...`keys` | `Keys` |
+
+##### Returns
+
+[`StylePropertyArrayValues`](../type-aliases/StylePropertyArrayValues.md)\<`Keys`\>
+
+---
+
+### set()
+
+#### Call Signature
+
+```ts
+set(props): void;
+```
+
+Sets multiple style properties in a single WASM call.
+
+Accepts an object where keys are property paths (supporting dot notation)
+and values are the new property values.
+
+##### Parameters
+
+| Parameter | Type  | Description                                          |
+| --------- | ----- | ---------------------------------------------------- |
+| `props`   | `any` | Object with property paths as keys and values to set |
+
+##### Returns
+
+`void`
+
+##### Example
+
+```typescript
+const style = new Style();
+
+// Set multiple properties at once
+style.set({
+  display: Display.Flex,
+  flexDirection: FlexDirection.Column,
+  "size.width": 200,
+  "size.height": "50%",
+  "margin.left": 10,
+  "margin.right": "auto",
+});
+```
+
+#### Call Signature
+
+```ts
+set(props): void;
+```
+
+Sets multiple style properties in a single WASM call.
+Supports dot notation for nested properties.
+
+##### Parameters
+
+| Parameter | Type                                                            | Description                                   |
+| --------- | --------------------------------------------------------------- | --------------------------------------------- |
+| `props`   | [`StylePropertyValues`](../type-aliases/StylePropertyValues.md) | Object mapping property paths to their values |
+
+##### Returns
+
+`void`
+
+##### Remarks
+
+Only accepts valid property paths with their corresponding value types.
+Invalid properties will be ignored at runtime.
+
+##### Example
+
+```typescript
+const style = new Style();
+style.set({
+  display: Display.Flex,
+  "size.width": 200,
+  "margin.left": 10,
+  "margin.right": "auto",
+});
+```

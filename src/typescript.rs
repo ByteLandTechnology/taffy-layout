@@ -572,4 +572,172 @@ export type GridTemplateArea = {
   /** End column line */
   columnEnd: number;
 };
+
+/**
+ * Valid property paths for Style.get() method.
+ *
+ * Supports dot notation for nested properties.
+ *
+ * @example
+ * ```typescript
+ * const style = new Style();
+ * // Top-level properties
+ * style.get("display", "flexGrow");
+ *
+ * // Nested properties with dot notation
+ * style.get("size.width", "margin.left");
+ * ```
+ */
+export type StyleProperty =
+  // Layout Mode
+  | "display" | "position" | "boxSizing"
+  // Overflow
+  | "overflow" | "overflow.x" | "overflow.y"
+  // Flexbox
+  | "flexDirection" | "flexWrap" | "flexGrow" | "flexShrink" | "flexBasis"
+  // Alignment
+  | "alignItems" | "alignSelf" | "alignContent"
+  | "justifyContent" | "justifyItems" | "justifySelf"
+  // Sizing
+  | "aspectRatio"
+  | "size" | "size.width" | "size.height"
+  | "minSize" | "minSize.width" | "minSize.height"
+  | "maxSize" | "maxSize.width" | "maxSize.height"
+  // Spacing
+  | "margin" | "margin.left" | "margin.right" | "margin.top" | "margin.bottom"
+  | "padding" | "padding.left" | "padding.right" | "padding.top" | "padding.bottom"
+  | "border" | "border.left" | "border.right" | "border.top" | "border.bottom"
+  | "inset" | "inset.left" | "inset.right" | "inset.top" | "inset.bottom"
+  | "gap" | "gap.width" | "gap.height"
+  // Block layout
+  | "itemIsTable" | "itemIsReplaced" | "scrollbarWidth" | "textAlign"
+  // Grid layout
+  | "gridAutoFlow"
+  | "gridRow" | "gridRow.start" | "gridRow.end"
+  | "gridColumn" | "gridColumn.start" | "gridColumn.end"
+  | "gridTemplateRows" | "gridTemplateColumns"
+  | "gridAutoRows" | "gridAutoColumns"
+  | "gridTemplateAreas" | "gridTemplateRowNames" | "gridTemplateColumnNames";
+
+/**
+ * Type-safe property values for batch setting.
+ *
+ * Maps property paths to their expected value types.
+ */
+export type StylePropertyValues = {
+  [K in StyleProperty]?: 
+    K extends "display" ? Display :
+    K extends "position" ? Position :
+    K extends "boxSizing" ? BoxSizing :
+    K extends "overflow" ? Point<Overflow> :
+    K extends "overflow.x" | "overflow.y" ? Overflow :
+    K extends "flexDirection" ? FlexDirection :
+    K extends "flexWrap" ? FlexWrap :
+    K extends "flexGrow" | "flexShrink" | "scrollbarWidth" ? number :
+    K extends "flexBasis" ? Dimension :
+    K extends "alignItems" | "justifyItems" ? AlignItems | undefined :
+    K extends "alignSelf" | "justifySelf" ? AlignSelf | undefined :
+    K extends "alignContent" ? AlignContent | undefined :
+    K extends "justifyContent" ? JustifyContent | undefined :
+    K extends "aspectRatio" ? number | undefined :
+    K extends "size" | "minSize" | "maxSize" ? Size<Dimension> :
+    K extends `${"size" | "minSize" | "maxSize"}.${"width" | "height"}` ? Dimension :
+    K extends "margin" | "inset" ? Rect<LengthPercentageAuto> :
+    K extends `${"margin" | "inset"}.${"left" | "right" | "top" | "bottom"}` ? LengthPercentageAuto :
+    K extends "padding" | "border" ? Rect<LengthPercentage> :
+    K extends `${"padding" | "border"}.${"left" | "right" | "top" | "bottom"}` ? LengthPercentage :
+    K extends "gap" ? Size<LengthPercentage> :
+    K extends `gap.${"width" | "height"}` ? LengthPercentage :
+    K extends "itemIsTable" | "itemIsReplaced" ? boolean :
+    K extends "textAlign" ? TextAlign :
+    K extends "gridAutoFlow" ? GridAutoFlow :
+    K extends "gridRow" | "gridColumn" ? Line<GridPlacement> :
+    K extends `${"gridRow" | "gridColumn"}.${"start" | "end"}` ? GridPlacement :
+    K extends "gridTemplateRows" | "gridTemplateColumns" ? GridTemplateComponent[] :
+    K extends "gridAutoRows" | "gridAutoColumns" ? TrackSizingFunction[] :
+    K extends "gridTemplateAreas" ? GridTemplateArea[] :
+    K extends "gridTemplateRowNames" | "gridTemplateColumnNames" ? string[][] :
+    unknown;
+};
+
+// Module augmentation for stronger typing on Style class methods
+declare module "./taffy_wasm" {
+  interface Style {
+    /**
+     * Reads multiple style properties in a single WASM call.
+     * Supports dot notation for nested properties.
+     *
+     * @returns Single value for one key, tuple for 2-3 keys, array for 4+ keys
+     *
+     * @remarks
+     * - Single property: returns exact value type (including `undefined` for optional properties)
+     * - 2-3 properties: returns typed tuple for destructuring
+     * - 4+ properties: returns array of union types
+     *
+     * @example
+     * ```typescript
+     * const style = new Style();
+     * style.display = Display.Flex;
+     *
+     * // Single property - returns exact type (includes undefined for optional properties)
+     * const display = style.get("display"); // Display | undefined
+     *
+     * // Nested property - returns exact type
+     * const width = style.get("size.width"); // Dimension
+     *
+     * // Optional properties return undefined when not set
+     * const alignItems = style.get("alignItems"); // AlignItems | undefined
+     *
+     * // Two properties - returns tuple for destructuring
+     * const [d, w] = style.get("display", "size.width"); // [Display | undefined, Dimension]
+     *
+     * // Three properties - returns tuple for destructuring
+     * const [d2, w2, f] = style.get("display", "size.width", "flexGrow");
+     *
+     * // Four or more properties - returns array
+     * const values = style.get("display", "size.width", "flexGrow", "flexShrink");
+     * // values type is: (Display | Dimension | number | undefined)[]
+     * ```
+     */
+    get<K extends StyleProperty>(...keys: [K]): StylePropertyValues[K];
+    get<K1 extends StyleProperty, K2 extends StyleProperty>(
+      ...keys: [K1, K2]
+    ): [StylePropertyValues[K1], StylePropertyValues[K2]];
+    get<K1 extends StyleProperty, K2 extends StyleProperty, K3 extends StyleProperty>(
+      ...keys: [K1, K2, K3]
+    ): [StylePropertyValues[K1], StylePropertyValues[K2], StylePropertyValues[K3]];
+    get<Keys extends StyleProperty[]>(...keys: Keys): StylePropertyArrayValues<Keys>;
+
+    /**
+     * Sets multiple style properties in a single WASM call.
+     * Supports dot notation for nested properties.
+     *
+     * @param props - Object mapping property paths to their values
+     *
+     * @remarks
+     * Only accepts valid property paths with their corresponding value types.
+     * Invalid properties will be ignored at runtime.
+     *
+     * @example
+     * ```typescript
+     * const style = new Style();
+     * style.set({
+     *   display: Display.Flex,
+     *   "size.width": 200,
+     *   "margin.left": 10,
+     *   "margin.right": "auto"
+     * });
+     * ```
+     */
+    set(props: StylePropertyValues): void;
+  }
+}
+
+/**
+ * Helper type to convert an array of property paths to an array of their value types.
+ * Unlike `TupleToStyleValues`, this returns an array type instead of a tuple.
+ */
+type StylePropertyArrayValues<Keys extends StyleProperty[]> = {
+  [K in keyof Keys]: Keys[K] extends StyleProperty ? StylePropertyValues[Keys[K]] : unknown;
+};
 "#;

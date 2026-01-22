@@ -21,6 +21,40 @@ describe("Style Class Properties", () => {
     await setupTaffy();
   });
 
+  describe("Constructor", () => {
+    it("creates Style with defaults when no arguments", () => {
+      const style = new Style();
+      expect(style.display).toBe(Display.Flex);
+      expect(style.position).toBe(Position.Relative);
+    });
+
+    it("creates Style with initial properties", () => {
+      const style = new Style({
+        display: Display.Grid,
+        flexDirection: FlexDirection.Column,
+        "size.width": 200,
+        "margin.left": 10,
+      });
+      expect(style.display).toBe(Display.Grid);
+      expect(style.flexDirection).toBe(FlexDirection.Column);
+      expect(style.get("size.width")).toBe(200);
+      expect(style.get("margin.left")).toBe(10);
+    });
+
+    it("creates Style with dot notation properties", () => {
+      const style = new Style({
+        "size.width": 300,
+        "size.height": "50%",
+        "margin.left": 20,
+        "margin.right": "auto",
+      });
+      expect(style.get("size.width")).toBe(300);
+      expect(style.get("size.height")).toBe("50%");
+      expect(style.get("margin.left")).toBe(20);
+      expect(style.get("margin.right")).toBe("auto");
+    });
+  });
+
   describe("Layout Modes", () => {
     it("display: defaults to Flex, sets and gets correctly", () => {
       const style = new Style();
@@ -909,6 +943,267 @@ describe("Style Class Properties", () => {
 
       style.gridRow = { start: 1, end: 2 };
       expect(style.gridRow.start).toBe(1);
+    });
+  });
+
+  describe("Batch Property Reading (Style.get)", () => {
+    it("reads single top-level property", () => {
+      const style = new Style();
+      style.display = Display.Flex;
+      expect(style.get("display")).toBe(Display.Flex);
+    });
+
+    it("reads single numeric property", () => {
+      const style = new Style();
+      style.flexGrow = 2.5;
+      expect(style.get("flexGrow")).toBe(2.5);
+    });
+
+    it("reads multiple top-level properties", () => {
+      const style = new Style();
+      style.display = Display.Grid;
+      style.flexGrow = 3;
+      style.flexShrink = 0.5;
+
+      const [display, flexGrow, flexShrink] = style.get(
+        "display",
+        "flexGrow",
+        "flexShrink",
+      );
+      expect(display).toBe(Display.Grid);
+      expect(flexGrow).toBe(3);
+      expect(flexShrink).toBeCloseTo(0.5);
+    });
+
+    it("reads nested size properties with dot notation", () => {
+      const style = new Style();
+      style.size = { width: 100, height: "50%" };
+
+      expect(style.get("size.width")).toBe(100);
+      expect(style.get("size.height")).toBe("50%");
+    });
+
+    it("reads nested margin properties with dot notation", () => {
+      const style = new Style();
+      style.margin = { left: 10, right: "auto", top: "5%", bottom: 0 };
+
+      expect(style.get("margin.left")).toBe(10);
+      expect(style.get("margin.right")).toBe("auto");
+      expect(style.get("margin.top")).toBe("5%");
+      expect(style.get("margin.bottom")).toBe(0);
+    });
+
+    it("reads mixed top-level and nested properties", () => {
+      const style = new Style();
+      style.display = Display.Flex;
+      style.flexDirection = FlexDirection.Column;
+      style.size = { width: 200, height: 100 };
+      style.padding = { left: 10, right: 10, top: 5, bottom: 5 };
+
+      const [display, width, paddingLeft] = style.get(
+        "display",
+        "size.width",
+        "padding.left",
+      );
+      expect(display).toBe(Display.Flex);
+      expect(width).toBe(200);
+      expect(paddingLeft).toBe(10);
+    });
+
+    it("reads full nested object (size)", () => {
+      const style = new Style();
+      style.size = { width: 150, height: "75%" };
+
+      const size = style.get("size")!;
+      expect(size.width).toBe(150);
+      expect(size.height).toBe("75%");
+    });
+
+    it("reads overflow nested properties", () => {
+      const style = new Style();
+      style.overflow = { x: Overflow.Hidden, y: Overflow.Scroll };
+
+      expect(style.get("overflow.x")).toBe(Overflow.Hidden);
+      expect(style.get("overflow.y")).toBe(Overflow.Scroll);
+    });
+
+    it("reads gap nested properties", () => {
+      const style = new Style();
+      style.gap = { width: 10, height: "5%" };
+
+      expect(style.get("gap.width")).toBe(10);
+      expect(style.get("gap.height")).toBe("5%");
+    });
+
+    it("reads boolean properties", () => {
+      const style = new Style();
+      style.itemIsTable = true;
+      style.itemIsReplaced = true;
+
+      expect(style.get("itemIsTable")).toBe(true);
+      expect(style.get("itemIsReplaced")).toBe(true);
+    });
+
+    it("returns undefined for optional properties that are not set", () => {
+      const style = new Style();
+      expect(style.get("alignItems")).toBeUndefined();
+      expect(style.get("aspectRatio")).toBeUndefined();
+    });
+
+    it("handles grid row/column properties", () => {
+      const style = new Style();
+      style.gridRow = { start: 1, end: 3 };
+      style.gridColumn = { start: 2, end: 4 };
+
+      expect(style.get("gridRow.start")).toBe(1);
+      expect(style.get("gridRow.end")).toBe(3);
+      expect(style.get("gridColumn.start")).toBe(2);
+      expect(style.get("gridColumn.end")).toBe(4);
+    });
+
+    it("returns undefined for empty keys array", () => {
+      const style = new Style();
+      expect(style.get()).toBeUndefined();
+    });
+
+    it("returns undefined for unknown property path", () => {
+      const style = new Style();
+      expect(style.get("unknownProperty")).toBeUndefined();
+      expect(style.get("size.unknown")).toBeUndefined();
+    });
+  });
+
+  describe("Batch Property Writing (Style.set)", () => {
+    it("sets single top-level property", () => {
+      const style = new Style();
+      style.set({ display: Display.Grid });
+      expect(style.display).toBe(Display.Grid);
+    });
+
+    it("sets multiple top-level properties", () => {
+      const style = new Style();
+      style.set({
+        display: Display.Flex,
+        flexDirection: FlexDirection.Column,
+        flexGrow: 2,
+        flexShrink: 0.5,
+      });
+
+      expect(style.display).toBe(Display.Flex);
+      expect(style.flexDirection).toBe(FlexDirection.Column);
+      expect(style.flexGrow).toBe(2);
+      expect(style.flexShrink).toBeCloseTo(0.5);
+    });
+
+    it("sets nested size properties with dot notation", () => {
+      const style = new Style();
+      style.set({
+        "size.width": 100,
+        "size.height": "50%",
+      });
+
+      expect(style.size.width).toBe(100);
+      expect(style.size.height).toBe("50%");
+    });
+
+    it("sets nested margin properties with dot notation", () => {
+      const style = new Style();
+      style.set({
+        "margin.left": 10,
+        "margin.right": "auto",
+        "margin.top": "5%",
+        "margin.bottom": 0,
+      });
+
+      expect(style.margin.left).toBe(10);
+      expect(style.margin.right).toBe("auto");
+      expect(style.margin.top).toBe("5%");
+      expect(style.margin.bottom).toBe(0);
+    });
+
+    it("sets mixed top-level and nested properties", () => {
+      const style = new Style();
+      style.set({
+        display: Display.Flex,
+        flexDirection: FlexDirection.Row,
+        "size.width": 200,
+        "padding.left": 10,
+        "padding.right": 10,
+      });
+
+      expect(style.display).toBe(Display.Flex);
+      expect(style.flexDirection).toBe(FlexDirection.Row);
+      expect(style.size.width).toBe(200);
+      expect(style.padding.left).toBe(10);
+      expect(style.padding.right).toBe(10);
+    });
+
+    it("sets full nested object (size)", () => {
+      const style = new Style();
+      style.set({
+        size: { width: 150, height: "75%" },
+      });
+
+      expect(style.size.width).toBe(150);
+      expect(style.size.height).toBe("75%");
+    });
+
+    it("sets overflow nested properties", () => {
+      const style = new Style();
+      style.set({
+        "overflow.x": Overflow.Hidden,
+        "overflow.y": Overflow.Scroll,
+      });
+
+      expect(style.overflow.x).toBe(Overflow.Hidden);
+      expect(style.overflow.y).toBe(Overflow.Scroll);
+    });
+
+    it("sets boolean properties", () => {
+      const style = new Style();
+      style.set({
+        itemIsTable: true,
+        itemIsReplaced: true,
+      });
+
+      expect(style.itemIsTable).toBe(true);
+      expect(style.itemIsReplaced).toBe(true);
+    });
+
+    it("set then get roundtrip", () => {
+      const style = new Style();
+      style.set({
+        display: Display.Grid,
+        "size.width": 300,
+        "margin.left": 20,
+        flexGrow: 1.5,
+      });
+
+      const [display, width, marginLeft, flexGrow] = style.get(
+        "display",
+        "size.width",
+        "margin.left",
+        "flexGrow",
+      );
+      expect(display).toBe(Display.Grid);
+      expect(width).toBe(300);
+      expect(marginLeft).toBe(20);
+      expect(flexGrow).toBe(1.5);
+    });
+
+    it("handles grid row/column properties", () => {
+      const style = new Style();
+      style.set({
+        "gridRow.start": 1,
+        "gridRow.end": 3,
+        "gridColumn.start": 2,
+        "gridColumn.end": 4,
+      });
+
+      expect(style.gridRow.start).toBe(1);
+      expect(style.gridRow.end).toBe(3);
+      expect(style.gridColumn.start).toBe(2);
+      expect(style.gridColumn.end).toBe(4);
     });
   });
 });

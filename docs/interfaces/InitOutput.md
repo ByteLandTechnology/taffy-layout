@@ -58,6 +58,7 @@
 | <a id="style_flexshrink"></a> `style_flexShrink`                                       | `readonly` | (`a`) => `number`                                             |
 | <a id="style_flexwrap"></a> `style_flexWrap`                                           | `readonly` | (`a`) => `number`                                             |
 | <a id="style_gap"></a> `style_gap`                                                     | `readonly` | (`a`) => `any`                                                |
+| <a id="style_get"></a> `style_get`                                                     | `readonly` | (`a`, `b`, `c`) => `any`                                      |
 | <a id="style_gridautocolumns"></a> `style_gridAutoColumns`                             | `readonly` | (`a`) => `any`                                                |
 | <a id="style_gridautoflow"></a> `style_gridAutoFlow`                                   | `readonly` | (`a`) => `number`                                             |
 | <a id="style_gridautorows"></a> `style_gridAutoRows`                                   | `readonly` | (`a`) => `any`                                                |
@@ -77,11 +78,12 @@
 | <a id="style_margin"></a> `style_margin`                                               | `readonly` | (`a`) => `any`                                                |
 | <a id="style_maxsize"></a> `style_maxSize`                                             | `readonly` | (`a`) => `any`                                                |
 | <a id="style_minsize"></a> `style_minSize`                                             | `readonly` | (`a`) => `any`                                                |
-| <a id="style_new"></a> `style_new`                                                     | `readonly` | () => `number`                                                |
+| <a id="style_new"></a> `style_new`                                                     | `readonly` | (`a`) => `number`                                             |
 | <a id="style_overflow"></a> `style_overflow`                                           | `readonly` | (`a`) => `any`                                                |
 | <a id="style_padding"></a> `style_padding`                                             | `readonly` | (`a`) => `any`                                                |
 | <a id="style_position"></a> `style_position`                                           | `readonly` | (`a`) => `number`                                             |
 | <a id="style_scrollbarwidth"></a> `style_scrollbarWidth`                               | `readonly` | (`a`) => `number`                                             |
+| <a id="style_set"></a> `style_set`                                                     | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_aligncontent"></a> `style_set_alignContent`                           | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_alignitems"></a> `style_set_alignItems`                               | `readonly` | (`a`, `b`) => `void`                                          |
 | <a id="style_set_alignself"></a> `style_set_alignSelf`                                 | `readonly` | (`a`, `b`) => `void`                                          |

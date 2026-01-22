@@ -246,3 +246,46 @@ test("typescript example 11", async () => {
   // CSS: grid-row: auto / auto
   style.gridRow = { start: "auto", end: "auto" };
 });
+
+test("typescript example 12", async () => {
+  const style = new Style();
+  // Top-level properties
+  style.get("display", "flexGrow");
+
+  // Nested properties with dot notation
+  style.get("size.width", "margin.left");
+});
+
+test("typescript example 13", async () => {
+  const style = new Style();
+  style.display = Display.Flex;
+
+  // Single property - returns exact type (includes undefined for optional properties)
+  const display = style.get("display"); // Display | undefined
+
+  // Nested property - returns exact type
+  const width = style.get("size.width"); // Dimension
+
+  // Optional properties return undefined when not set
+  const alignItems = style.get("alignItems"); // AlignItems | undefined
+
+  // Two properties - returns tuple for destructuring
+  const [d, w] = style.get("display", "size.width"); // [Display | undefined, Dimension]
+
+  // Three properties - returns tuple for destructuring
+  const [d2, w2, f] = style.get("display", "size.width", "flexGrow");
+
+  // Four or more properties - returns array
+  const values = style.get("display", "size.width", "flexGrow", "flexShrink");
+  // values type is: (Display | Dimension | number | undefined)[]
+});
+
+test("typescript example 14", async () => {
+  const style = new Style();
+  style.set({
+    display: Display.Flex,
+    "size.width": 200,
+    "margin.left": 10,
+    "margin.right": "auto",
+  });
+});
