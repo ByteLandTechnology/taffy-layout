@@ -1,3 +1,10 @@
+## [1.1.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.0.3...v1.1.0) (2026-01-22)
+
+### ✨ Features
+
+- **style:** add batch get and set methods ([25f6dc4](https://github.com/ByteLandTechnology/taffy-layout/commit/25f6dc40db6dbeff84ae4b09b14dce68b7af5c26))
+- **style:** add individual property getters/setters and flatten property paths ([1e4c648](https://github.com/ByteLandTechnology/taffy-layout/commit/1e4c6480439da4a9565a7bc96b56bd02b9ef222d))
+
 ## [1.0.3](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.0.2...v1.0.3) (2026-01-21)
 
 ### 📚 Documentation
