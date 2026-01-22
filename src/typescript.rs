@@ -574,7 +574,7 @@ export type GridTemplateArea = {
 };
 
 /**
- * Valid property paths for Style.get() method.
+ * Valid property keys for Style.get() method.
  *
  * Supports both object properties and individual flat properties.
  *
@@ -672,6 +672,8 @@ declare module "./taffy_wasm" {
      *
      * @returns Single value for one key, tuple for 2-3 keys, array for 4+ keys
      *
+     * @throws Error if any property key is unknown.
+     *
      * @remarks
      * - Single property: returns exact value type (including `undefined` for optional properties)
      * - 2-3 properties: returns typed tuple for destructuring
@@ -715,11 +717,12 @@ declare module "./taffy_wasm" {
      * Sets multiple style properties in a single WASM call.
      * Supports both object properties and individual flat properties.
      *
-     * @param props - Object mapping property paths to their values
+     * @param props - Object mapping property keys to their values
      *
      * @remarks
-     * Only accepts valid property paths with their corresponding value types.
-     * Invalid properties will be ignored at runtime.
+     * Only accepts valid property keys with their corresponding value types.
+     *
+     * @throws Error if any property key is unknown.
      *
      * @example
      * ```typescript
@@ -737,7 +740,7 @@ declare module "./taffy_wasm" {
 }
 
 /**
- * Helper type to convert an array of property paths to an array of their value types.
+ * Helper type to convert an array of property keys to an array of their value types.
  * Unlike `TupleToStyleValues`, this returns an array type instead of a tuple.
  */
 type StylePropertyArrayValues<Keys extends StyleProperty[]> = {

@@ -67,8 +67,8 @@ test("style example 2", async () => {
   const style = new Style({
     display: Display.Flex,
     flexDirection: FlexDirection.Column,
-    "size.width": 200,
-    "margin.left": 10,
+    width: 200,
+    marginLeft: 10,
   });
 });
 
@@ -79,8 +79,8 @@ test("style example 3", async () => {
   style.set({
     display: Display.Flex,
     flexDirection: FlexDirection.Column,
-    "size.width": 200,
-    "margin.left": 10,
+    width: 200,
+    marginLeft: 10,
   });
 
   // Get a single property
@@ -90,7 +90,7 @@ test("style example 3", async () => {
   const [display, flexDirection, width] = style.get(
     "display",
     "flexDirection",
-    "size.width",
+    "width",
   );
 });
 
@@ -103,8 +103,8 @@ test("style example 4", async () => {
   const style2 = new Style({
     display: Display.Flex,
     flexDirection: FlexDirection.Column,
-    "size.width": 200,
-    "margin.left": 10,
+    width: 200,
+    marginLeft: 10,
   });
 });
 
@@ -518,14 +518,10 @@ test("style example 69", async () => {
   const d = style.get("display");
 
   // Read nested property
-  const w = style.get("size.width");
+  const w = style.get("width");
 
   // Read multiple properties with destructuring
-  const [display, width, margin] = style.get(
-    "display",
-    "size.width",
-    "margin.left",
-  );
+  const [display, width, margin] = style.get("display", "width", "marginLeft");
 });
 
 test("style example 70", async () => {
@@ -535,9 +531,9 @@ test("style example 70", async () => {
   style.set({
     display: Display.Flex,
     flexDirection: FlexDirection.Column,
-    "size.width": 200,
-    "size.height": "50%",
-    "margin.left": 10,
-    "margin.right": "auto",
+    width: 200,
+    height: "50%",
+    marginLeft: 10,
+    marginRight: "auto",
   });
 });

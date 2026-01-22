@@ -78,7 +78,7 @@ type StyleProperty =
   | "gridTemplateColumnNames";
 ```
 
-Valid property paths for Style.get() method.
+Valid property keys for Style.get() method.
 
 Supports both object properties and individual flat properties.
 

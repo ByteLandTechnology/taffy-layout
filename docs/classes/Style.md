@@ -58,8 +58,8 @@ console.log(style.display); // Display.Block
 const style2 = new Style({
   display: Display.Flex,
   flexDirection: FlexDirection.Column,
-  "size.width": 200,
-  "margin.left": 10,
+  width: 200,
+  marginLeft: 10,
 });
 ```
 
@@ -167,49 +167,6 @@ free(): void;
 #### Call Signature
 
 ```ts
-get(...keys): any;
-```
-
-Reads multiple style properties in a single WASM call.
-
-Supports dot notation for nested properties (e.g., `"size.width"`, `"margin.left"`).
-
-##### Parameters
-
-| Parameter | Type       | Description            |
-| --------- | ---------- | ---------------------- |
-| ...`keys` | `string`[] | Property paths to read |
-
-##### Returns
-
-`any`
-
-- Single value if one key, array of values if multiple keys
-
-##### Example
-
-```typescript
-const style = new Style();
-style.display = Display.Flex;
-style.size = { width: 100, height: "50%" };
-
-// Read single property
-const d = style.get("display");
-
-// Read nested property
-const w = style.get("size.width");
-
-// Read multiple properties with destructuring
-const [display, width, margin] = style.get(
-  "display",
-  "size.width",
-  "margin.left",
-);
-```
-
-#### Call Signature
-
-```ts
 get<K>(...keys): StylePropertyValues[K];
 ```
 
@@ -233,6 +190,10 @@ Supports both object properties and individual flat properties.
 [`StylePropertyValues`](../type-aliases/StylePropertyValues.md)\[`K`\]
 
 Single value for one key, tuple for 2-3 keys, array for 4+ keys
+
+##### Throws
+
+Error if any property key is unknown.
 
 ##### Remarks
 
@@ -339,45 +300,6 @@ get<Keys>(...keys): StylePropertyArrayValues<Keys>;
 
 ### set()
 
-#### Call Signature
-
-```ts
-set(props): void;
-```
-
-Sets multiple style properties in a single WASM call.
-
-Accepts an object where keys are property paths (supporting dot notation)
-and values are the new property values.
-
-##### Parameters
-
-| Parameter | Type  | Description                                          |
-| --------- | ----- | ---------------------------------------------------- |
-| `props`   | `any` | Object with property paths as keys and values to set |
-
-##### Returns
-
-`void`
-
-##### Example
-
-```typescript
-const style = new Style();
-
-// Set multiple properties at once
-style.set({
-  display: Display.Flex,
-  flexDirection: FlexDirection.Column,
-  "size.width": 200,
-  "size.height": "50%",
-  "margin.left": 10,
-  "margin.right": "auto",
-});
-```
-
-#### Call Signature
-
 ```ts
 set(props): void;
 ```
@@ -385,22 +307,25 @@ set(props): void;
 Sets multiple style properties in a single WASM call.
 Supports both object properties and individual flat properties.
 
-##### Parameters
+#### Parameters
 
-| Parameter | Type                                                            | Description                                   |
-| --------- | --------------------------------------------------------------- | --------------------------------------------- |
-| `props`   | [`StylePropertyValues`](../type-aliases/StylePropertyValues.md) | Object mapping property paths to their values |
+| Parameter | Type                                                            | Description                                  |
+| --------- | --------------------------------------------------------------- | -------------------------------------------- |
+| `props`   | [`StylePropertyValues`](../type-aliases/StylePropertyValues.md) | Object mapping property keys to their values |
 
-##### Returns
+#### Returns
 
 `void`
 
-##### Remarks
+#### Remarks
 
-Only accepts valid property paths with their corresponding value types.
-Invalid properties will be ignored at runtime.
+Only accepts valid property keys with their corresponding value types.
 
-##### Example
+#### Throws
+
+Error if any property key is unknown.
+
+#### Example
 
 ```typescript
 const style = new Style();

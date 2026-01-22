@@ -60,8 +60,8 @@
 //! const style = new Style({
 //!   display: Display.Flex,
 //!   flexDirection: FlexDirection.Column,
-//!   "size.width": 200,
-//!   "margin.left": 10
+//!   width: 200,
+//!   marginLeft: 10
 //! });
 //! ```
 //!
@@ -78,15 +78,15 @@
 //! style.set({
 //!   display: Display.Flex,
 //!   flexDirection: FlexDirection.Column,
-//!   "size.width": 200,
-//!   "margin.left": 10
+//!   width: 200,
+//!   marginLeft: 10
 //! });
 //!
 //! // Get a single property
 //! const d = style.get("display");
 //!
 //! // Get multiple properties with destructuring
-//! const [display, flexDirection, width] = style.get("display", "flexDirection", "size.width");
+//! const [display, flexDirection, width] = style.get("display", "flexDirection", "width");
 //! ```
 //!
 //! ## Property Categories
@@ -164,8 +164,8 @@ impl JsStyle {
     /// const style2 = new Style({
     ///   display: Display.Flex,
     ///   flexDirection: FlexDirection.Column,
-    ///   "size.width": 200,
-    ///   "margin.left": 10
+    ///   width: 200,
+    ///   marginLeft: 10
     /// });
     /// ```
     #[wasm_bindgen(constructor)]
@@ -2218,9 +2218,11 @@ impl JsStyle {
 
     /// Reads multiple style properties in a single WASM call.
     ///
-    /// Supports dot notation for nested properties (e.g., `"size.width"`, `"margin.left"`).
+    /// Supports flattened property keys (e.g., `"width"`, `"marginLeft"`).
     ///
-    /// @param keys - Property paths to read
+    /// @throws Error if any property key is unknown.
+    ///
+    /// @param keys - Property keys to read
     /// @returns - Single value if one key, array of values if multiple keys
     ///
     /// @example
@@ -2233,12 +2235,12 @@ impl JsStyle {
     /// const d = style.get("display");
     ///
     /// // Read nested property
-    /// const w = style.get("size.width");
+    /// const w = style.get("width");
     ///
     /// // Read multiple properties with destructuring
-    /// const [display, width, margin] = style.get("display", "size.width", "margin.left");
+    /// const [display, width, margin] = style.get("display", "width", "marginLeft");
     /// ```
-    #[wasm_bindgen(variadic)]
+    #[wasm_bindgen(variadic, skip_typescript)]
     pub fn get(&self, keys: Vec<String>) -> JsValue {
         if keys.is_empty() {
             return JsValue::UNDEFINED;
@@ -2253,7 +2255,9 @@ impl JsStyle {
         }
     }
 
-    /// Internal helper to get a property value by its path
+    /// Internal helper to get a property value by its key
+    ///
+    /// @throws Error if the key is unknown.
     fn get_property(&self, path: &str) -> JsValue {
         match path {
             // Layout Mode
@@ -2610,8 +2614,7 @@ impl JsStyle {
 
             // Unknown property path
             _ => {
-                log(&format!("Unknown property path: {}", path));
-                JsValue::UNDEFINED
+                wasm_bindgen::throw_str(&format!("Unknown property path: {}", path));
             }
         }
     }
@@ -2622,10 +2625,11 @@ impl JsStyle {
 
     /// Sets multiple style properties in a single WASM call.
     ///
-    /// Accepts an object where keys are property paths (supporting dot notation)
-    /// and values are the new property values.
+    /// Accepts an object where keys are property keys.
     ///
-    /// @param props - Object with property paths as keys and values to set
+    /// @throws Error if any property key is unknown.
+    ///
+    /// @param props - Object with property keys as keys and values to set
     ///
     /// @example
     /// ```typescript
@@ -2635,13 +2639,13 @@ impl JsStyle {
     /// style.set({
     ///   display: Display.Flex,
     ///   flexDirection: FlexDirection.Column,
-    ///   "size.width": 200,
-    ///   "size.height": "50%",
-    ///   "margin.left": 10,
-    ///   "margin.right": "auto"
+    ///   width: 200,
+    ///   height: "50%",
+    ///   marginLeft: 10,
+    ///   marginRight: "auto"
     /// });
     /// ```
-    #[wasm_bindgen]
+    #[wasm_bindgen(skip_typescript)]
     pub fn set(&mut self, props: JsValue) {
         if !props.is_object() {
             log("set() requires an object argument");
@@ -2664,7 +2668,9 @@ impl JsStyle {
         }
     }
 
-    /// Internal helper to set a property value by its path
+    /// Internal helper to set a property value by its key
+    ///
+    /// @throws Error if the key is unknown.
     fn set_property(&mut self, path: &str, value: JsValue) {
         match path {
             // Layout Mode
@@ -3108,7 +3114,7 @@ impl JsStyle {
 
             // Unknown property path
             _ => {
-                log(&format!("Unknown property path for set: {}", path));
+                wasm_bindgen::throw_str(&format!("Unknown property path for set: {}", path));
             }
         }
     }

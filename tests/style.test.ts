@@ -1066,10 +1066,12 @@ describe("Style Class Properties", () => {
       expect(style.get()).toBeUndefined();
     });
 
-    it("returns undefined for unknown property path", () => {
+    it("throws error for unknown property path", () => {
       const style = new Style();
-      expect(style.get("unknownProperty")).toBeUndefined();
-      expect(style.get("size.unknown")).toBeUndefined();
+      // @ts-expect-error - testing invalid property key
+      expect(() => style.get("unknownProperty")).toThrow(
+        "Unknown property path: unknownProperty",
+      );
     });
   });
 
@@ -1204,6 +1206,14 @@ describe("Style Class Properties", () => {
       expect(style.gridRow.end).toBe(3);
       expect(style.gridColumn.start).toBe(2);
       expect(style.gridColumn.end).toBe(4);
+    });
+
+    it("throws error for unknown property key", () => {
+      const style = new Style();
+      // @ts-expect-error - testing invalid property key in batch set
+      expect(() => style.set({ unknownProperty: 1 })).toThrow(
+        "Unknown property path for set: unknownProperty",
+      );
     });
   });
 

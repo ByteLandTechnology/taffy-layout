@@ -14,7 +14,7 @@ type StylePropertyArrayValues<Keys> = {
 };
 ```
 
-Helper type to convert an array of property paths to an array of their value types.
+Helper type to convert an array of property keys to an array of their value types.
 Unlike `TupleToStyleValues`, this returns an array type instead of a tuple.
 
 ## Type Parameters
