@@ -1,7 +1,7 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["./pkg/taffy_wasm.d.ts"],
-  "out": "./docs",
+  "out": "./docs/api",
   "plugin": ["typedoc-plugin-markdown"],
   "name": "Taffy Layout API Documentation",
   "readme": "none",

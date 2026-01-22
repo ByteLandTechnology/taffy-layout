@@ -99,27 +99,27 @@ console.log(
 
 The main class for managing layout trees.
 
-[View Documentation](./docs/classes/TaffyTree.md)
+[View Documentation](./docs/api/classes/TaffyTree.md)
 
 ### Style
 
 Configuration object for node layout properties.
 
-[View Documentation](./docs/classes/Style.md)
+[View Documentation](./docs/api/classes/Style.md)
 
 ### Layout
 
 Read-only computed layout result.
 
-[View Documentation](./docs/classes/Layout.md)
+[View Documentation](./docs/api/classes/Layout.md)
 
 ### Enums
 
-[View Documentation](./docs/index.md#enumerations)
+[View Documentation](./docs/api/index.md#enumerations)
 
 ### Types
 
-[View Documentation](./docs/index.md#type-aliases)
+[View Documentation](./docs/api/index.md#type-aliases)
 
 ## 📐 Custom Text Measurement
 

@@ -99,27 +99,27 @@ console.log(
 
 管理布局树的核心类。
 
-[查看文档](./docs/classes/TaffyTree.md)
+[查看文档](./docs/api/classes/TaffyTree.md)
 
 ### Style
 
 用于配置节点布局属性的对象。
 
-[查看文档](./docs/classes/Style.md)
+[查看文档](./docs/api/classes/Style.md)
 
 ### Layout
 
 只读的布局计算结果。
 
-[查看文档](./docs/classes/Layout.md)
+[查看文档](./docs/api/classes/Layout.md)
 
 ### 枚举
 
-[查看文档](./docs/index.md#enumerations)
+[查看文档](./docs/api/index.md#enumerations)
 
 ### 类型别名
 
-[查看文档](./docs/index.md#type-aliases)
+[查看文档](./docs/api/index.md#type-aliases)
 
 ## 📐 自定义文本测量
 
