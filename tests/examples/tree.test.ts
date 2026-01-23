@@ -386,6 +386,6 @@ test("tree example 35", async () => {
 test("tree example 36", async () => {
   const tree = new TaffyTree();
   const rootId = tree.newLeaf(new Style());
-  tree.printTree(rootId);
-  // Output appears in browser console
+  const output = tree.printTree(rootId);
+  console.log(output);
 });

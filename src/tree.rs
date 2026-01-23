@@ -1108,15 +1108,70 @@ impl JsTaffyTree {
     ///
     /// @param node - The root node ID to print from
     ///
+    /// @returns - A string representation of the tree structure
+    ///
     /// @example
     /// ```typescript
     /// const tree = new TaffyTree();
     /// const rootId = tree.newLeaf(new Style());
-    /// tree.printTree(rootId);
-    /// // Output appears in browser console
+    /// const output = tree.printTree(rootId);
+    /// console.log(output);
     /// ```
     #[wasm_bindgen(js_name = printTree)]
-    pub fn print_tree(&mut self, node: u64) {
-        self.tree.print_tree(NodeId::from(node));
+    pub fn print_tree(&self, node: u64) -> String {
+        let tree = &self.tree;
+        let root_id = NodeId::from(node);
+
+        fn print_node(
+            tree: &TaffyTree<JsValue>,
+            node_id: NodeId,
+            has_sibling: bool,
+            lines_string: String,
+        ) -> String {
+            let layout = tree.get_final_layout(node_id);
+            let display = tree.get_debug_label(node_id);
+            let num_children = tree.child_count(node_id);
+
+            let fork_string = if has_sibling {
+                "├── "
+            } else {
+                "└── "
+            };
+
+            let result = format!(
+                "{lines}{fork} {display} [x: {x:<4} y: {y:<4} w: {w:<4} h: {h:<4} content_w: {cw:<4} content_h: {ch:<4} border: l:{bl} r:{br} t:{bt} b:{bb}, padding: l:{pl} r:{pr} t:{pt} b:{pb}] ({key:?})\n",
+                lines = lines_string,
+                fork = fork_string,
+                display = display,
+                x = layout.location.x,
+                y = layout.location.y,
+                w = layout.size.width,
+                h = layout.size.height,
+                cw = layout.content_size.width,
+                ch = layout.content_size.height,
+                bl = layout.border.left,
+                br = layout.border.right,
+                bt = layout.border.top,
+                bb = layout.border.bottom,
+                pl = layout.padding.left,
+                pr = layout.padding.right,
+                pt = layout.padding.top,
+                pb = layout.padding.bottom,
+                key = u64::from(node_id),
+            );
+
+            let bar = if has_sibling { "│   " } else { "    " };
+            let new_string = lines_string + bar;
+
+            let mut child_output = String::new();
+            for (index, child) in tree.child_ids(node_id).enumerate() {
+                let has_sibling = index < num_children - 1;
+                child_output.push_str(&print_node(tree, child, has_sibling, new_string.clone()));
+            }
+
+            result + &child_output
+        }
+
+        print_node(tree, root_id, false, String::new())
     }
 }

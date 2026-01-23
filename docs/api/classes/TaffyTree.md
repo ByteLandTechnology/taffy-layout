@@ -875,7 +875,7 @@ const parent: bigint | undefined = tree.parent(childId);
 ### printTree()
 
 ```ts
-printTree(node): void;
+printTree(node): string;
 ```
 
 Prints the tree structure to the console (for debugging)
@@ -891,15 +891,17 @@ the given node. Useful for debugging layout issues.
 
 #### Returns
 
-`void`
+`string`
+
+- A string representation of the tree structure
 
 #### Example
 
 ```typescript
 const tree = new TaffyTree();
 const rootId = tree.newLeaf(new Style());
-tree.printTree(rootId);
-// Output appears in browser console
+const output = tree.printTree(rootId);
+console.log(output);
 ```
 
 ---

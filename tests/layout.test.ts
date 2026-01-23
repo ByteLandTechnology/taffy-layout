@@ -715,3 +715,141 @@ describe("Layout.get() batch property retrieval", () => {
     tree.free();
   });
 });
+
+describe("printTree", () => {
+  beforeAll(async () => {
+    await setupTaffy();
+  });
+
+  it("returns string representation of single node", () => {
+    const tree = new TaffyTree();
+    const style = new Style();
+    style.size = { width: 100, height: 50 };
+    const node = tree.newLeaf(style);
+    tree.computeLayout(node, { width: 100, height: 50 });
+
+    const output = tree.printTree(node);
+
+    expect(typeof output).toBe("string");
+    expect(output.length).toBeGreaterThan(0);
+    expect(output).toContain("└──"); // tree marker
+    expect(output).toContain("x:");
+    expect(output).toContain("y:");
+    expect(output).toContain("w:");
+    expect(output).toContain("h:");
+
+    tree.free();
+    style.free();
+  });
+
+  it("returns string representation of tree with children", () => {
+    const tree = new TaffyTree();
+
+    const rootStyle = new Style();
+    rootStyle.display = Display.Flex;
+    rootStyle.flexDirection = FlexDirection.Column;
+    rootStyle.size = { width: 100, height: 100 };
+
+    const root = tree.newLeaf(rootStyle);
+
+    const childStyle = new Style();
+    childStyle.size = { width: 50, height: 50 };
+
+    const child1 = tree.newLeaf(childStyle);
+    const child2 = tree.newLeaf(childStyle);
+
+    tree.addChild(root, child1);
+    tree.addChild(root, child2);
+
+    tree.computeLayout(root, { width: 100, height: 100 });
+
+    const output = tree.printTree(root);
+
+    expect(typeof output).toBe("string");
+    expect(output).toContain("└──"); // root marker
+    expect(output).toContain("├──"); // child with sibling marker
+
+    // Should contain 3 nodes (root + 2 children)
+    const lines = output.split("\n").filter((line) => line.includes(" [x:"));
+    expect(lines.length).toBe(3);
+
+    tree.free();
+    rootStyle.free();
+    childStyle.free();
+  });
+
+  it("includes layout information in output", () => {
+    const tree = new TaffyTree();
+    const style = new Style();
+    style.size = { width: 100, height: 50 };
+    style.padding = { left: 5, right: 10, top: 3, bottom: 7 };
+    style.border = { left: 1, right: 2, top: 1, bottom: 2 };
+    const node = tree.newLeaf(style);
+    tree.computeLayout(node, { width: 100, height: 50 });
+
+    const output = tree.printTree(node);
+
+    expect(output).toContain("x: 0");
+    expect(output).toContain("y: 0");
+    expect(output).toContain("w: 100");
+    expect(output).toContain("h: 50");
+    expect(output).toContain("content_w:");
+    expect(output).toContain("content_h:");
+    expect(output).toContain("border: l:1 r:2 t:1 b:2");
+    expect(output).toContain("padding: l:5 r:10 t:3 b:7");
+
+    tree.free();
+    style.free();
+  });
+
+  it("shows correct node id in output", () => {
+    const tree = new TaffyTree();
+    const style = new Style();
+    style.size = { width: 100, height: 50 };
+    const node = tree.newLeaf(style);
+    tree.computeLayout(node, { width: 100, height: 50 });
+
+    const output = tree.printTree(node);
+
+    // Should contain node id in parentheses
+    expect(output).toMatch(/\(\d+\)/);
+
+    tree.free();
+    style.free();
+  });
+
+  it("handles deep tree structure", () => {
+    const tree = new TaffyTree();
+
+    const rootStyle = new Style();
+    rootStyle.display = Display.Flex;
+    rootStyle.size = { width: 100, height: 100 };
+
+    const root = tree.newLeaf(rootStyle);
+
+    // Create 3 levels of children
+    const childStyle = new Style();
+    childStyle.size = { width: 30, height: 30 };
+
+    const level1 = tree.newLeaf(childStyle);
+    tree.addChild(root, level1);
+
+    const level2 = tree.newLeaf(childStyle);
+    tree.addChild(level1, level2);
+
+    const level3 = tree.newLeaf(childStyle);
+    tree.addChild(level2, level3);
+
+    tree.computeLayout(root, { width: 100, height: 100 });
+
+    const output = tree.printTree(root);
+
+    // Should have proper indentation for each level
+    const lines = output.split("\n").filter((line) => line.trim().length > 0);
+    expect(lines.length).toBeGreaterThanOrEqual(4); // at least 4 nodes
+
+    tree.free();
+    rootStyle.free();
+    childStyle.free();
+  });
+});

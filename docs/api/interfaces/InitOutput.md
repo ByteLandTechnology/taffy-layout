@@ -216,7 +216,7 @@
 | <a id="taffytree_newleafwithcontext"></a> `taffytree_newLeafWithContext`               | `readonly` | (`a`, `b`, `c`) => \[`bigint`, `number`, `number`\]           |
 | <a id="taffytree_newwithchildren"></a> `taffytree_newWithChildren`                     | `readonly` | (`a`, `b`, `c`, `d`) => \[`bigint`, `number`, `number`\]      |
 | <a id="taffytree_parent"></a> `taffytree_parent`                                       | `readonly` | (`a`, `b`) => \[`number`, `bigint`\]                          |
-| <a id="taffytree_printtree"></a> `taffytree_printTree`                                 | `readonly` | (`a`, `b`) => `void`                                          |
+| <a id="taffytree_printtree"></a> `taffytree_printTree`                                 | `readonly` | (`a`, `b`) => \[`number`, `number`\]                          |
 | <a id="taffytree_remove"></a> `taffytree_remove`                                       | `readonly` | (`a`, `b`) => \[`bigint`, `number`, `number`\]                |
 | <a id="taffytree_removechild"></a> `taffytree_removeChild`                             | `readonly` | (`a`, `b`, `c`) => \[`bigint`, `number`, `number`\]           |
 | <a id="taffytree_removechildatindex"></a> `taffytree_removeChildAtIndex`               | `readonly` | (`a`, `b`, `c`) => \[`bigint`, `number`, `number`\]           |
