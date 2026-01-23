@@ -1,3 +1,13 @@
+## [1.4.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.3.0...v1.4.0) (2026-01-23)
+
+### ✨ Features
+
+- **tree:** improve printTree to return string instead of void ([d2a84cc](https://github.com/ByteLandTechnology/taffy-layout/commit/d2a84cca6d75ed4b78ebf5c4ee1c13a7cc5352ab))
+
+### 📚 Documentation
+
+- move API documentation to docs/api directory ([0571044](https://github.com/ByteLandTechnology/taffy-layout/commit/057104445f0301ea41f1b6e55e8be5e732bb4052))
+
 ## [1.3.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.2.0...v1.3.0) (2026-01-22)
 
 ### ✨ Features
