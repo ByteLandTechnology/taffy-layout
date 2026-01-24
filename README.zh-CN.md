@@ -71,10 +71,7 @@ childStyle.height = "auto";
 // 创建节点
 const child1 = tree.newLeaf(childStyle);
 const child2 = tree.newLeaf(childStyle);
-const container = tree.newWithChildren(
-  containerStyle,
-  BigUint64Array.from([child1, child2]),
-);
+const container = tree.newWithChildren(containerStyle, [child1, child2]);
 
 // 计算布局
 tree.computeLayout(container, { width: 300, height: 200 });

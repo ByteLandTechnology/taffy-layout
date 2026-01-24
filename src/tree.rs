@@ -58,7 +58,7 @@
 //! const child2: bigint = tree.newLeaf(childStyle);
 //! const container: bigint = tree.newWithChildren(
 //!   containerStyle,
-//!   BigUint64Array.from([child1, child2])
+//!   [child1, child2]
 //! );
 //!
 //! // Compute layout with typed available space
@@ -99,7 +99,7 @@
 use crate::error::{JsTaffyError, map_bool_result, map_node_result, map_void_result, to_js_error};
 use crate::layout::JsLayout;
 use crate::style::JsStyle;
-use crate::types::{AvailableSizeDto, JsAvailableSizeArg, JsMeasureFunctionArg};
+use crate::types::{AvailableSizeDto, JsAvailableSizeArg, JsBigIntArray, JsMeasureFunctionArg};
 use crate::{DetailedGridInfoDto, DetailedGridItemsInfoDto, DetailedGridTracksInfoDto};
 
 use taffy::TaffyError as NativeTaffyError;
@@ -271,7 +271,7 @@ impl JsTaffyTree {
     /// The children must already exist in the tree.
     ///
     /// @param style - The style configuration for the node
-    /// @param children - Array of child node IDs (as BigUint64Array)
+    /// @param children - Array of child node IDs (as bigint[])
     ///
     /// @returns - The node ID (`bigint`)
     ///
@@ -288,15 +288,16 @@ impl JsTaffyTree {
     ///
     /// const container: bigint = tree.newWithChildren(
     ///   containerStyle,
-    ///   BigUint64Array.from([child1, child2])
+    ///   [child1, child2]
     /// );
     /// ```
     #[wasm_bindgen(js_name = newWithChildren)]
     pub fn new_with_children(
         &mut self,
         style: &JsStyle,
-        children: Box<[u64]>,
+        children: JsBigIntArray,
     ) -> Result<u64, JsValue> {
+        let children: Vec<u64> = serde_wasm_bindgen::from_value(children.into())?;
         let children_ids: Vec<NodeId> = children.iter().map(|&id| NodeId::from(id)).collect();
         map_node_result(
             self.tree
@@ -433,14 +434,15 @@ impl JsTaffyTree {
     /// const tree = new TaffyTree();
     /// const id1 = tree.newLeaf(new Style());
     /// const id2 = tree.newLeaf(new Style());
-    /// const nodes = BigUint64Array.from([id1, id2]);
+    /// const nodes = [id1, id2];
     /// const contexts = tree.getDisjointNodeContextMut(nodes);
     /// ```
     #[wasm_bindgen(js_name = getDisjointNodeContextMut)]
     pub fn get_disjoint_node_context_mut(
         &mut self,
-        children: Box<[u64]>,
+        children: JsBigIntArray,
     ) -> Result<Box<[JsValue]>, JsValue> {
+        let children: Vec<u64> = serde_wasm_bindgen::from_value(children.into())?;
         let mut results = Vec::with_capacity(children.len());
         for id in children.iter() {
             match self.tree.get_node_context_mut(NodeId::from(*id)) {
@@ -524,11 +526,12 @@ impl JsTaffyTree {
     /// const child1 = tree.newLeaf(new Style());
     /// const child2 = tree.newLeaf(new Style());
     /// const child3 = tree.newLeaf(new Style());
-    /// const children = BigUint64Array.from([child1, child2, child3]);
+    /// const children = [child1, child2, child3];
     /// tree.setChildren(parentId, children);
     /// ```
     #[wasm_bindgen(js_name = setChildren)]
-    pub fn set_children(&mut self, parent: u64, children: Box<[u64]>) -> Result<(), JsValue> {
+    pub fn set_children(&mut self, parent: u64, children: JsBigIntArray) -> Result<(), JsValue> {
+        let children: Vec<u64> = serde_wasm_bindgen::from_value(children.into())?;
         let children_ids: Vec<NodeId> = children.iter().map(|&id| NodeId::from(id)).collect();
         map_void_result(self.tree.set_children(NodeId::from(parent), &children_ids))
     }
@@ -652,12 +655,13 @@ impl JsTaffyTree {
     /// ```typescript
     /// const tree = new TaffyTree();
     /// const parentId = tree.newLeaf(new Style());
+    /// const child0 = tree.newLeaf(new Style());
     /// const child1 = tree.newLeaf(new Style());
     /// const child2 = tree.newLeaf(new Style());
     /// const child3 = tree.newLeaf(new Style());
-    /// tree.setChildren(parentId, BigUint64Array.from([child1, child2, child3]));
+    /// tree.setChildren(parentId, [child0, child1, child2, child3]);
     ///
-    /// tree.removeChildrenRange(parentId, 1, 3);
+    /// tree.removeChildrenRange(parentId, 1, 3); // Removes child1 and child2
     /// ```
     #[wasm_bindgen(js_name = removeChildrenRange)]
     pub fn remove_children_range(
@@ -728,7 +732,7 @@ impl JsTaffyTree {
     ///
     /// @param parent - The parent node ID
     ///
-    /// @returns - Array of child node IDs (`BigUint64Array`)
+    /// @returns - Array of child node IDs
     ///
     /// @throws `TaffyError` if the parent node does not exist
     ///
@@ -736,13 +740,16 @@ impl JsTaffyTree {
     /// ```typescript
     /// const tree = new TaffyTree();
     /// const parentId = tree.newLeaf(new Style());
-    /// const children: BigUint64Array = tree.children(parentId);
+    /// const children = tree.children(parentId);
     /// ```
     #[wasm_bindgen(js_name = children)]
-    pub fn children(&self, parent: u64) -> Result<Box<[u64]>, JsValue> {
+    pub fn children(&self, parent: u64) -> Result<JsBigIntArray, JsValue> {
         self.tree
             .children(NodeId::from(parent))
-            .map(|c| c.into_iter().map(u64::from).collect::<Box<[u64]>>())
+            .map(|c| {
+                let ids: Vec<u64> = c.into_iter().map(u64::from).collect();
+                serde_wasm_bindgen::to_value(&ids).unwrap().into()
+            })
             .map_err(to_js_error)
     }
 

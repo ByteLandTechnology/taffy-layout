@@ -121,7 +121,7 @@ const count: number = tree.childCount(parentId);
 ### children()
 
 ```ts
-children(parent): BigUint64Array;
+children(parent): bigint[];
 ```
 
 Gets all children of a node
@@ -134,9 +134,9 @@ Gets all children of a node
 
 #### Returns
 
-`BigUint64Array`
+`bigint`[]
 
-- Array of child node IDs (`BigUint64Array`)
+- Array of child node IDs
 
 #### Throws
 
@@ -147,7 +147,7 @@ Gets all children of a node
 ```typescript
 const tree = new TaffyTree();
 const parentId = tree.newLeaf(new Style());
-const children: BigUint64Array = tree.children(parentId);
+const children = tree.children(parentId);
 ```
 
 ---
@@ -469,9 +469,9 @@ when you need to access contexts for many nodes.
 
 #### Parameters
 
-| Parameter  | Type             | Description       |
-| ---------- | ---------------- | ----------------- |
-| `children` | `BigUint64Array` | Array of node IDs |
+| Parameter  | Type       | Description       |
+| ---------- | ---------- | ----------------- |
+| `children` | `bigint`[] | Array of node IDs |
 
 #### Returns
 
@@ -485,7 +485,7 @@ when you need to access contexts for many nodes.
 const tree = new TaffyTree();
 const id1 = tree.newLeaf(new Style());
 const id2 = tree.newLeaf(new Style());
-const nodes = BigUint64Array.from([id1, id2]);
+const nodes = [id1, id2];
 const contexts = tree.getDisjointNodeContextMut(nodes);
 ```
 
@@ -807,10 +807,10 @@ The children must already exist in the tree.
 
 #### Parameters
 
-| Parameter  | Type                | Description                                 |
-| ---------- | ------------------- | ------------------------------------------- |
-| `style`    | [`Style`](Style.md) | The style configuration for the node        |
-| `children` | `BigUint64Array`    | Array of child node IDs (as BigUint64Array) |
+| Parameter  | Type                | Description                           |
+| ---------- | ------------------- | ------------------------------------- |
+| `style`    | [`Style`](Style.md) | The style configuration for the node  |
+| `children` | `bigint`[]          | Array of child node IDs (as bigint[]) |
 
 #### Returns
 
@@ -832,10 +832,10 @@ containerStyle.display = Display.Flex;
 const child1: bigint = tree.newLeaf(new Style());
 const child2: bigint = tree.newLeaf(new Style());
 
-const container: bigint = tree.newWithChildren(
-  containerStyle,
-  BigUint64Array.from([child1, child2]),
-);
+const container: bigint = tree.newWithChildren(containerStyle, [
+  child1,
+  child2,
+]);
 ```
 
 ---
@@ -1055,12 +1055,13 @@ Removes children from `start_index` (inclusive) to `end_index` (exclusive).
 ```typescript
 const tree = new TaffyTree();
 const parentId = tree.newLeaf(new Style());
+const child0 = tree.newLeaf(new Style());
 const child1 = tree.newLeaf(new Style());
 const child2 = tree.newLeaf(new Style());
 const child3 = tree.newLeaf(new Style());
-tree.setChildren(parentId, BigUint64Array.from([child1, child2, child3]));
+tree.setChildren(parentId, [child0, child1, child2, child3]);
 
-tree.removeChildrenRange(parentId, 1, 3);
+tree.removeChildrenRange(parentId, 1, 3); // Removes child1 and child2
 ```
 
 ---
@@ -1122,10 +1123,10 @@ Any existing children are removed and replaced with the new array.
 
 #### Parameters
 
-| Parameter  | Type             | Description                 |
-| ---------- | ---------------- | --------------------------- |
-| `parent`   | `bigint`         | The parent node ID          |
-| `children` | `BigUint64Array` | Array of new child node IDs |
+| Parameter  | Type       | Description                 |
+| ---------- | ---------- | --------------------------- |
+| `parent`   | `bigint`   | The parent node ID          |
+| `children` | `bigint`[] | Array of new child node IDs |
 
 #### Returns
 
@@ -1143,7 +1144,7 @@ const parentId = tree.newLeaf(new Style());
 const child1 = tree.newLeaf(new Style());
 const child2 = tree.newLeaf(new Style());
 const child3 = tree.newLeaf(new Style());
-const children = BigUint64Array.from([child1, child2, child3]);
+const children = [child1, child2, child3];
 tree.setChildren(parentId, children);
 ```
 

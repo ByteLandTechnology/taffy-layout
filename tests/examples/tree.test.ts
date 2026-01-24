@@ -57,10 +57,10 @@ test("tree example 1", async () => {
   // Create nodes with type annotations
   const child1: bigint = tree.newLeaf(childStyle);
   const child2: bigint = tree.newLeaf(childStyle);
-  const container: bigint = tree.newWithChildren(
-    containerStyle,
-    BigUint64Array.from([child1, child2]),
-  );
+  const container: bigint = tree.newWithChildren(containerStyle, [
+    child1,
+    child2,
+  ]);
 
   // Compute layout with typed available space
   const availableSpace: Size<AvailableSpace> = {
@@ -135,10 +135,10 @@ test("tree example 9", async () => {
   const child1: bigint = tree.newLeaf(new Style());
   const child2: bigint = tree.newLeaf(new Style());
 
-  const container: bigint = tree.newWithChildren(
-    containerStyle,
-    BigUint64Array.from([child1, child2]),
-  );
+  const container: bigint = tree.newWithChildren(containerStyle, [
+    child1,
+    child2,
+  ]);
 });
 
 test("tree example 10", async () => {
@@ -182,7 +182,7 @@ test("tree example 14", async () => {
   const tree = new TaffyTree();
   const id1 = tree.newLeaf(new Style());
   const id2 = tree.newLeaf(new Style());
-  const nodes = BigUint64Array.from([id1, id2]);
+  const nodes = [id1, id2];
   const contexts = tree.getDisjointNodeContextMut(nodes);
 });
 
@@ -206,7 +206,7 @@ test("tree example 17", async () => {
   const child1 = tree.newLeaf(new Style());
   const child2 = tree.newLeaf(new Style());
   const child3 = tree.newLeaf(new Style());
-  const children = BigUint64Array.from([child1, child2, child3]);
+  const children = [child1, child2, child3];
   tree.setChildren(parentId, children);
 });
 
@@ -249,12 +249,13 @@ test("tree example 21", async () => {
 test("tree example 22", async () => {
   const tree = new TaffyTree();
   const parentId = tree.newLeaf(new Style());
+  const child0 = tree.newLeaf(new Style());
   const child1 = tree.newLeaf(new Style());
   const child2 = tree.newLeaf(new Style());
   const child3 = tree.newLeaf(new Style());
-  tree.setChildren(parentId, BigUint64Array.from([child1, child2, child3]));
+  tree.setChildren(parentId, [child0, child1, child2, child3]);
 
-  tree.removeChildrenRange(parentId, 1, 3);
+  tree.removeChildrenRange(parentId, 1, 3); // Removes child1 and child2
 });
 
 test("tree example 23", async () => {
@@ -279,7 +280,7 @@ test("tree example 25", async () => {
 test("tree example 26", async () => {
   const tree = new TaffyTree();
   const parentId = tree.newLeaf(new Style());
-  const children: BigUint64Array = tree.children(parentId);
+  const children = tree.children(parentId);
 });
 
 test("tree example 27", async () => {

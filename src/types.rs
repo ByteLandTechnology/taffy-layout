@@ -136,6 +136,10 @@ extern "C" {
     /// Non-repeated grid tracks (for auto-columns/rows)
     #[wasm_bindgen(typescript_type = "TrackSizingFunction[]")]
     pub type JsTrackSizingFunctions;
+
+    /// Array of BigInt values
+    #[wasm_bindgen(typescript_type = "bigint[]")]
+    pub type JsBigIntArray;
 }
 
 // =============================================================================
