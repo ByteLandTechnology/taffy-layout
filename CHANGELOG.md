@@ -1,3 +1,23 @@
+## [2.0.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.4.0...v2.0.0) (2026-01-24)
+
+### ⚠ BREAKING CHANGES
+
+- The API now strictly uses standard JavaScript arrays (`bigint[]`) instead of
+  `BigUint64Array` for passing and receiving lists of node IDs. This improves ergonomics but requires
+  updating existing code.
+
+Changes:
+
+- Changed `newWithChildren` to accept `bigint[]` instead of `BigUint64Array`.
+- Changed `setChildren` to accept `bigint[]` instead of `BigUint64Array`.
+- Changed `getDisjointNodeContextMut` to accept `bigint[]` instead of `BigUint64Array`.
+- Changed `children` (getter) to return `bigint[]` instead of `BigUint64Array`.
+- Updated documentation and examples to reflect these changes.
+
+### ♻️ Refactoring
+
+- replace BigUint64Array with plain bigint[] for tree operations ([ee445ff](https://github.com/ByteLandTechnology/taffy-layout/commit/ee445ffe1e3e9408278afb9cd56fa1fc6537108e))
+
 ## [1.4.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.3.0...v1.4.0) (2026-01-23)
 
 ### ✨ Features
