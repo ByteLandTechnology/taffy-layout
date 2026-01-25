@@ -8,6 +8,7 @@ import {
 } from "fs";
 import { execSync } from "child_process";
 import { resolve, join, basename, extname } from "path";
+import * as prettier from "prettier";
 
 const srcDir = resolve(process.cwd(), "src");
 const readmePath = resolve(process.cwd(), "README.md");
@@ -114,7 +115,11 @@ try {
     snippetsBySource[item.source].push(item);
   });
 
-  Object.entries(snippetsBySource).forEach(([source, items]) => {
+  // Resolve prettier config once
+  const prettierConfig = (await prettier.resolveConfig(outDir)) || {};
+  prettierConfig.parser = "typescript";
+
+  for (const [source, items] of Object.entries(snippetsBySource)) {
     const fileName = `${source.toLowerCase()}.test.tsx`;
     const filePath = join(outDir, fileName);
 
@@ -164,14 +169,22 @@ test('${item.source} example ${item.index}', async () => {
 `;
     });
 
-    writeFileSync(filePath, fileContent);
-
+    // Format in-memory
+    let formatted = fileContent;
     try {
-      execSync(`npx prettier --write "${filePath}"`, { stdio: "inherit" });
+      formatted = await prettier.format(fileContent, prettierConfig);
     } catch (error) {
       console.warn(`⚠️  Formatting failed for ${fileName}`, error);
     }
-  });
+
+    // Only write if changed
+    if (
+      !existsSync(filePath) ||
+      readFileSync(filePath, "utf-8") !== formatted
+    ) {
+      writeFileSync(filePath, formatted);
+    }
+  }
 
   console.log(`Generated test files in ${outDir}`);
 
