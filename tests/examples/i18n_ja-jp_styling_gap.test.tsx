@@ -1,0 +1,65 @@
+import React from "react";
+import { test } from "vitest";
+import init, {
+  TaffyTree,
+  Style,
+  // Add all other exports that might be needed
+  Display,
+  FlexDirection,
+  AlignItems,
+  AlignContent,
+  JustifyContent,
+  Position,
+  FlexWrap,
+  BoxSizing,
+  GridAutoFlow,
+  Overflow,
+  AlignSelf,
+  TextAlign,
+  Dimension,
+  AvailableSpace,
+  Size,
+  GridPlacement,
+  Rect,
+  LengthPercentage,
+  LengthPercentageAuto,
+  DetailedLayoutInfo,
+  DetailedGridInfo,
+  DetailedGridTracksInfo,
+  DetailedGridItemsInfo,
+  TrackSizingFunction,
+  Point,
+  TaffyError,
+  Layout,
+  MeasureFunction,
+} from "taffy-layout";
+
+// Global init for the suite
+await init();
+
+// Mock TaffyTreePreview component
+const TaffyTreePreview = (_props: any) => null;
+
+test("i18n_ja-JP_styling_gap example 1", async () => {
+  const tree = new TaffyTree();
+
+  const itemStyle = new Style({ size: { width: 40, height: 40 } });
+
+  const rootStyle = new Style({
+    display: Display.Flex,
+    flexDirection: FlexDirection.Row,
+    flexWrap: FlexWrap.Wrap,
+    size: { width: 150, height: 100 },
+
+    // Gap はアイテム間のスペースを厳密に追加し、外縁には追加しません
+    gap: { width: 10, height: 10 },
+  });
+
+  const children = Array.from({ length: 6 }).map(() => tree.newLeaf(itemStyle));
+
+  const root = tree.newWithChildren(rootStyle, children);
+
+  tree.computeLayout(root, { width: 150, height: 100 });
+
+  return <TaffyTreePreview tree={tree} root={root} />;
+});

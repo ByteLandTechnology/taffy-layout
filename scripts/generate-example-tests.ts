@@ -11,6 +11,7 @@ import { resolve, join, basename, extname } from "path";
 
 const srcDir = resolve(process.cwd(), "src");
 const readmePath = resolve(process.cwd(), "README.md");
+const docsDir = resolve(process.cwd(), "docs");
 const outDir = resolve(process.cwd(), "tests/examples");
 
 // Clean output dir
@@ -29,15 +30,14 @@ try {
     isRust: boolean,
   ) => {
     // Regex to find typescript code blocks
-    // For Rust files, we look for blocks that are inside comments.
-    // But typically we can just find the fenced blocks and then clean the lines.
-    const regex = /```typescript([\s\S]*?)```/g;
+    // Supports: ```typescript, ```ts, ```tsx, ```ts live, ```tsx live
+    // Use typescript|tsx|ts to avoid 'ts' matching 'tsx' prefix
+    const regex = /```(typescript|tsx|ts).*\n([\s\S]*?)```/g;
     let match;
-    let counter = 0; // Reset counter for each source if we want per-source indexing (or keep global if distinctness is key)
-    // Actually user probably wants sequential per source.
+    let counter = 0;
     while ((match = regex.exec(content)) !== null) {
       counter++;
-      let code = match[1];
+      let code = match[2];
       if (isRust) {
         // Strip Rust comment prefixes (/// or //!) and JSDoc stars (*) from each line
         code = code
@@ -68,6 +68,41 @@ try {
     extractSnippets(content, "readme", false);
   }
 
+  // 3. Process docs directory recursively
+  const getAllMdFiles = (dir: string): string[] => {
+    let results: string[] = [];
+    const list = readdirSync(dir);
+    list.forEach((file) => {
+      const filePath = join(dir, file);
+      const stat = readdirSync(filePath, { withFileTypes: true }); // Wait, readdirSync on file? No.
+      // Use lstatSync or similar
+    });
+    return results;
+  };
+  // Actually, let's use a simpler recursive function
+  function processDocs(currentDir: string, relativePath: string = "") {
+    if (basename(currentDir) === "api") return; // Skip generated API docs
+
+    const entries = readdirSync(currentDir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = join(currentDir, entry.name);
+      if (entry.isDirectory()) {
+        processDocs(fullPath, join(relativePath, entry.name));
+      } else if (entry.name.endsWith(".md") || entry.name.endsWith(".mdx")) {
+        const content = readFileSync(fullPath, "utf-8");
+        const sourceName = join(
+          relativePath,
+          basename(entry.name, extname(entry.name)),
+        ).replace(/[\\/]/g, "_"); // Flatten the name for file system compatibility
+        extractSnippets(content, sourceName, false);
+      }
+    }
+  }
+
+  if (existsSync(docsDir)) {
+    processDocs(docsDir);
+  }
+
   console.log(`Found ${snippets.length} examples.`);
 
   // Group snippets by source
@@ -80,10 +115,11 @@ try {
   });
 
   Object.entries(snippetsBySource).forEach(([source, items]) => {
-    const fileName = `${source.toLowerCase()}.test.ts`;
+    const fileName = `${source.toLowerCase()}.test.tsx`;
     const filePath = join(outDir, fileName);
 
     let fileContent = `
+import React from 'react';
 import { test } from 'vitest';
 import init, { 
     TaffyTree, 
@@ -99,6 +135,9 @@ import init, {
 
 // Global init for the suite
 await init();
+
+// Mock TaffyTreePreview component
+const TaffyTreePreview = (_props: any) => null;
 `;
 
     items.forEach((item) => {

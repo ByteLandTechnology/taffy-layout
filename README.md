@@ -1,6 +1,6 @@
-# ![Taffy Layout Logo](./taffy.svg) Taffy Layout
+# ![Taffy Layout Logo](docs/taffy.svg) Taffy Layout
 
-[English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja-JP.md)
+[English](README.md) | [简体中文](docs/i18n/zh-CN/README.md) | [日本語](docs/i18n/ja-JP/README.md)
 
 [![npm version](https://badge.fury.io/js/taffy-layout.svg)](https://www.npmjs.com/package/taffy-layout)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
