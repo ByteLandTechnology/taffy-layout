@@ -1,3 +1,9 @@
+## [2.0.2](https://github.com/ByteLandTechnology/taffy-layout/compare/v2.0.1...v2.0.2) (2026-01-25)
+
+### 📚 Documentation
+
+- fix i18n links to point to localized documentation ([6e90f88](https://github.com/ByteLandTechnology/taffy-layout/commit/6e90f886d014763959dfa99fb09e85185051ace2))
+
 ## [2.0.1](https://github.com/ByteLandTechnology/taffy-layout/compare/v2.0.0...v2.0.1) (2026-01-25)
 
 ### 📚 Documentation
