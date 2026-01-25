@@ -92,12 +92,12 @@ console.log(
 
 ## 📚 ドキュメント
 
-- [はじめに](../../intro.md)
-- [クイックスタート](../../getting-started/installation.md)
-- [コアコンセプト](../../core-concepts/overview.md)
-- [スタイリングガイド](../../styling/index.md)
-- [高度な使い方](../../advanced/index.md)
-- [クックブック](../../cookbook/index.md)
+- [はじめに](intro.md)
+- [クイックスタート](getting-started/installation.md)
+- [コアコンセプト](core-concepts/overview.md)
+- [スタイリングガイド](styling/index.md)
+- [高度な使い方](advanced/index.md)
+- [クックブック](cookbook/index.md)
 
 ## 📖 API リファレンス
 
