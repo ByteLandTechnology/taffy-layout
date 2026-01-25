@@ -90,6 +90,15 @@ console.log(
 );
 ```
 
+## 📚 Documentation
+
+- [Introduction](docs/intro.md)
+- [Getting Started](docs/getting-started/installation.md)
+- [Core Concepts](docs/core-concepts/overview.md)
+- [Styling Guide](docs/styling/index.md)
+- [Advanced Usage](docs/advanced/index.md)
+- [Cookbook](docs/cookbook/index.md)
+
 ## 📖 API Reference
 
 ### TaffyTree
