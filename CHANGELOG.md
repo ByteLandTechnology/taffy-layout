@@ -1,3 +1,14 @@
+## [2.0.1](https://github.com/ByteLandTechnology/taffy-layout/compare/v2.0.0...v2.0.1) (2026-01-25)
+
+### 📚 Documentation
+
+- add links to detailed documentation in READMEs ([d565edf](https://github.com/ByteLandTechnology/taffy-layout/commit/d565edffc11e7dcca1ec0bdd3bf4768583f0a706))
+- update documentation and connect with generated tests ([a807ab2](https://github.com/ByteLandTechnology/taffy-layout/commit/a807ab2400f03371b6666603a8e6091077493c56))
+
+### 💄 Styles
+
+- optimize generate-example-tests.ts performance ([5183f9f](https://github.com/ByteLandTechnology/taffy-layout/commit/5183f9f171361f0aee61fbd72294fa56c0b0c0a5))
+
 ## [2.0.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v1.4.0...v2.0.0) (2026-01-24)
 
 ### ⚠ BREAKING CHANGES
