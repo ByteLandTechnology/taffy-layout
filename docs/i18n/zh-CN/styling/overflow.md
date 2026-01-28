@@ -1,18 +1,15 @@
 ---
-title: Overflow（溢出）
-sidebar_position: 12
+title: 溢出 (Overflow)
+sidebar_position: 24
 ---
 
-# 🌊 Overflow（溢出）
+# 溢出 (Overflow)
 
 **控制内容超出容器尺寸时的行为。**
 
 `overflow` 属性指定当内容大于容器盒子时发生的情况。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [overflow](https://developer.mozilla.org/zh-CN/docs/Web/CSS/overflow)
-
-## 🎛️ 取值
+## 取值
 
 | 值            | 描述                                                       |
 | :------------ | :--------------------------------------------------------- |
@@ -20,7 +17,7 @@ sidebar_position: 12
 | **`Hidden`**  | 内容在容器边缘被裁剪。                                     |
 | **`Scroll`**  | Taffy 为滚动条预留空间（如果已配置），但它不会渲染滚动条。 |
 
-## 📜 滚动条尺寸
+## 滚动条尺寸
 
 在 Taffy 中，`Overflow.Scroll` 通常用于表示节点*可以*滚动。Taffy 会计算 `scrollbarSize`，你可以从布局输出中读取它。
 
@@ -40,7 +37,7 @@ console.log(
 );
 ```
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -67,6 +64,7 @@ tree.computeLayout(container, { width: 100, height: 100 });
 return <TaffyTreePreview tree={tree} root={container} />;
 ```
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[Size（尺寸）](./size.md)** - 限制容器尺寸。
+- [核心概念](../core-concepts/index.md)
+- [尺寸 (Size)](./size.md)

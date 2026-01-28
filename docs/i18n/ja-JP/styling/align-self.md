@@ -1,18 +1,15 @@
 ---
-title: Align Self（自己配置）
-sidebar_position: 7
+title: 自己配置 (Align Self)
+sidebar_position: 15
 ---
 
-# 🕴️ Align Self（自己配置）
+# 自己配置 (Align Self)
 
 **特定のアイテムに対して親の `alignItems` を上書きします。**
 
 `alignSelf` プロパティを使用すると、個々のフレックスアイテムに対してデフォルトの配置（`alignItems` で指定されたもの）を上書きできます。
 
-> [!TIP]
-> 🔗 **MDN ドキュメント**: [align-self](https://developer.mozilla.org/ja/docs/Web/CSS/align-self)
-
-## 🎛️ 値
+## 値
 
 | 値              | 説明                                                     |
 | :-------------- | :------------------------------------------------------- |
@@ -23,7 +20,7 @@ sidebar_position: 7
 | **`Center`**    | アイテムを中央に配置します。                             |
 | **`Baseline`**  | アイテムをベースラインに配置します。                     |
 
-## 💻 例
+## 例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -56,6 +53,7 @@ tree.computeLayout(root, { width: 300, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 次のステップ
+## 次のステップ
 
-- **[Align Items（交差軸揃え）](./align-items.md)** - コンテナのデフォルト配置を設定します。
+- [行揃え (Align Content)](./align-content.md)
+- [交差軸揃え (Align Items)](./align-items.md)

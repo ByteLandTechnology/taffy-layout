@@ -2,9 +2,11 @@
 title: サイズ、スペース、単位
 ---
 
+sidebar_position: 4
+
 # サイズ、スペース、単位
 
-Taffy レイアウトは利用可能なスペースとサイズ制約によって駆動されます。このモデルを理解することで、レイアウトを予測可能にします。
+Taffy レイアウトは利用可能なスペースとサイズ制約で駆動されます。このモデルを理解することで、レイアウトを予測可能にします。
 
 ## 利用可能なスペース
 
@@ -75,7 +77,7 @@ return (
 
 Taffy は `box-sizing: border-box` のように動作します：
 
-```
+```text
 ┌─────────────────────────┐
 │  Margin                 │
 │  ┌───────────────────┐  │
@@ -126,8 +128,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 次のステップ
 
-- [Flexbox レイアウト](../styling/index.md)
-- [CSS Grid レイアウト](../styling/index.md)
-- [サイジング](../styling/size.md)
-- [スペーシング（マージン/パディング）](../styling/margin-padding-border.md)
-- [スペーシング（Gap）](../styling/gap.md)
+- [計測関数 (Measure Functions)](./measure-functions.md)
+- [スタイリングガイド (Styling Guide)](../styling/index.md)

@@ -7,7 +7,7 @@
 
 基于 WebAssembly 的高性能 [Taffy](https://github.com/DioxusLabs/taffy) 布局引擎 JavaScript 绑定，将 CSS Flexbox 和 Grid 布局算法带到前端，接近原生性能。
 
-## ✨ 特性
+## 特性
 
 - **🚀 高性能**：WebAssembly 驱动的布局计算
 - **📦 完整 CSS 支持**：实现 Flexbox 与 CSS Grid
@@ -16,13 +16,13 @@
 - **🌳 基于树的 API**：适合复杂场景的高效树结构
 - **💡 熟悉的 API**：类 CSS 的属性名称与取值
 
-## 📦 安装
+## 安装
 
 ```bash
 npm install taffy-layout
 ```
 
-## 🚀 快速上手
+## 快速上手
 
 ```typescript
 import {
@@ -90,16 +90,16 @@ console.log(
 );
 ```
 
-## 📚 详细文档
+## 详细文档
 
 - [简介](intro.md)
 - [快速上手](getting-started/installation.md)
-- [核心概念](core-concepts/overview.md)
+- [核心概念](core-concepts/index.md)
 - [样式指南](styling/index.md)
 - [高级用法](advanced/index.md)
 - [Cookbook](cookbook/index.md)
 
-## 📖 API 参考
+## API 参考
 
 ### TaffyTree
 
@@ -127,7 +127,7 @@ console.log(
 
 [查看文档](../../api/index.md#type-aliases)
 
-## 📐 自定义文本测量
+## 自定义文本测量
 
 对文本节点或需要动态测量的内容，可传入测量回调：
 
@@ -155,7 +155,7 @@ tree.computeLayoutWithMeasure(
 );
 ```
 
-## 🔧 错误处理
+## 错误处理
 
 可能失败的方法会抛出 `TaffyError`。使用 try-catch 处理：
 
@@ -172,7 +172,7 @@ try {
 }
 ```
 
-## 🌐 浏览器支持
+## 浏览器支持
 
 支持所有具备 WebAssembly 的现代浏览器：
 
@@ -181,7 +181,7 @@ try {
 - Safari 11+
 - Edge 16+
 
-## 📚 示例
+## 示例
 
 ### Flexbox 行布局
 
@@ -258,7 +258,7 @@ imgStyle.aspectRatio = 16 / 9; // 16:9 宽高比
 imgStyle.size = { width: "100%", height: "auto" };
 ```
 
-## 🏗️ 从源码构建
+## 从源码构建
 
 ```bash
 # 克隆仓库
@@ -272,13 +272,17 @@ npm install
 npm run build
 ```
 
-# 运行测试
+## 运行测试
 
-## 📄 许可证
+```bash
+npm test
+```
+
+## 许可证
 
 MIT License - 详见 [LICENSE](../../../LICENSE)。
 
-## 🙏 致谢
+## 致谢
 
 - [Taffy](https://github.com/DioxusLabs/taffy) - 本项目封装的 Rust 布局引擎
 - [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) - Rust/WebAssembly 互操作工具

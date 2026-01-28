@@ -1,10 +1,15 @@
-# 🍱 Layout Cookbook
+---
+title: Layout Cookbook
+sidebar_position: 5
+---
+
+# Layout Cookbook
 
 **Ready-to-copy layout recipes.**
 
 Scan the diagram, copy the code, and adjust to your needs.
 
-## 🥘 Recipes
+## Recipes
 
 | Recipe                                          | Description                                      | Tech    |
 | :---------------------------------------------- | :----------------------------------------------- | :------ |

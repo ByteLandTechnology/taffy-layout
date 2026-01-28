@@ -55,9 +55,9 @@ test("i18n_ja-JP_styling_align-items example 1", async () => {
   });
 
   // 配置をデモンストレーションするために異なる高さの子要素を作成
-  const child1 = tree.newLeaf(new Style({ size: { width: 40, height: 20 } }));
-  const child2 = tree.newLeaf(new Style({ size: { width: 40, height: 40 } }));
-  const child3 = tree.newLeaf(new Style({ size: { width: 40, height: 60 } }));
+  const child1 = tree.newLeaf(new Style({ size: { width: 50, height: 20 } }));
+  const child2 = tree.newLeaf(new Style({ size: { width: 50, height: 40 } }));
+  const child3 = tree.newLeaf(new Style({ size: { width: 50, height: 60 } }));
 
   const rootStyle = new Style({
     display: Display.Flex,
@@ -68,7 +68,7 @@ test("i18n_ja-JP_styling_align-items example 1", async () => {
 
     // ここを変更して様々な値をテスト
     alignItems: AlignItems.Center,
-    // 选项: FlexStart, FlexEnd, Stretch, Baseline
+    // オプション: FlexStart, FlexEnd, Stretch, Baseline
   });
 
   const root = tree.newWithChildren(rootStyle, [child1, child2, child3]);

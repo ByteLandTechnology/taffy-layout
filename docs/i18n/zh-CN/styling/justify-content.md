@@ -1,18 +1,15 @@
 ---
-title: Justify Content（主轴对齐）
-sidebar_position: 5
+title: 主轴对齐 (Justify Content)
+sidebar_position: 13
 ---
 
-# ↔️ Justify Content（主轴对齐）
+# 主轴对齐 (Justify Content)
 
 **沿主轴对齐子元素。**
 
 `justifyContent` 属性沿**主轴**对齐子元素（如果 `flexDirection` 是 `Row`，则为水平方向；如果是 `Column`，则为垂直方向）。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [justify-content](https://developer.mozilla.org/zh-CN/docs/Web/CSS/justify-content)
-
-## 🎛️ 取值
+## 取值
 
 | 值                 | 描述                                                     |
 | :----------------- | :------------------------------------------------------- |
@@ -23,13 +20,13 @@ sidebar_position: 5
 | **`SpaceAround`**  | 子元素均匀分布，每个子元素周围的空间相等。               |
 | **`SpaceEvenly`**  | 子元素均匀分布，任意两个子元素（和边缘）之间的空间相等。 |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
 
 const style = new Style({
-  size: { width: 40, height: 40 },
+  size: { width: 50, height: 50 },
 });
 
 const child1 = tree.newLeaf(style);
@@ -56,6 +53,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 - [JustifyContent 枚举](../../api/enumerations/JustifyContent.md)
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[Align Items（交叉轴对齐）](./align-items.md)** - 沿交叉轴对齐子元素。
+- [交叉轴对齐 (Align Items)](./align-items.md)
+- [Flex 方向 (Flex Direction)](./flex-direction.md)

@@ -46,10 +46,10 @@ test("styling_grid example 1", async () => {
   const rootStyle = new Style({
     display: Display.Grid,
     size: { width: 200, height: 200 },
-    // Define 2 columns of 50% width each
+    // Define 2 columns of equal width (1fr)
     gridTemplateColumns: [
-      { min: "50%", max: "50%" },
-      { min: "50%", max: "50%" },
+      { min: 0, max: "1fr" },
+      { min: 0, max: "1fr" },
     ],
     // Define 2 rows: 50px fixed, and "1fr" (remaining space)
     gridTemplateRows: [

@@ -1,18 +1,15 @@
 ---
 title: Overflow
-sidebar_position: 12
+sidebar_position: 24
 ---
 
-# 🌊 Overflow
+# Overflow
 
 **Control behavior when content exceeds the container size.**
 
 The `overflow` property specifies what happens if content is larger than the container's box.
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [overflow](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)
-
-## 🎛️ Values
+## Values
 
 | Value         | Description                                                                          |
 | :------------ | :----------------------------------------------------------------------------------- |
@@ -20,7 +17,7 @@ The `overflow` property specifies what happens if content is larger than the con
 | **`Hidden`**  | Content is clipped at the container edge.                                            |
 | **`Scroll`**  | Taffy reserves space for scrollbars (if configured), though it does not render them. |
 
-## 📜 Scrollbar Sizing
+## Scrollbar Sizing
 
 In Taffy, `Overflow.Scroll` is often used to signal that a node _can_ scroll. Taffy computes `scrollbarSize` which you can read from the layout output.
 
@@ -40,7 +37,7 @@ console.log(
 );
 ```
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -67,6 +64,7 @@ tree.computeLayout(container, { width: 100, height: 100 });
 return <TaffyTreePreview tree={tree} root={container} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Size](./size.md)** - Constrain the container size.
+- [Core Concepts](../core-concepts/index.md)
+- [Size](./size.md)

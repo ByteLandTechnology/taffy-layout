@@ -43,13 +43,13 @@ const TaffyTreePreview = (_props: any) => null;
 test("i18n_zh-CN_styling_gap example 1", async () => {
   const tree = new TaffyTree();
 
-  const itemStyle = new Style({ size: { width: 40, height: 40 } });
+  const itemStyle = new Style({ size: { width: 60, height: 40 } });
 
   const rootStyle = new Style({
     display: Display.Flex,
     flexDirection: FlexDirection.Row,
     flexWrap: FlexWrap.Wrap,
-    size: { width: 150, height: 100 },
+    size: { width: 200, height: 100 },
 
     // Gap 严格在子元素之间添加空间，而不是在外边缘
     gap: { width: 10, height: 10 },
@@ -59,7 +59,7 @@ test("i18n_zh-CN_styling_gap example 1", async () => {
 
   const root = tree.newWithChildren(rootStyle, children);
 
-  tree.computeLayout(root, { width: 150, height: 100 });
+  tree.computeLayout(root, { width: 200, height: 100 });
 
   return <TaffyTreePreview tree={tree} root={root} />;
 });

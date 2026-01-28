@@ -1,82 +1,61 @@
 ---
-title: Grid 布局
+title: 样式
+sidebar_position: 4
 ---
 
-# Grid 布局
-
-Taffy 的 Grid API 反映 CSS Grid，非常适合二维布局。为行和列定义轨道，然后按线或区域放置项目。
-
-## 核心概念
-
-- **Track**：行或列的尺寸定义
-- **Line**：用于放置的网格线
-- **Area**：命名区域（如果使用）
-
-```
-Columns:  1fr 2fr
-Rows:     auto 1fr
-
-┌───────────────┐
-│ Header        │
-├───────┬───────┤
-│ Nav   │ Main  │
-└───────┴───────┘
-```
-
-# 🎨 样式 (Styling)
+# 样式
 
 **Taffy 样式属性综合指南。**
 
 Taffy 的样式 API 模仿 CSS 设计。以下是所有支持属性的分类列表。
 
-## 📐 布局模式
+## 布局模式
 
 定义节点行为的核心属性。
 
 | 属性                            | 描述                                        |
 | :------------------------------ | :------------------------------------------ |
-| **[`display`](./display.md)**   | `Flex` (默认), `Grid`, 或 `None`。          |
-| **[`position`](./position.md)** | `Relative` (流) 或 `Absolute` (叠加)。      |
-| **[`overflow`](./overflow.md)** | `Visible`, `Hidden`, 或 `Scroll`。          |
-| **[`inset`](./inset.md)**       | `top`, `bottom`, `left`, `right` 用于定位。 |
+| **[`display`](./display.md)**   | `Flex`（默认）、`Grid` 或 `None`。          |
+| **[`position`](./position.md)** | `Relative`（流式）或 `Absolute`（覆盖）。   |
+| **[`overflow`](./overflow.md)** | `Visible`、`Hidden` 或 `Scroll`。           |
+| **[`inset`](./inset.md)**       | 定位用的 `top`、`bottom`、`left`、`right`。 |
 
-## 📦 尺寸与间距
+## 尺寸与间距
 
 控制尺寸和间距。
 
-| 属性                                                            | 描述                       |
-| :-------------------------------------------------------------- | :------------------------- |
-| **[`size` / `minSize` / `maxSize`](./size.md)**                 | 宽度和高度控制。           |
-| **[`aspectRatio`](./aspect-ratio.md)**                          | 宽高比。                   |
-| **[`margin`, `padding`, `border`](./margin-padding-border.md)** | 盒模型间距。               |
-| **[`gap`](./gap)**                                              | Flex/Grid 项目之间的间距。 |
+| 属性                                            | 描述                       |
+| :---------------------------------------------- | :------------------------- |
+| **[`size` / `minSize` / `maxSize`](./size.md)** | 宽度和高度控制。           |
+| **[`aspectRatio`](./aspect-ratio.md)**          | 宽高比。                   |
+| **[`margin`](./margin.md)**                     | 外边距。                   |
+| **[`padding`](./padding.md)**                   | 内边距。                   |
+| **[`border`](./border.md)**                     | 边框宽度 (仅空间)。        |
+| **[`gap`](./gap.md)**                           | Flex/Grid 项目之间的间距。 |
 
-## 🔗 Flexbox
+## Flexbox 布局
 
-一维布局属性。
+一维布局的属性。
 
-| 属性                                                                     | 描述                     |
-| :----------------------------------------------------------------------- | :----------------------- |
-| **[`flexDirection`](./flex-direction.md)**                               | `Row` 或 `Column` 方向。 |
-| **[`flexWrap`](./flex-wrap.md)**                                         | `Wrap` 或 `NoWrap`.      |
-| **[`flexBasis`, `flexGrow`, `flexShrink`](./flex-basis-grow-shrink.md)** | 项目调整逻辑。           |
-| **[`justifyContent`](./justify-content.md)**                             | 主轴对齐。               |
-| **[`alignItems`](./align-items.md)**                                     | 默认交叉轴对齐。         |
-| **[`alignSelf`](./align-self.md)**                                       | 覆盖单个项目对齐。       |
-| **[`alignContent`](./align-content.md)**                                 | 多行对齐。               |
+| 属性                                         | 描述                     |
+| :------------------------------------------- | :----------------------- |
+| **[`flexDirection`](./flex-direction.md)**   | `Row` 或 `Column` 方向。 |
+| **[`flexWrap`](./flex-wrap.md)**             | `Wrap` 或 `NoWrap`。     |
+| **[`flexBasis`](./flex-basis.md)**           | 初始主轴大小。           |
+| **[`flexGrow`](./flex-grow.md)**             | 增长因子。               |
+| **[`flexShrink`](./flex-shrink.md)**         | 收缩因子。               |
+| **[`justifyContent`](./justify-content.md)** | 主轴对齐。               |
+| **[`alignItems`](./align-items.md)**         | 默认交叉轴对齐。         |
+| **[`alignSelf`](./align-self.md)**           | 项目的覆盖对齐。         |
+| **[`alignContent`](./align-content.md)**     | 对齐换行线。             |
 
-## ▦ Grid 布局
+## Grid 布局
 
-二维布局属性。
+二维布局的属性。
 
-| 属性                                                | 描述               |
-| :-------------------------------------------------- | :----------------- |
-| **[`gridTemplate*`](./grid-templates.md)**          | 定义列和行。       |
-| **[`gridColumn` / `gridRow`](./grid-placement.md)** | 在网格中放置项目。 |
-| **[`gridAutoFlow`](./grid-auto-flow.md)**           | 自动放置算法。     |
-
-## 下一步
-
-- [Grid Template](./grid-templates.md)
-- [Grid Placement](./grid-placement.md)
-- [Grid Auto Flow](./grid-auto-flow.md)
+| 属性                                      | 描述             |
+| :---------------------------------------- | :--------------- |
+| **[`gridTemplate`](./grid-templates.md)** | 定义列和行。     |
+| **[`gridColumn`](./grid-column.md)**      | 在网格中放置列。 |
+| **[`gridRow`](./grid-row.md)**            | 在网格中放置行。 |
+| **[`gridAutoFlow`](./grid-auto-flow.md)** | 自动放置算法。   |

@@ -1,8 +1,9 @@
 ---
 title: フレックス行カード
+sidebar_position: 1
 ---
 
-# 🃏 フレックス行カード
+# フレックス行カード
 
 **均一サイズのカードの行——統計、ツールバー、パネルに最適です。**
 
@@ -12,13 +13,13 @@ title: フレックス行カード
 └────────────────────────────────────┘
 ```
 
-## 🔑 キーアイデア
+## キーアイデア
 
 - `display: flex` + `flexDirection: row`
 - `flexGrow` で残りのスペースを均等に分割
 - `gap` でスペーシングを制御
 
-## 💻 コード
+## コード
 
 ```tsx live
 const tree = new TaffyTree();
@@ -45,7 +46,7 @@ tree.computeLayout(root, { width: 500, height: 120 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 関連ガイド
+## 関連ガイド
 
 - **[Flex Grow/Shrink](../styling/flex-basis-grow-shrink.md)**
 - **[スペーシング](../styling/gap.md)**

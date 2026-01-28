@@ -1,9 +1,9 @@
 ---
-title: グリッドレイアウト
-sidebar_position: 16
+title: グリッドレイアウト (Grid)
+sidebar_position: 17
 ---
 
-# グリッドレイアウト
+# グリッドレイアウト (Grid)
 
 Taffy の Grid API は CSS Grid に似ており、2次元レイアウトに最適です。行と列のトラックを定義し、線または領域でアイテムを配置します。
 
@@ -13,7 +13,7 @@ Taffy の Grid API は CSS Grid に似ており、2次元レイアウトに最�
 - **ライン（Line）**：配置に使用されるグリッド線
 - **エリア（Area）**：名前付き領域（使用する場合）
 
-```
+```text
 列:  1fr 2fr
 行:  auto 1fr
 
@@ -32,10 +32,10 @@ const tree = new TaffyTree();
 const rootStyle = new Style({
   display: Display.Grid,
   size: { width: 200, height: 200 },
-  // 2つの列を定義（各50%幅）
+  // 2つの列を定義（残りのスペースを等分する 1fr）
   gridTemplateColumns: [
-    { min: "50%", max: "50%" },
-    { min: "50%", max: "50%" },
+    { min: 0, max: "1fr" },
+    { min: 0, max: "1fr" },
   ],
   // 2つの行を定義：1行目は固定50px、2行目は残りスペース
   gridTemplateRows: [
@@ -62,8 +62,8 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 次のステップ
+## 次のステップ
 
-- **[グリッドテンプレート](./grid-templates.md)** - グリッド構造を定義する
-- **[グリッド配置](./grid-placement.md)** - アイテムをグリッドに配置する
-- **[グリッド自動フロー](./grid-auto-flow.md)** - 自動配置を制御する
+- [グリッドテンプレート (Grid Templates)](./grid-templates.md)
+- [グリッド列 (Grid Column)](./grid-column.md)
+- [グリッド行 (Grid Row)](./grid-row.md)

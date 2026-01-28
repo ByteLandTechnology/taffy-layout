@@ -1,18 +1,15 @@
 ---
-title: Grid Auto Flow（网格自动流向）
-sidebar_position: 19
+title: 网格自动流向 (Grid Auto Flow)
+sidebar_position: 21
 ---
 
-# 🌊 Grid Auto Flow（网格自动流向）
+# 网格自动流向 (Grid Auto Flow)
 
 **控制自动放置的子元素如何流入网格。**
 
 如果您有超过显式单元格数量的子元素，或者您没有显式放置子元素，`gridAutoFlow` 将控制它们如何填充网格。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [grid-auto-flow](https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-auto-flow)
-
-## 🎛️ 取值
+## 取值
 
 | 值                | 描述                                           |
 | :---------------- | :--------------------------------------------- |
@@ -21,7 +18,7 @@ sidebar_position: 19
 | **`RowDense`**    | 类似 Row，但尝试回填网格中的空隙。             |
 | **`ColumnDense`** | 类似 Column，但尝试回填空隙。                  |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -66,5 +63,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 后续步骤
 
-- **[Grid Templates（网格模板）](./grid-templates.md)** - 定义网格结构。
-- [Grid Placement（网格放置）](./grid-placement.md)
+- [定位 (Position)](./position.md)
+- [网格模板 (Grid Templates)](./grid-templates.md)

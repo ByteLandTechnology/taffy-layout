@@ -1,8 +1,9 @@
 ---
 title: メディアカード
+sidebar_position: 5
 ---
 
-# 🖼️ メディアカード
+# メディアカード
 
 **画像 + テキストレイアウト、固定メディアとフレキシブルなテキストコンテンツ。**
 
@@ -13,7 +14,7 @@ title: メディアカード
 └────────────────────────────┘
 ```
 
-## 💻 コード
+## コード
 
 ```tsx live
 const tree = new TaffyTree();
@@ -52,7 +53,7 @@ tree.computeLayout(root, { width: 420, height: 120 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 関連ガイド
+## 関連ガイド
 
 - **[フレックス方向](../styling/flex-direction.md)**
 - **[アラインアイテム](../styling/align-items.md)**

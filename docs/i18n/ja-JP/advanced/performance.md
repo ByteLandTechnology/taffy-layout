@@ -1,12 +1,17 @@
-# ⚡ パフォーマンス
+---
+title: パフォーマンス
+sidebar_position: 2
+---
+
+# パフォーマンス
 
 **Taffy レイアウトを高速に保つためのヒント。**
 
-Taffy は効率的で高パフォーマンスになるように設計されていますが、特定のパターンはパフォーマンスに影響を与える可能性があります。
+Taffy は効率的で高性能に設計されていますが、特定のパターンはパフォーマンスに影響を与える可能性があります。
 
 ## 1. 容量の事前割り当て
 
-ノード数を把握している場合は、`withCapacity` を使用して再割り当てを回避します。
+ノード数を把握している場合は、`withCapacity` を使用して再割り当てを防ぎます。
 
 ```tsx live
 const tree = TaffyTree.withCapacity(2000);
@@ -50,7 +55,7 @@ return (
 
 ## 2. 増分レイアウト
 
-変更されたノードのみが再計算されます。Taffy は**怠惰的に**動作し、変更の影響を受けるブランチのみを再計算します。
+変更されたノードのみが再計算されます。Taffy は**遅延評価的に**動作し、変更の影響を受けたブランチのみを再計算します。
 
 ```tsx live
 const tree = new TaffyTree();
@@ -71,7 +76,7 @@ tree.computeLayout(root, { width: 200, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 🐢 一般的な落とし穴
+## 一般的な落とし穴
 
 ### 1. 過度なネスト
 
@@ -86,7 +91,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 - **最適化**：測定コールバックが高速であることを確認してください。測定内での DOM リフローや重い計算を避けてください。
 
-## 🚀 最適化パターン
+## 最適化パターン
 
 ### スタイルの再利用
 
@@ -164,7 +169,7 @@ const layout = tree.getLayout(node);
 const [x, y, w, h] = layout.get("x", "y", "width", "height");
 ```
 
-## 🔬 ベンチマーク
+## ベンチマーク
 
 `performance.now()` を使用してレイアウトパスを測定します。
 

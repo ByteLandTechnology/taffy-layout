@@ -1,25 +1,22 @@
 ---
 title: Positioning
-sidebar_position: 13
+sidebar_position: 22
 ---
 
-# 📍 Position
+# Position
 
 **Control how an element is placed in the document.**
 
 The `position` property determines if an element participates in the normal layout flow or if it is removed and positioned manually.
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [position](https://developer.mozilla.org/en-US/docs/Web/CSS/position)
-
-## 🎛️ Values
+## Values
 
 | Value          | Description                                                                                                                                              |
 | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`Relative`** | **Default**. The element remains in the document flow. `inset` offsets move it visually, but it still takes up space in its original location.           |
 | **`Absolute`** | The element is **removed from the flow**. It is positioned relative to its nearest _positioned_ ancestor (parent with non-default position) or the root. |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -40,7 +37,7 @@ const standardItem = new Style({
 
 const absoluteItem = new Style({
   position: Position.Absolute,
-  size: { width: 40, height: 40 },
+  size: { width: 50, height: 50 },
   inset: { top: 0, right: 0, left: "auto", bottom: "auto" },
 });
 
@@ -57,7 +54,7 @@ tree.computeLayout(root, { width: 300, height: 120 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Inset](./inset.md)** - Define the top/right/bottom/left coordinates.
-- **[Display](./display.md)** - Switch between Flex and None.
+- [Inset](./inset.md)
+- [Display](./display.md)

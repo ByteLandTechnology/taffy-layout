@@ -1,18 +1,15 @@
 ---
-title: Align Content（行揃え）
-sidebar_position: 8
+title: 行揃え (Align Content)
+sidebar_position: 16
 ---
 
-# 📚 Align Content（行揃え）
+# 行揃え (Align Content)
 
 **複数行のフレックスコンテナにおける行の配置を制御します。**
 
 `alignContent` プロパティは、交差軸に余分なスペースがある場合に、フレックスコンテナ内の行を配置します。**このプロパティは単一行のフレックスコンテナ（`flexWrap` が `NoWrap`）には効果がありません**。
 
-> [!TIP]
-> 🔗 **MDN ドキュメント**: [align-content](https://developer.mozilla.org/ja/docs/Web/CSS/align-content)
-
-## 🎛️ 値
+## 値
 
 | 值                 | 説明                                                               |
 | :----------------- | :----------------------------------------------------------------- |
@@ -23,7 +20,7 @@ sidebar_position: 8
 | **`SpaceBetween`** | 行は均等に配置され、最初の行は始端、最後の行は終端に配置されます。 |
 | **`SpaceAround`**  | 行は均等に配置され、各行の周囲に等しいスペースが設けられます。     |
 
-## 💻 例
+## 例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -53,7 +50,7 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 次のステップ
+## 次のステップ
 
-- **[Flex Wrap（折り返し）](./flex-wrap.md)** - このプロパティを使用するには折り返しを有効にします。
-- **[Align Items（交差軸揃え）](./align-items.md)** - 単一行内のアイテムを配置します。
+- [グリッドレイアウト (Grid)](./grid.md)
+- [自己配置 (Align Self)](./align-self.md)

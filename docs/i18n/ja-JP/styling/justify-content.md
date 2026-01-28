@@ -1,18 +1,15 @@
 ---
-title: Justify Content（主軸揃え）
-sidebar_position: 5
+title: 主軸揃え (Justify Content)
+sidebar_position: 13
 ---
 
-# ↔️ Justify Content（主軸揃え）
+# 主軸揃え (Justify Content)
 
 **主軸に沿ってアイテムを配置します。**
 
 `justifyContent` プロパティは**主軸**に沿ってアイテムを配置します（`flexDirection` が `Row` の場合は水平方向、`Column` の場合は垂直方向）。
 
-> [!TIP]
-> 🔗 **MDN ドキュメント**: [justify-content](https://developer.mozilla.org/ja/docs/Web/CSS/justify-content)
-
-## 🎛️ 値
+## 値
 
 | 値                 | 説明                                                                                  |
 | :----------------- | :------------------------------------------------------------------------------------ |
@@ -23,13 +20,13 @@ sidebar_position: 5
 | **`SpaceAround`**  | アイテムを均等に分布し、各アイテムの周りのスペースを等しくする。                      |
 | **`SpaceEvenly`**  | 任意の 2 つのアイテム間（および端）のスペースが等しくなるようにアイテムを均等に分布。 |
 
-## 💻 例
+## 例
 
 ```tsx live
 const tree = new TaffyTree();
 
 const style = new Style({
-  size: { width: 40, height: 40 },
+  size: { width: 50, height: 50 },
 });
 
 const child1 = tree.newLeaf(style);
@@ -56,6 +53,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 - [JustifyContent 列挙型](../../api/enumerations/JustifyContent.md)
 
-## ⏭️ 次のステップ
+## 次のステップ
 
-- **[Align Items（交差軸揃え）](./align-items.md)** - 交差軸に沿ってアイテムを配置します。
+- [交差軸揃え (Align Items)](./align-items.md)
+- [フレックス方向 (Flex Direction)](./flex-direction.md)

@@ -3,13 +3,13 @@ title: Computing Layouts
 sidebar_position: 4
 ---
 
-# 📐 Computing Layouts
+# Computing Layouts
 
 **Turn your styles and tree structure into concrete pixel coordinates.**
 
 Once your tree is built, you call `computeLayout` to calculate the final positions and sizes of every node.
 
-## 🚀 Standard Layout Computation
+## Standard Layout Computation
 
 You must provide the **Available Space** (the constraints for the root node) when computing the layout.
 
@@ -75,7 +75,7 @@ return (
 );
 ```
 
-## 🔄 Incremental Layouts
+## Incremental Layouts
 
 Taffy employs intelligent caching. If you modify a specific node's style or content, only the affected parts of the tree are recomputed in the next pass.
 
@@ -97,7 +97,7 @@ tree.setStyle(childNode, newStyle);
 tree.computeLayout(root, { width: 800, height: 600 });
 ```
 
-## 🎯 Rounding & Precision
+## Rounding & Precision
 
 By default, Taffy rounds all output coordinates to the nearest pixel (integer) to align with standard display grids.
 
@@ -117,12 +117,12 @@ const layout = tree.getLayout(node);
 console.log(layout.width); // Might be 33.33333... instead of 33
 ```
 
-## 🛠️ Debug Tips
+## Debug Tips
 
 - 🖨️ **`printTree(root)`**: Prints a text representation of your entire tree depth, styles, and computed layout. Essential for debugging.
 - 🔒 **Isolate**: If a complex tree behaves oddly, create a small reproduction with just the problematic nodes to isolate the issue.
 
-## ⏭️ Next Steps
+## Next Steps
 
 - ⚙️ **[Configuration](./configuration.md)** - Adjust engine settings.
 - 🔍 **[Debugging Layouts](../advanced/debugging.md)** - Learn how to troubleshoot.

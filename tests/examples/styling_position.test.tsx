@@ -59,7 +59,7 @@ test("styling_position example 1", async () => {
 
   const absoluteItem = new Style({
     position: Position.Absolute,
-    size: { width: 40, height: 40 },
+    size: { width: 50, height: 50 },
     inset: { top: 0, right: 0, left: "auto", bottom: "auto" },
   });
 

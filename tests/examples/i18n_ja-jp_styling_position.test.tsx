@@ -59,14 +59,14 @@ test("i18n_ja-JP_styling_position example 1", async () => {
 
   const absoluteItem = new Style({
     position: Position.Absolute,
-    size: { width: 40, height: 40 },
+    size: { width: 50, height: 50 },
     inset: { top: 0, right: 0, left: "auto", bottom: "auto" },
   });
 
   const child1 = tree.newLeaf(standardItem);
   const child2 = tree.newLeaf(standardItem);
 
-  // この子要素は他の要素の上に浮かびます
+  // この子要素は他の要素の上に重なります
   const childAbs = tree.newLeaf(absoluteItem);
 
   const root = tree.newWithChildren(rootStyle, [child1, child2, childAbs]);

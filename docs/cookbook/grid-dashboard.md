@@ -1,8 +1,9 @@
 ---
 title: Grid Dashboard
+sidebar_position: 2
 ---
 
-# 📊 Grid Dashboard
+# Grid Dashboard
 
 **A dashboard layout with header, navigation, and main content.**
 
@@ -14,13 +15,13 @@ title: Grid Dashboard
 └──────────┴─────────────────┘
 ```
 
-## 🔑 Key Ideas
+## Key Ideas
 
 - Use Grid for layout structure.
 - **Header** spans all columns.
 - **Nav** and **Main** sit in the second row.
 
-## 💻 Code
+## Code
 
 ```tsx live
 const tree = new TaffyTree();
@@ -71,7 +72,8 @@ tree.computeLayout(root, { width: 600, height: 320 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Related Guides
+## Related Guides
 
 - **[Grid Templates](../styling/grid-templates.md)**
-- **[Grid Placement](../styling/grid-placement.md)**
+- **[Grid Column](../styling/grid-column.md)**
+- **[Grid Row](../styling/grid-row.md)**

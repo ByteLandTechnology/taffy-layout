@@ -1,18 +1,15 @@
 ---
 title: Justify Content
-sidebar_position: 5
+sidebar_position: 13
 ---
 
-# ↔️ Justify Content
+# Justify Content
 
 **Align items along the main axis.**
 
 The `justifyContent` property aligns items along the **main axis** (horizontal if `flexDirection` is `Row`; vertical if `Column`).
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [justify-content](https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content)
-
-## 🎛️ Values
+## Values
 
 | Value              | Description                                                                      |
 | :----------------- | :------------------------------------------------------------------------------- |
@@ -23,13 +20,13 @@ The `justifyContent` property aligns items along the **main axis** (horizontal i
 | **`SpaceAround`**  | Items are evenly distributed with equal space around them.                       |
 | **`SpaceEvenly`**  | Items are evenly distributed with equal space between any two items (and edges). |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
 
 const style = new Style({
-  size: { width: 40, height: 40 },
+  size: { width: 50, height: 50 },
 });
 
 const child1 = tree.newLeaf(style);
@@ -56,6 +53,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 - [JustifyContent Enum](../../api/enumerations/JustifyContent.md)
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Align Items](./align-items.md)** - Align items on the cross axis.
+- [Align Items](./align-items.md)
+- [Flex Direction](./flex-direction.md)

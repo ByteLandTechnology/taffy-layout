@@ -44,7 +44,7 @@ test("i18n_ja-JP_styling_display example 1", async () => {
   // Grid デモ
   const gridTree = new TaffyTree();
   const gridStyle = new Style();
-  gridStyle.size = { width: 40, height: 40 };
+  gridStyle.size = { width: 60, height: 40 };
   const gridChild1 = gridTree.newLeaf(gridStyle);
   const gridChild2 = gridTree.newLeaf(gridStyle);
   const gridChild3 = gridTree.newLeaf(gridStyle);
@@ -81,7 +81,7 @@ test("i18n_ja-JP_styling_display example 1", async () => {
   // Flex デモ設定
   const flexTree = new TaffyTree();
   const flexStyle = new Style();
-  flexStyle.size = { width: 40, height: 40 };
+  flexStyle.size = { width: 60, height: 40 };
   const flexChild1 = flexTree.newLeaf(flexStyle);
   const flexChild2 = flexTree.newLeaf(flexStyle);
 

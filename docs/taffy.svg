@@ -1,51 +1,76 @@
 <svg viewBox="0 0 100 100" width="25" height="25" xmlns="http://www.w3.org/2000/svg">
   <style>
-    /* 
-      Slot 1 (Header):   x:10, y:10, w:80, h:25 
-      Slot 2 (Sidebar):  x:10, y:40, w:25, h:50
-      Slot 3 (Content):  x:40, y:40, w:50, h:50
-    */
-
-    /* Cycle: Slot 1 -> Slot 3 -> Slot 2 -> Slot 1 */
-    @keyframes cycle-1 {
-      0%, 100% { x: 10px; y: 10px; width: 80px; height: 25px; } /* Slot 1 */
-      33%      { x: 40px; y: 40px; width: 50px; height: 50px; } /* Slot 3 */
-      66%      { x: 10px; y: 40px; width: 25px; height: 50px; } /* Slot 2 */
-    }
-
-    /* Cycle: Slot 2 -> Slot 1 -> Slot 3 -> Slot 2 */
-    @keyframes cycle-2 {
-      0%, 100% { x: 10px; y: 40px; width: 25px; height: 50px; } /* Slot 2 */
-      33%      { x: 10px; y: 10px; width: 80px; height: 25px; } /* Slot 1 */
-      66%      { x: 40px; y: 40px; width: 50px; height: 50px; } /* Slot 3 */
-    }
-
-    /* Cycle: Slot 3 -> Slot 2 -> Slot 1 -> Slot 3 */
-    @keyframes cycle-3 {
-      0%, 100% { x: 40px; y: 40px; width: 50px; height: 50px; } /* Slot 3 */
-      33%      { x: 10px; y: 40px; width: 25px; height: 50px; } /* Slot 2 */
-      66%      { x: 10px; y: 10px; width: 80px; height: 25px; } /* Slot 1 */
-    }
-
-    .block {
-      rx: 5px;
-      /* Animation settings */
+    .taffy-shape {
+      stroke-linejoin: round;
+      paint-order: stroke fill;
       animation-duration: 6s;
       animation-iteration-count: infinite;
-      animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .sidebar { fill: #007AFF; stroke: #007AFF; animation-name: morph-sidebar; }
+    .content { fill: #FF3B30; stroke: #FF3B30; animation-name: morph-content; }
+    .header { fill: #34C759; stroke: #34C759; animation-name: morph-header; }
+
+    /* 
+       ANIMATION (6s):
+       - 0%-40%: Candy State
+       - 40%-48%: Subtle Squeeze Inward
+       - 48%-58%: Snap Outward to Layout
+       - 60%-85%: Layout State (Rounder, larger gaps)
+       - 85%-100%: Back to Candy
+    */
+
+    @keyframes morph-header {
+      0%, 40%, 100% {
+        d: path('M 50 38 L 62 50 L 50 62 L 38 50 Z');
+        stroke-width: 32px;
+      }
+      48% {
+        d: path('M 50 42 L 58 50 L 50 58 L 42 50 Z');
+        stroke-width: 36px;
+      }
+      /* Layout: Larger gaps (8 units) and rounder corners (stroke-width 8px) */
+      58%, 85% {
+        d: path('M 12 12 L 88 12 L 88 32 L 12 32 Z');
+        stroke-width: 8px;
+      }
     }
 
-    .blue { fill: #007AFF; animation-name: cycle-1; }
-    .green { fill: #34C759; animation-name: cycle-2; }
-    .red { fill: #FF3B30; animation-name: cycle-3; }
+    @keyframes morph-sidebar {
+      0%, 40%, 100% {
+        d: path('M 5 25 L 55 50 L 55 50 L 5 75 Z');
+        stroke-width: 8px;
+      }
+      48% {
+        d: path('M 15 35 L 50 50 L 50 50 L 15 65 Z');
+        stroke-width: 10px;
+      }
+      /* Layout: X gap to Content (8 units), Y gap to Header (8 units) */
+      58%, 85% {
+        d: path('M 12 44 L 33 44 L 33 88 L 12 88 Z');
+        stroke-width: 6px;
+      }
+    }
+
+    @keyframes morph-content {
+      0%, 40%, 100% {
+        d: path('M 95 25 L 45 50 L 45 50 L 95 75 Z');
+        stroke-width: 8px;
+      }
+      48% {
+        d: path('M 85 35 L 50 50 L 50 50 L 85 65 Z');
+        stroke-width: 10px;
+      }
+      /* Layout: X gap from Sidebar (8 units), Y gap from Header (8 units) */
+      58%, 85% {
+        d: path('M 45 44 L 88 44 L 88 88 L 45 88 Z');
+        stroke-width: 6px;
+      }
+    }
   </style>
 
-  <!-- Blue Block (Starts at Header) -->
-  <rect class="block blue" />
-
-  <!-- Green Block (Starts at Sidebar) -->
-  <rect class="block green" />
-
-  <!-- Red Block (Starts at Content) -->
-  <rect class="block red" />
+  <path class="taffy-shape sidebar" />
+  <path class="taffy-shape content" />
+  <path class="taffy-shape header" />
 </svg>

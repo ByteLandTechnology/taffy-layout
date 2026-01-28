@@ -1,18 +1,15 @@
 ---
-title: Align Self（自身对齐）
-sidebar_position: 7
+title: 自身对齐 (Align Self)
+sidebar_position: 15
 ---
 
-# 🕴️ Align Self（自身对齐）
+# 自身对齐 (Align Self)
 
 **为特定子元素覆盖父级的 `alignItems` 设置。**
 
 `alignSelf` 属性允许单个弹性子元素覆盖默认的对齐方式（即 `alignItems` 指定的方式）。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [align-self](https://developer.mozilla.org/zh-CN/docs/Web/CSS/align-self)
-
-## 🎛️ 取值
+## 取值
 
 | 值              | 描述                                     |
 | :-------------- | :--------------------------------------- |
@@ -23,7 +20,7 @@ sidebar_position: 7
 | **`Center`**    | 子元素居中对齐。                         |
 | **`Baseline`**  | 子元素根据基线对齐。                     |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -56,6 +53,7 @@ tree.computeLayout(root, { width: 300, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[Align Items（交叉轴对齐）](./align-items.md)** - 为容器设置默认对齐方式。
+- [多行对齐 (Align Content)](./align-content.md)
+- [交叉轴对齐 (Align Items)](./align-items.md)

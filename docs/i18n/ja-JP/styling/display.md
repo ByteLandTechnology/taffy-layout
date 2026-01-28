@@ -1,18 +1,15 @@
 ---
-title: Display（表示モード）
+title: 表示モード (Display)
 sidebar_position: 1
 ---
 
-# 📺 Display（表示モード）
+# 表示モード (Display)
 
 **ノードのレイアウト動作を定義します。**
 
 `display` プロパティは、ノードの子要素に使用される内部レイアウトアルゴリズムを決定します。
 
-> [!TIP]
-> 🔗 **MDN ドキュメント**: [display](https://developer.mozilla.org/ja/docs/Web/CSS/display)
-
-## 🎛️ 値
+## 値
 
 | 値          | 説明                                                                                                                 |
 | :---------- | :------------------------------------------------------------------------------------------------------------------- |
@@ -21,13 +18,13 @@ sidebar_position: 1
 | **`Block`** | **Block** アルゴリズムを使用します。（Taffy では現在サポートが制限されており、特定の Flex 設定のように動作します）。 |
 | **`None`**  | ノードはレイアウトから削除されます。スペースを占有せず、スキップされます。                                           |
 
-## 💻 例
+## 例
 
 ```tsx live
 // Grid デモ
 const gridTree = new TaffyTree();
 const gridStyle = new Style();
-gridStyle.size = { width: 40, height: 40 };
+gridStyle.size = { width: 60, height: 40 };
 const gridChild1 = gridTree.newLeaf(gridStyle);
 const gridChild2 = gridTree.newLeaf(gridStyle);
 const gridChild3 = gridTree.newLeaf(gridStyle);
@@ -64,7 +61,7 @@ console.log(`Flex mode: Flex, Grid columns: 2`);
 // Flex デモ設定
 const flexTree = new TaffyTree();
 const flexStyle = new Style();
-flexStyle.size = { width: 40, height: 40 };
+flexStyle.size = { width: 60, height: 40 };
 const flexChild1 = flexTree.newLeaf(flexStyle);
 const flexChild2 = flexTree.newLeaf(flexStyle);
 
@@ -89,5 +86,6 @@ return (
 
 ## 次のステップ
 
-- [Flexbox プロパティ](./flex-direction.md)
-- [Grid レイアウト](./grid-templates.md)
+- [サイジング (Sizing)](./size.md)
+- [フレックスボックス (Flexbox)](./flex-direction.md)
+- [グリッドレイアウト (Grid)](./grid.md)

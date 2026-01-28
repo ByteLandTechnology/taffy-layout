@@ -1,8 +1,9 @@
 ---
 title: Sticky Footer
+sidebar_position: 4
 ---
 
-# 🦶 Sticky Footer
+# Sticky Footer
 
 **When content is short, the footer sticks to the bottom; when content grows, the footer moves down naturally.**
 
@@ -16,12 +17,12 @@ title: Sticky Footer
 └────────────────────────────┘
 ```
 
-## 🔑 Key Rules
+## Key Rules
 
 - Parent: `flexDirection: column`
 - Content: `flexGrow: 1`
 
-## 💻 Code
+## Code
 
 ```tsx live
 const tree = new TaffyTree();
@@ -55,7 +56,7 @@ tree.computeLayout(root, { width: 300, height: 300 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Related Guides
+## Related Guides
 
 - **[Flex Grow](../styling/flex-basis-grow-shrink.md)**
 - **[Size](../styling/size.md)**

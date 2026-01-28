@@ -3,13 +3,13 @@ title: インストール
 sidebar_position: 1
 ---
 
-# 📦 インストール
+# インストール
 
 ```bash
 npm install taffy-layout
 ```
 
-## ✅ 動作環境
+## 動作環境
 
 - **Node.js**: バージョン 12 以上。
 - **ブラウザ**: **WebAssembly** をサポートするモダンブラウザ：
@@ -18,7 +18,7 @@ npm install taffy-layout
   - Safari 11+
   - Edge 16+
 
-## 🌐 ブラウザでの使用
+## ブラウザでの使用
 
 ES Modules を通じてブラウザで Taffy を使用します：
 
@@ -37,7 +37,7 @@ ES Modules を通じてブラウザで Taffy を使用します：
 </script>
 ```
 
-## 🖥️ Node.js での使用
+## Node.js での使用
 
 Node.js 環境で Taffy を使用します：
 
@@ -51,11 +51,11 @@ await loadTaffy();
 const tree = new TaffyTree();
 ```
 
-## 📘 TypeScript サポート
+## TypeScript サポート
 
 Taffy Layout は**完全な TypeScript 型定義**を含んでおり、すぐに使用できます。追加のインストール（`@types/taffy-layout` など）は不要です。`Style`、`Layout`、`TaffyTree` の完全なインテリセンスが利用できます。
 
-## ⏭️ 次のステップ
+## 次のステップ
 
-- 👉 **[クイックスタートガイド](./quick-start.md)** - 最初の Taffy レイアウトを作成します。
-- 📖 **[API リファレンス](../../api/index.md)** - 完全な API ドキュメントを確認します。
+- **[クイックスタートガイド](./quick-start.md)** - 最初の Taffy レイアウトを作成します。
+- **[API リファレンス](../../api/index.md)** - 完全な API ドキュメントを確認します。

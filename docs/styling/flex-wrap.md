@@ -1,18 +1,15 @@
 ---
 title: Flex Wrap
-sidebar_position: 3
+sidebar_position: 9
 ---
 
-# ↩️ Flex Wrap
+# ↩ Flex Wrap
 
 **Control whether items are forced onto one line or can wrap.**
 
 The `flexWrap` property controls what happens when items don't fit in a single line along the main axis.
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [flex-wrap](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap)
-
-## 🎛️ Values
+## Values
 
 | Value             | Description                                                                                                          |
 | :---------------- | :------------------------------------------------------------------------------------------------------------------- |
@@ -20,7 +17,7 @@ The `flexWrap` property controls what happens when items don't fit in a single l
 | **`Wrap`**        | Items wrap onto multiple lines if needed, from top to bottom.                                                        |
 | **`WrapReverse`** | Items wrap onto multiple lines, from bottom to top.                                                                  |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -49,7 +46,7 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Align Content](./align-content.md)** - Control how multiple lines are spaced.
-- **[Flex Basis, Grow, Shrink](./flex-basis-grow-shrink.md)** - Control how items resize.
+- [Flex Basis](./flex-basis.md)
+- [Align Content](./align-content.md)

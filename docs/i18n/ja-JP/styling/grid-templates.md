@@ -1,18 +1,15 @@
 ---
-title: Grid Template（グリッドテンプレート）
-sidebar_position: 17
+title: グリッドテンプレート (Grid Template)
+sidebar_position: 18
 ---
 
-# ▦ Grid Templates（グリッドテンプレート）
+# ▦ グリッドテンプレート (Grid Template)
 
 **グリッドの行と列を定義します。**
 
 `gridTemplateColumns` と `gridTemplateRows` プロパティは、グリッドのトラックサイズ関数を定義します。
 
-> [!TIP]
-> 🔗 **MDN ドキュメント**: [grid-template-columns](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-columns), [grid-template-rows](https://developer.mozilla.org/ja/docs/Web/CSS/grid-template-rows)
-
-## 🎛️ トラックサイズ
+## トラックサイズ
 
 各トラックは `min` と `max` のサイズ関数を使って定義します：
 
@@ -25,7 +22,7 @@ sidebar_position: 17
 | **MinContent（最小コンテンツ）** | コンテンツに適合する最小のサイズ。             | `{ min: 'min-content', max: 'auto' }` |
 | **MaxContent（最大コンテンツ）** | コンテンツに適合する最大のサイズ。             | `{ min: 'auto', max: 'max-content' }` |
 
-## 💻 例
+## 例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -79,5 +76,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 次のステップ
 
-- [Grid Placement（グリッド配置）](./grid-placement.md)
-- [Grid Auto Flow（グリッド自動流）](./grid-auto-flow.md)
+- [グリッド列 (Grid Column)](./grid-column.md)
+- [グリッド行 (Grid Row)](./grid-row.md)

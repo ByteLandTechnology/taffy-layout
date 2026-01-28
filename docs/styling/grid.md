@@ -1,9 +1,9 @@
 ---
-title: Grid Layout
-sidebar_position: 16
+title: Grid
+sidebar_position: 17
 ---
 
-# Grid Layout
+# Grid
 
 Taffy’s Grid API mirrors CSS Grid and is best for two-dimensional layouts. Define tracks for rows and columns, then place items by line or area.
 
@@ -13,7 +13,7 @@ Taffy’s Grid API mirrors CSS Grid and is best for two-dimensional layouts. Def
 - **Line**: grid line used for placement
 - **Area**: named regions (if you use them)
 
-```
+```text
 Columns:  1fr 2fr
 Rows:     auto 1fr
 
@@ -32,10 +32,10 @@ const tree = new TaffyTree();
 const rootStyle = new Style({
   display: Display.Grid,
   size: { width: 200, height: 200 },
-  // Define 2 columns of 50% width each
+  // Define 2 columns of equal width (1fr)
   gridTemplateColumns: [
-    { min: "50%", max: "50%" },
-    { min: "50%", max: "50%" },
+    { min: 0, max: "1fr" },
+    { min: 0, max: "1fr" },
   ],
   // Define 2 rows: 50px fixed, and "1fr" (remaining space)
   gridTemplateRows: [
@@ -62,8 +62,8 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Grid Templates](./grid-templates.md)** - Define the grid structure.
-- **[Grid Placement](./grid-placement.md)** - Place items into the grid.
-- **[Grid Auto Flow](./grid-auto-flow.md)** - Control automatic placement.
+- [Grid Templates](./grid-templates.md)
+- [Grid Column](./grid-column.md)
+- [Grid Row](./grid-row.md)

@@ -43,13 +43,13 @@ const TaffyTreePreview = (_props: any) => null;
 test("styling_gap example 1", async () => {
   const tree = new TaffyTree();
 
-  const itemStyle = new Style({ size: { width: 40, height: 40 } });
+  const itemStyle = new Style({ size: { width: 60, height: 40 } });
 
   const rootStyle = new Style({
     display: Display.Flex,
     flexDirection: FlexDirection.Row,
     flexWrap: FlexWrap.Wrap,
-    size: { width: 150, height: 100 },
+    size: { width: 200, height: 100 },
 
     // Gap adds space strictly BETWEEN items, not on the outside edges
     gap: { width: 10, height: 10 },
@@ -59,7 +59,7 @@ test("styling_gap example 1", async () => {
 
   const root = tree.newWithChildren(rootStyle, children);
 
-  tree.computeLayout(root, { width: 150, height: 100 });
+  tree.computeLayout(root, { width: 200, height: 100 });
 
   return <TaffyTreePreview tree={tree} root={root} />;
 });

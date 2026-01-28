@@ -46,10 +46,10 @@ test("i18n_ja-JP_styling_grid example 1", async () => {
   const rootStyle = new Style({
     display: Display.Grid,
     size: { width: 200, height: 200 },
-    // 2つの列を定義（各50%幅）
+    // 2つの列を定義（残りのスペースを等分する 1fr）
     gridTemplateColumns: [
-      { min: "50%", max: "50%" },
-      { min: "50%", max: "50%" },
+      { min: 0, max: "1fr" },
+      { min: 0, max: "1fr" },
     ],
     // 2つの行を定義：1行目は固定50px、2行目は残りスペース
     gridTemplateRows: [

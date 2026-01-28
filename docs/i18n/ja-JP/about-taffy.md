@@ -5,17 +5,17 @@ sidebar_position: 1
 
 # Taffy について
 
-Taffy は、Rust で記述され WebAssembly にコンパイルされた高性能で埋め込み可能なレイアウトエンジンです。ネイティブに近いパフォーマンスで CSS Flexbox と Grid レイアウトアルゴリズムを JavaScript に提供します。
+Taffy は、Rust で書かれ WebAssembly にコンパイルされた高性能で埋め込み可能なレイアウトエンジンです。ネイティブに近いパフォーマンスで CSS Flexbox と Grid レイアウトアルゴリズムを JavaScript に提供します。
 
 ## Taffy の特徴
 
 ### WebAssembly パワード
 
-Taffy は Rust で記述され WebAssembly にコンパイルされているため、純粋な JavaScript 実装よりもネイティブコードに近いパフォーマンス特性を持っています。
+Taffy は Rust で書かれ WebAssembly にコンパイルされているため、純粋な JavaScript 実装よりもネイティブコードに近いパフォーマンス特性を持ちます。
 
 ### 完全な CSS サポート
 
-Taffy は CSS Flexbox と CSS Grid レイアウトエンジンの両方を、Web ブラウザと完全な機能パリティで実装しています。
+Taffy は CSS Flexbox と CSS Grid レイアウトエンジンの両方を、Web ブラウザと完全な互換性を持って実装しています。
 
 ### ツリーベース API
 
@@ -23,7 +23,7 @@ Taffy はレイアウトノードを管理するための効率的なツリー�
 
 ### カスタム測定
 
-Taffy はテキストなどの動的コンテンツ用のカスタム測定コールバックをサポートし、ターミナル UI、Canvas レンダリングなどを可能にします。
+Taffy はテキストなどの動的コンテンツ用のカスタム測定コールバックをサポートし、ターミナル UI、Canvas レンダリングなどを実現します。
 
 ## ユースケース
 

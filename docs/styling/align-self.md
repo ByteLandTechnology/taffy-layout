@@ -1,18 +1,15 @@
 ---
 title: Align Self
-sidebar_position: 7
+sidebar_position: 15
 ---
 
-# 🕴️ Align Self
+# Align Self
 
 **Override the parent's `alignItems` for a specific item.**
 
 The `alignSelf` property allows the default alignment (or the one specified by `alignItems`) to be overridden for individual flex items.
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [align-self](https://developer.mozilla.org/en-US/docs/Web/CSS/align-self)
-
-## 🎛️ Values
+## Values
 
 | Value           | Description                                            |
 | :-------------- | :----------------------------------------------------- |
@@ -23,7 +20,7 @@ The `alignSelf` property allows the default alignment (or the one specified by `
 | **`Center`**    | Item aligns in the center.                             |
 | **`Baseline`**  | Item aligns based on its baseline.                     |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -56,6 +53,7 @@ tree.computeLayout(root, { width: 300, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Align Items](./align-items.md)** - Set the default alignment for the container.
+- [Align Content](./align-content.md)
+- [Align Items](./align-items.md)

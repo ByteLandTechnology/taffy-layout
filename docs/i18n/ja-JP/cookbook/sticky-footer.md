@@ -1,8 +1,9 @@
 ---
 title: スティッキーフッター
+sidebar_position: 4
 ---
 
-# 🦶 スティッキーフッター
+# スティッキーフッター
 
 **コンテンツが短い場合、フッターは下部に固定されます。コンテンツが増えると、フッターは自然に下に移動します。**
 
@@ -16,12 +17,12 @@ title: スティッキーフッター
 └────────────────────────────┘
 ```
 
-## 🔑 キールール
+## 主要なルール
 
 - 親: `flexDirection: column`
 - コンテンツ: `flexGrow: 1`
 
-## 💻 コード
+## コード
 
 ```tsx live
 const tree = new TaffyTree();
@@ -55,7 +56,7 @@ tree.computeLayout(root, { width: 300, height: 300 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 関連ガイド
+## 関連ガイド
 
 - **[Flex Grow/Shrink](../styling/flex-basis-grow-shrink.md)**
 - **[サイジング](../styling/size.md)**

@@ -3,11 +3,11 @@ title: 构建节点树
 sidebar_position: 3
 ---
 
-# 🏗️ 构建节点树
+# 构建节点树
 
 Taffy 中的布局以节点树的形式表示。每个节点都有一个 `Style`，父节点控制其子节点的排列方式。
 
-## 🔑 关键操作
+## 关键操作
 
 | 操作             | 方法                                            | 描述                                       |
 | :--------------- | :---------------------------------------------- | :----------------------------------------- |
@@ -19,7 +19,7 @@ Taffy 中的布局以节点树的形式表示。每个节点都有一个 `Style`
 | **获取样式**     | `tree.getStyle(node)`                           | 检索节点的样式对象。                       |
 | **设置样式**     | `tree.setStyle(node, style)`                    | 更新节点的样式。                           |
 
-## 🍃 创建节点
+## 创建节点
 
 ### 叶子节点
 
@@ -53,7 +53,7 @@ const child2 = tree.newLeaf(new Style());
 const containerNode = tree.newWithChildren(containerStyle, [child1, child2]);
 ```
 
-## 🌲 管理子节点
+## 管理子节点
 
 使用这些方法动态操作树结构。
 
@@ -77,7 +77,7 @@ tree.replaceChildAtIndex(parent, 1, newChild);
 tree.removeChild(parent, firstChild);
 ```
 
-## 🎨 更新样式
+## 更新样式
 
 样式可以随时更新。这会将节点标记为"脏"状态，需要重新计算布局。
 
@@ -90,10 +90,9 @@ const newStyle = new Style({ flexGrow: 2, width: 100 });
 tree.setStyle(node, newStyle);
 ```
 
-> [!NOTE]
 > **性能提示**: 尽量为静态内容初始化重用 `Style` 对象，但请记住 `tree.setStyle` 会将样式数据复制到内部引擎中，因此在将样式传递给树**之后**修改 JS `Style` 对象不会影响树，直到您再次调用 `setStyle`。
 
-## ⏭️ 下一步
+## 下一步
 
-- 📐 **[计算布局](./computing-layouts.md)** - 计算位置和尺寸。
-- ⚙️ **[配置](./configuration.md)** - 全局设置。
+- **[计算布局](./computing-layouts.md)** - 计算位置和尺寸。
+- **[配置](./configuration.md)** - 全局设置。

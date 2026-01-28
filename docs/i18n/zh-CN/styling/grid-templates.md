@@ -1,18 +1,15 @@
 ---
-title: Grid Template（网格模板）
-sidebar_position: 17
+title: 网格模板 (Grid Templates)
+sidebar_position: 18
 ---
 
-# ▦ Grid Templates（网格模板）
+# 网格模板 (Grid Templates)
 
 **定义网格的行和列。**
 
 `gridTemplateColumns` 和 `gridTemplateRows` 属性定义网格的轨道尺寸函数。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [grid-template-columns](https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-columns), [grid-template-rows](https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-rows)
-
-## 🎛️ 轨道尺寸
+## 轨道尺寸
 
 每个轨道使用 `min` 和 `max` 尺寸函数定义：
 
@@ -25,7 +22,7 @@ sidebar_position: 17
 | **MinContent（最小内容）** | 适合内容的最小可能尺寸。     | `{ min: 'min-content', max: 'auto' }` |
 | **MaxContent（最大内容）** | 适合内容的最大可能尺寸。     | `{ min: 'auto', max: 'max-content' }` |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -79,5 +76,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 后续步骤
 
-- [Grid Placement（网格放置）](./grid-placement.md)
-- [Grid Auto Flow（网格自动流向）](./grid-auto-flow.md)
+- [网格列 (Grid Column)](./grid-column.md)
+- [网格行 (Grid Row)](./grid-row.md)

@@ -1,8 +1,9 @@
 ---
-title: 尺寸
+title: 尺寸 (Size)
+sidebar_position: 2
 ---
 
-# 尺寸
+# 尺寸 (Size)
 
 使用 `size`、`minSize` 和 `maxSize` 控制元素的尺寸。
 
@@ -40,7 +41,7 @@ console.log(tree.printTree(root));
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 📏 宽度和高度
+## 宽度和高度
 
 **精确控制元素的尺寸。**
 
@@ -49,7 +50,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 > [!TIP]
 > 🔗 **MDN 文档**：[width](https://developer.mozilla.org/zh-CN/docs/Web/CSS/width)、[height](https://developer.mozilla.org/zh-CN/docs/Web/CSS/height)、[min-width](https://developer.mozilla.org/zh-CN/docs/Web/CSS/min-width)、[max-width](https://developer.mozilla.org/zh-CN/docs/Web/CSS/max-width)
 
-## 🎛️ 属性
+## 属性
 
 这些属性接受包含 `width` 和 `height` 的 `Size` 对象。
 
@@ -59,7 +60,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 | **`minSize`** | 最小尺寸。防止元素收缩到小于此值。                       |
 | **`maxSize`** | 最大尺寸。防止元素增长超过此值。                         |
 
-## 📐 尺寸值
+## 尺寸值
 
 `width` 和 `height` 属性接受以下值类型：
 
@@ -69,7 +70,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 | **Points**  | 精确的像素值。                                 | `150`                                                 |
 | **Percent** | 父元素尺寸的百分比。                           | `"50%"` 或 `0.5`（JS 绑定中通常使用字符串 `"50%"`）。 |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -109,7 +110,7 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[宽高比](./aspect-ratio.md)** - 保持宽高比
-- **[外边距、内边距、边框](./margin-padding-border.md)** - 添加尺寸周围的间距
+- [纵横比 (Aspect Ratio)](./aspect-ratio.md)
+- [外边距 (Margin)](./margin.md)

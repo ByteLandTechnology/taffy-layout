@@ -1,8 +1,9 @@
 ---
 title: Holy Grail レイアウト
+sidebar_position: 3
 ---
 
-# 🏆 Holy Grail レイアウト
+# Holy Grail レイアウト
 
 **ヘッダーとフッター付きのクラシックな 3 列レイアウト。**
 
@@ -16,7 +17,7 @@ title: Holy Grail レイアウト
 └──────────────────────────────┘
 ```
 
-## 💻 コード
+## コード
 
 ```tsx live
 const tree = new TaffyTree();
@@ -28,8 +29,18 @@ const pageStyle = new Style({
   gap: { width: 0, height: 10 },
 });
 
-const header = tree.newLeaf(new Style({ size: { height: 50 } }));
-const footer = tree.newLeaf(new Style({ size: { height: 50 } }));
+const header = tree.newLeaf(
+  new Style({
+    size: { width: "100%", height: 50 },
+    flexShrink: 0,
+  }),
+);
+const footer = tree.newLeaf(
+  new Style({
+    size: { width: "100%", height: 50 },
+    flexShrink: 0,
+  }),
+);
 
 const bodyRowStyle = new Style({
   display: Display.Flex,
@@ -38,12 +49,11 @@ const bodyRowStyle = new Style({
   gap: { width: 10, height: 0 },
 });
 
-const left = tree.newLeaf(new Style({ size: { width: 100, height: "100%" } }));
-const right = tree.newLeaf(new Style({ size: { width: 100, height: "100%" } }));
+const left = tree.newLeaf(new Style({ size: { width: 100, height: "auto" } }));
+const right = tree.newLeaf(new Style({ size: { width: 100, height: "auto" } }));
 const main = tree.newLeaf(
   new Style({
     flexGrow: 1,
-    size: { width: "auto", height: "100%" },
   }),
 );
 
@@ -55,7 +65,7 @@ tree.computeLayout(root, { width: 600, height: 400 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 関連ガイド
+## 関連ガイド
 
 - **[フレックス方向](../styling/flex-direction.md)**
 - **[ポジショニング](../styling/position.md)**

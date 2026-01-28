@@ -1,5 +1,6 @@
 ---
 title: Measure Functions
+sidebar_position: 5
 ---
 
 # Measure Functions
@@ -13,10 +14,6 @@ Use `computeLayoutWithMeasure()` instead of the standard `computeLayout()` when 
 ## How it Works
 
 The measure function is a callback that Taffy invokes during the layout process. It asks you: "Given these constraints, how big is this content?"
-
-```text
-measure(known_dimensions, available_space) -> Size { width, height }
-```
 
 ### Arguments
 
@@ -91,5 +88,5 @@ return (
 
 ## Next Steps
 
-- [Performance Tuning](../advanced/performance.md)
+- [Styling Guide](../styling/index.md)
 - [Layout Cookbook](../cookbook/)

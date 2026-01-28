@@ -3,11 +3,11 @@ title: Building Trees
 sidebar_position: 3
 ---
 
-# 🏗️ Building Trees
+# Building Trees
 
 Layouts in Taffy are represented as a tree of nodes. Each node has a `Style`, and parent nodes control how their children are arranged.
 
-## 🔑 Key Operations
+## Key Operations
 
 | Operation         | Method                                          | Description                                         |
 | :---------------- | :---------------------------------------------- | :-------------------------------------------------- |
@@ -19,7 +19,7 @@ Layouts in Taffy are represented as a tree of nodes. Each node has a `Style`, an
 | **Get Styles**    | `tree.getStyle(node)`                           | Retrieve the style object for a node.               |
 | **Set Styles**    | `tree.setStyle(node, style)`                    | Update the style for a node.                        |
 
-## 🍃 Creating Nodes
+## Creating Nodes
 
 ### Leaf Nodes
 
@@ -53,7 +53,7 @@ const child2 = tree.newLeaf(new Style());
 const containerNode = tree.newWithChildren(containerStyle, [child1, child2]);
 ```
 
-## 🌲 Managing Children
+## Managing Children
 
 Manipulate the tree structure dynamically using these methods.
 
@@ -77,7 +77,7 @@ tree.replaceChildAtIndex(parent, 1, newChild);
 tree.removeChild(parent, firstChild);
 ```
 
-## 🎨 Updating Styles
+## Updating Styles
 
 Styles can be updated at any time. This will mark the node as "dirty" and require a new layout computation.
 
@@ -90,10 +90,9 @@ const newStyle = new Style({ flexGrow: 2, width: 100 });
 tree.setStyle(node, newStyle);
 ```
 
-> [!NOTE]
 > **Performance Tip**: Try to reuse `Style` objects for static content initialization, but remember that `tree.setStyle` copies the style data into the internal engine, so modifying the JS `Style` object _after_ passing it to the tree won't affect the tree until you call `setStyle` again.
 
-## ⏭️ Next Steps
+## Next Steps
 
 - 📐 **[Computing Layouts](./computing-layouts.md)** - Calculate positions and sizes.
 - ⚙️ **[Configuration](./configuration.md)** - Global settings.

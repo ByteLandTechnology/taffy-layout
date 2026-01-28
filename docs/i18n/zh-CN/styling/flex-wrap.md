@@ -1,18 +1,15 @@
 ---
-title: Flex Wrap（弹性换行）
-sidebar_position: 3
+title: Flex 换行 (Flex Wrap)
+sidebar_position: 9
 ---
 
-# ↩️ Flex Wrap（弹性换行）
+# Flex 换行 (Flex Wrap)
 
 **控制子元素是保持在一行还是可以换行。**
 
 `flexWrap` 属性控制当子元素在主轴方向的单行中放不下时的行为。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [flex-wrap](https://developer.mozilla.org/zh-CN/docs/Web/CSS/flex-wrap)
-
-## 🎛️ 取值
+## 取值
 
 | 值                | 描述                                                                                    |
 | :---------------- | :-------------------------------------------------------------------------------------- |
@@ -20,7 +17,7 @@ sidebar_position: 3
 | **`Wrap`**        | 子元素在需要时换行到多行，从上到下排列。                                                |
 | **`WrapReverse`** | 子元素在需要时换行到多行，从下到上排列。                                                |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -49,7 +46,7 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[Align Content（多行对齐）](./align-content.md)** - 控制多行之间的间距。
-- **[Flex Basis、Grow、Shrink（弹性尺寸）](./flex-basis-grow-shrink.md)** - 控制子元素的调整大小行为。
+- [Flex 基准 (Flex Basis)](./flex-basis.md)
+- [多行对齐 (Align Content)](./align-content.md)

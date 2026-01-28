@@ -3,13 +3,13 @@ title: Configuration
 sidebar_position: 5
 ---
 
-# ⚙️ Configuration
+# Configuration
 
 **Optimize Taffy for your specific use case.**
 
 Taffy works out-of-the-box, but you can tune it for performance, precision, or resource constraints.
 
-## 💾 Capacity Pre-allocation
+## Capacity Pre-allocation
 
 If you know roughly how many nodes you'll need, initializing the tree with a capacity can reduce memory re-allocations and improve startup performance.
 
@@ -31,7 +31,7 @@ tree.computeLayout(root, { width: 200, height: 40 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 🎯 Rounding Settings
+## Rounding Settings
 
 Control whether layout values are snapped to whole integers (pixels) or kept as precise floats.
 
@@ -78,11 +78,14 @@ console.log(`Precise Width: ${layout1.width}`);
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 🗑️ Memory Management
+## Memory Management
 
-Taffy uses WebAssembly, so while Javascript is garbage collected, the underlying Rust structs are managed manually in some bindings. **However, in this JS binding version, the `TaffyTree` manages its own lifecycle.**
+Although Taffy's JavaScript bindings use `FinalizationRegistry` to automatically clean up WASM memory when `TaffyTree` objects are garbage collected, relying solely on the GC can be insufficient for high-performance applications (like game loops) where trees are created frequently.
 
-If you are creating many trees (e.g. one per frame in a game loop), you should explicitly clear them or free them to avoid leaks in the WASM heap.
+To prevent memory spikes or leaks in the WASM heap, you should explicitly manage memory:
+
+- **Reuse (Recommended):** Use `.clear()` to reset a tree without deallocating its memory. This is ideal for game loops or recursive layouts, as it avoids constant allocation overhead.
+- **Dispose:** Use `.free()` if you are completely done with a tree and want to release its memory immediately.
 
 ```ts
 const tree = new TaffyTree();
@@ -97,7 +100,7 @@ tree.clear();
 tree.free();
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
 - 🎨 **[Styling Guide](../styling/index.md)** - Learn about Flexbox and Grid.
 - 🛠️ **[Advanced Topics](../advanced/index.md)** - Debugging and Internals.

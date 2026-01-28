@@ -55,9 +55,9 @@ test("i18n_zh-CN_styling_align-items example 1", async () => {
   });
 
   // 创建不同高度的子元素以演示对齐效果
-  const child1 = tree.newLeaf(new Style({ size: { width: 40, height: 20 } }));
-  const child2 = tree.newLeaf(new Style({ size: { width: 40, height: 40 } }));
-  const child3 = tree.newLeaf(new Style({ size: { width: 40, height: 60 } }));
+  const child1 = tree.newLeaf(new Style({ size: { width: 50, height: 20 } }));
+  const child2 = tree.newLeaf(new Style({ size: { width: 50, height: 40 } }));
+  const child3 = tree.newLeaf(new Style({ size: { width: 50, height: 60 } }));
 
   const rootStyle = new Style({
     display: Display.Flex,

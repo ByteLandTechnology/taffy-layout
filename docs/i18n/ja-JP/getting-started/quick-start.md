@@ -3,11 +3,11 @@ title: クイックスタート
 sidebar_position: 2
 ---
 
-# ⚡ クイックスタート
+# クイックスタート
 
 **数分で動作する Taffy レイアウトを作成しましょう。**
 
-## 1. 最小限の例
+## 最小限の例
 
 この例では、コンテナと 2 つの子ノードを含むシンプルな Flexbox レイアウトを作成します。
 
@@ -60,8 +60,8 @@ console.log(`Container: ${containerLayout.width}x${containerLayout.height}`);
 console.log(tree.printTree(container));
 ```
 
-## ⏭️ 次のステップ
+## 次のステップ
 
-- 🏗️ **[ノードツリーの構築](./building-trees.md)** - ノードツリーの操作方法を学びます。
-- 📐 **[レイアウトの計算](./computing-layouts.md)** - レイアウト計算のプロセスを理解します。
-- 🧠 **[コアコンセプト](../core-concepts/overview.md)** - Taffy のモデルを深く理解します。
+- **[ノードツリーの構築](./building-trees.md)** - ノードツリーの操作方法を学びます。
+- **[レイアウトの計算](./computing-layouts.md)** - レイアウト計算のプロセスを理解します。
+- **[コアコンセプト](../core-concepts/index.md)** - Taffy のモデルを深く理解します。

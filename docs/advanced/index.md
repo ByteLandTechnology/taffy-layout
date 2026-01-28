@@ -1,4 +1,9 @@
-# 🛠️ Advanced Topics
+---
+title: Advanced Topics
+sidebar_position: 6
+---
+
+# Advanced Topics
 
 **Deep dives on debugging, performance, and error handling.**
 

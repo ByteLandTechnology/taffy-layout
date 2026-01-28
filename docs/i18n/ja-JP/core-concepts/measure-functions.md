@@ -1,5 +1,6 @@
 ---
 title: 測定関数
+sidebar_position: 5
 ---
 
 # 測定関数
@@ -13,10 +14,6 @@ title: 測定関数
 ## 動作原理
 
 測定関数は、レイアウトプロセス中に Taffy が呼び出すコールバックです。「これらの制約が与えられた場合、このコンテンツはどのくらいのサイズですか？」と尋ねます。
-
-```text
-measure(known_dimensions, available_space) -> Size { width, height }
-```
 
 ### 引数
 
@@ -91,5 +88,5 @@ return (
 
 ## 次のステップ
 
-- [パフォーマンスチューニング](../advanced/performance.md)
-- [レイアウトクックブック](../cookbook/)
+- [スタイリングガイド (Styling Guide)](../styling/index.md)
+- [レイアウトクックブック (Cookbook)](../cookbook/)

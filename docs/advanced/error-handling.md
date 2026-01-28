@@ -1,10 +1,15 @@
-# 🚨 Error Handling
+---
+title: Error Handling
+sidebar_position: 3
+---
+
+# Error Handling
 
 **Handling exceptions and invalid states safely.**
 
 Taffy operations generally do not throw, but invalid API usage (like accessing non-existent nodes) can raise `TaffyError`.
 
-## ⚠️ Common Error Scenarios
+## Common Error Scenarios
 
 | Error Type                  | Cause                                                     | Solution                                         |
 | :-------------------------- | :-------------------------------------------------------- | :----------------------------------------------- |
@@ -12,7 +17,7 @@ Taffy operations generally do not throw, but invalid API usage (like accessing n
 | **`ChildIndexOutOfBounds`** | Calling `getChildAtIndex` with an index >= `childCount`.  | Check `childCount` before access.                |
 | **`InvalidParentNode`**     | Removing a child that isn't attached to the parent.       | Track your tree structure carefully.             |
 
-## 🛡️ Best Practices
+## Best Practices
 
 Wrap tree operations in `try-catch` blocks if you are dealing with dynamic or user-generated tree structures.
 
@@ -34,7 +39,7 @@ try {
 }
 ```
 
-## 🔍 Validation Pattern
+## Validation Pattern
 
 Instead of relying on catch, validate indices:
 

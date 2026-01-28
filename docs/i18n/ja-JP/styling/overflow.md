@@ -1,18 +1,15 @@
 ---
-title: Overflow（オーバーフロー）
-sidebar_position: 12
+title: オーバーフロー (Overflow)
+sidebar_position: 24
 ---
 
-# 🌊 Overflow（オーバーフロー）
+# オーバーフロー (Overflow)
 
 **コンテンツがコンテナのサイズを超えた場合の動作を制御します。**
 
 `overflow` プロパティは、コンテンツがコンテナボックスより大きい場合に何が起こるかを指定します。
 
-> [!TIP]
-> 🔗 **MDN ドキュメント**: [overflow](https://developer.mozilla.org/ja/docs/Web/CSS/overflow)
-
-## 🎛️ 値
+## 値
 
 | 值            | 説明                                                                                                                   |
 | :------------ | :--------------------------------------------------------------------------------------------------------------------- |
@@ -20,7 +17,7 @@ sidebar_position: 12
 | **`Hidden`**  | コンテンツはコンテナの端で切り取られます。                                                                             |
 | **`Scroll`**  | Taffy はスクロールバー用のスペースを確保します（設定されている場合）。ただしスクロールバー自体はレンダリングしません。 |
 
-## 📜 スクロールバーのサイズ
+## スクロールバーのサイズ
 
 Taffy では、`Overflow.Scroll` は通常、ノードがスクロール*できる*ことを示すために使用されます。Taffy は `scrollbarSize` を計算し、レイアウト出力から読み取ることができます。
 
@@ -40,7 +37,7 @@ console.log(
 );
 ```
 
-## 💻 例
+## 例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -67,6 +64,7 @@ tree.computeLayout(container, { width: 100, height: 100 });
 return <TaffyTreePreview tree={tree} root={container} />;
 ```
 
-## ⏭️ 次のステップ
+## 次のステップ
 
-- **[Size（サイズ）](./size.md)** - コンテナのサイズを制限します。
+- [コアコンセプト](../core-concepts/index.md)
+- [サイジング (Sizing)](./size.md)

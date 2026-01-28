@@ -1,8 +1,9 @@
 ---
 title: Media Card
+sidebar_position: 5
 ---
 
-# 🖼️ Media Card
+# Media Card
 
 **Image + text layout with fixed media and flexible text content.**
 
@@ -13,7 +14,7 @@ title: Media Card
 └────────────────────────────┘
 ```
 
-## 💻 Code
+## Code
 
 ```tsx live
 const tree = new TaffyTree();
@@ -52,7 +53,7 @@ tree.computeLayout(root, { width: 420, height: 120 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Related Guides
+## Related Guides
 
 - **[Flex Direction](../styling/flex-direction.md)**
 - **[Align Items](../styling/align-items.md)**

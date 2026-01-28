@@ -1,5 +1,6 @@
 ---
 title: Size, Space, and Units
+sidebar_position: 4
 ---
 
 # Size, Space, and Units
@@ -75,7 +76,7 @@ return (
 
 Taffy behaves like `box-sizing: border-box`:
 
-```
+```text
 ┌─────────────────────────┐
 │  Margin                 │
 │  ┌───────────────────┐  │
@@ -126,8 +127,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Next Steps
 
-- [Flexbox Layout](../styling/index.md)
-- [CSS Grid Layout](../styling/index.md)
-- [Sizing](../styling/size.md)
-- [Spacing (Margin/Padding)](../styling/margin-padding-border.md)
-- [Spacing (Gap)](../styling/gap.md)
+- [Measure Functions](./measure-functions.md)
+- [Styling Guide](../styling/index.md)

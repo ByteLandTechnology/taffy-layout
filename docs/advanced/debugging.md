@@ -1,8 +1,13 @@
-# 🐞 Debugging
+---
+title: Debugging
+sidebar_position: 1
+---
+
+# Debugging
 
 **Tools to inspect and troubleshoot layouts.**
 
-## 🖨️ Print Tree
+## Print Tree
 
 The most powerful tool at your disposal is `tree.printTree(node)`. It generates a string representation of the tree structure, style configuration, and computed layout.
 
@@ -23,7 +28,7 @@ DIV [x: 0    y: 0    w: 100  h: 100  content_w: 100  content_h: 100  border: l:0
 
 > **Note**: The actual output format may vary slightly by version but will always show the hierarchy and key constraints.
 
-## 📏 Visual Debugging
+## Visual Debugging
 
 If you are rendering to a canvas or screen:
 
@@ -51,7 +56,7 @@ function debugDraw(node: any) {
 debugDraw(root);
 ```
 
-## 🔍 Isolation
+## Isolation
 
 If a specific sub-tree is misbehaving:
 

@@ -1,8 +1,9 @@
 ---
 title: グリッドダッシュボード
+sidebar_position: 2
 ---
 
-# 📊 グリッドダッシュボード
+# グリッドダッシュボード
 
 **ヘッダー、ナビゲーション、メインコンテンツエリアを持つダッシュボードレイアウト。**
 
@@ -14,13 +15,13 @@ title: グリッドダッシュボード
 └──────────┴─────────────────┘
 ```
 
-## 🔑 キーアイデア
+## キーアイデア
 
 - レイアウト構造に Grid を使用
 - **Header** はすべての列にまたがる
 - **Nav** と **Main** は 2 行目にある
 
-## 💻 コード
+## コード
 
 ```tsx live
 const tree = new TaffyTree();
@@ -71,7 +72,8 @@ tree.computeLayout(root, { width: 600, height: 320 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 関連ガイド
+## 関連ガイド
 
 - **[グリッドテンプレート](../styling/grid-templates.md)**
-- **[グリッド配置](../styling/grid-placement.md)**
+- **[グリッド列](../styling/grid-column.md)**
+- **[グリッド行](../styling/grid-row.md)**

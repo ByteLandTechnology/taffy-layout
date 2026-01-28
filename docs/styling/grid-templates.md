@@ -1,6 +1,6 @@
 ---
 title: Grid Template
-sidebar_position: 17
+sidebar_position: 18
 ---
 
 # ▦ Grid Templates
@@ -9,10 +9,7 @@ sidebar_position: 17
 
 The `gridTemplateColumns` and `gridTemplateRows` properties define the line names and track sizing functions of the grid.
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [grid-template-columns](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns), [grid-template-rows](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-rows)
-
-## 🎛️ Track Sizing
+## Track Sizing
 
 Each track is defined using a `min` and `max` sizing function:
 
@@ -25,7 +22,7 @@ Each track is defined using a `min` and `max` sizing function:
 | **MinContent** | Smallest possible size that fits content.   | `{ min: 'min-content', max: 'auto' }` |
 | **MaxContent** | Largest possible size that fits content.    | `{ min: 'auto', max: 'max-content' }` |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -79,5 +76,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Next Steps
 
-- [Grid Placement](./grid-placement.md)
-- [Grid Auto Flow](./grid-auto-flow.md)
+- [Grid Column](./grid-column.md)
+- [Grid Row](./grid-row.md)

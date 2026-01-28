@@ -3,11 +3,11 @@ title: Quick Start
 sidebar_position: 2
 ---
 
-# ⚡ Quick Start
+# Quick Start
 
 **Get a working Taffy layout in minutes.**
 
-## 1. Minimal Example
+## Minimal Example
 
 This example creates a simple Flexbox layout with a container and two children.
 
@@ -60,8 +60,8 @@ console.log(`Container: ${containerLayout.width}x${containerLayout.height}`);
 console.log(tree.printTree(container));
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- 🏗️ **[Building Trees](./building-trees.md)** - Learn how to manipulate the node tree.
-- 📐 **[Computing Layouts](./computing-layouts.md)** - Understanding the layout pass.
-- 🧠 **[Core Concepts](../core-concepts/overview.md)** - Deep dive into Taffy's model.
+- **[Building Trees](./building-trees.md)** - Learn how to manipulate the node tree.
+- **[Computing Layouts](./computing-layouts.md)** - Understanding the layout pass.
+- **[Core Concepts](../core-concepts/index.md)** - Deep dive into Taffy's model.

@@ -1,18 +1,15 @@
 ---
-title: Display（显示模式）
+title: 显示模式 (Display)
 sidebar_position: 1
 ---
 
-# 📺 Display（显示模式）
+# 显示模式 (Display)
 
 **定义节点的布局行为。**
 
 `display` 属性确定用于节点子元素的内部布局算法。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [display](https://developer.mozilla.org/zh-CN/docs/Web/CSS/display)
-
-## 🎛️ 取值
+## 取值
 
 | 值          | 描述                                                                        |
 | :---------- | :-------------------------------------------------------------------------- |
@@ -21,13 +18,13 @@ sidebar_position: 1
 | **`Block`** | 使用 **Block** 算法。（Taffy 中目前支持有限，通常表现为特定的 Flex 配置）。 |
 | **`None`**  | 节点从布局中移除。它不占用任何空间并被跳过。                                |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 // Grid 演示
 const gridTree = new TaffyTree();
 const gridStyle = new Style();
-gridStyle.size = { width: 40, height: 40 };
+gridStyle.size = { width: 60, height: 40 };
 const gridChild1 = gridTree.newLeaf(gridStyle);
 const gridChild2 = gridTree.newLeaf(gridStyle);
 const gridChild3 = gridTree.newLeaf(gridStyle);
@@ -64,7 +61,7 @@ console.log(`Flex mode: Flex, Grid columns: 2`);
 // Flex 演示设置
 const flexTree = new TaffyTree();
 const flexStyle = new Style();
-flexStyle.size = { width: 40, height: 40 };
+flexStyle.size = { width: 60, height: 40 };
 const flexChild1 = flexTree.newLeaf(flexStyle);
 const flexChild2 = flexTree.newLeaf(flexStyle);
 
@@ -87,7 +84,8 @@ return (
 );
 ```
 
-## 后续步骤
+## 下一步
 
-- [Flexbox 属性](./flex-direction.md)
-- [Grid 布局](./grid-templates.md)
+- [尺寸 (Size)](./size.md)
+- [Flex 方向 (Flex Direction)](./flex-direction.md)
+- [网格布局 (Grid)](./grid.md)

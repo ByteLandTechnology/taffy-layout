@@ -46,10 +46,10 @@ test("i18n_zh-CN_styling_grid example 1", async () => {
   const rootStyle = new Style({
     display: Display.Grid,
     size: { width: 200, height: 200 },
-    // 定义 2 列，每列 50% 宽度
+    // 定义 2 列，每列平均分配剩余空间 (1fr)
     gridTemplateColumns: [
-      { min: "50%", max: "50%" },
-      { min: "50%", max: "50%" },
+      { min: 0, max: "1fr" },
+      { min: 0, max: "1fr" },
     ],
     // 定义 2 行：第一行固定 50px，第二行占剩余空间
     gridTemplateRows: [

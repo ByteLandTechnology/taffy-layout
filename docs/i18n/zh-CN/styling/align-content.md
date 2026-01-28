@@ -1,18 +1,15 @@
 ---
-title: Align Content（多行对齐）
-sidebar_position: 8
+title: 多行对齐 (Align Content)
+sidebar_position: 16
 ---
 
-# 📚 Align Content（多行对齐）
+# 多行对齐 (Align Content)
 
 **控制多行弹性容器中行的对齐方式。**
 
 `alignContent` 属性用于在交叉轴上有剩余空间时，对齐弹性容器内的行。**此属性对单行弹性容器（即 `flexWrap` 为 `NoWrap`）无效**。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [align-content](https://developer.mozilla.org/zh-CN/docs/Web/CSS/align-content)
-
-## 🎛️ 取值
+## 取值
 
 | 值                 | 描述                                               |
 | :----------------- | :------------------------------------------------- |
@@ -23,7 +20,7 @@ sidebar_position: 8
 | **`SpaceBetween`** | 行均匀分布；第一行在起始位置，最后一行在结束位置。 |
 | **`SpaceAround`**  | 行均匀分布，行与行之间有相等的空间。               |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -53,7 +50,7 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[Flex Wrap（换行）](./flex-wrap.md)** - 启用换行以使用此属性。
-- **[Align Items（交叉轴对齐）](./align-items.md)** - 在单行内对齐子元素。
+- [网格布局 (Layout)](./grid.md)
+- [自身对齐 (Align Self)](./align-self.md)

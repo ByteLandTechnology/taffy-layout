@@ -1,18 +1,15 @@
 ---
-title: Aspect Ratio（纵横比）
-sidebar_position: 15
+title: 纵横比 (Aspect Ratio)
+sidebar_position: 3
 ---
 
-# 🖼️ Aspect Ratio（纵横比）
+# 纵横比 (Aspect Ratio)
 
 **保持宽度和高度之间的特定比例。**
 
 `aspectRatio` 属性为元素尺寸设置首选比例。如果设置了一个维度（例如宽度）而另一个维度为 `auto`（高度），Taffy 将计算缺失的维度以满足该比例。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [aspect-ratio](https://developer.mozilla.org/zh-CN/docs/Web/CSS/aspect-ratio)
-
-## 🎛️ 用法
+## 用法
 
 传入一个表示 `width / height` 比率的数字。
 
@@ -21,7 +18,7 @@ sidebar_position: 15
 - `1.77` ≈ 16:9
 - `0.56` ≈ 9:16
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -48,6 +45,7 @@ tree.computeLayout(root, { width: 300, height: 300 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[Width and Height（宽度和高度）](./size.md)** - 设置显式尺寸。
+- [外边距 (Margin)](./margin.md)
+- [尺寸 (Size)](./size.md)

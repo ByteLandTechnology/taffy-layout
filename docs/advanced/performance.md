@@ -1,4 +1,9 @@
-# ⚡ Performance
+---
+title: Performance
+sidebar_position: 2
+---
+
+# Performance
 
 **Tips for keeping Taffy layouts blazing fast.**
 
@@ -71,7 +76,7 @@ tree.computeLayout(root, { width: 200, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 🐢 Common Pitfalls
+## Common Pitfalls
 
 ### 1. Excessive Nesting
 
@@ -86,7 +91,7 @@ Custom measure functions (for text/images) are called frequently.
 
 - **Optimize**: Ensure your measurement callback is fast. Avoid DOM reflows or heavy calculations inside measurements.
 
-## 🚀 Optimization Patterns
+## Optimization Patterns
 
 ### Reuse Styles
 
@@ -165,7 +170,7 @@ const layout = tree.getLayout(node);
 const [x, y, w, h] = layout.get("x", "y", "width", "height");
 ```
 
-## 🔬 Benchmarking
+## Benchmarking
 
 Use `performance.now()` to measure your layout pass.
 

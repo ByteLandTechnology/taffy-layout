@@ -1,18 +1,15 @@
 ---
 title: Align Content
-sidebar_position: 8
+sidebar_position: 16
 ---
 
-# 📚 Align Content
+# Align Content
 
 **Control alignment of lines in multi-line flex containers.**
 
 The `alignContent` property aligns a flex container's lines within the flex container when there is extra space on the cross-axis. **This property has no effect on single-line flex containers** (i.e. where `flexWrap` is `NoWrap`).
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [align-content](https://developer.mozilla.org/en-US/docs/Web/CSS/align-content)
-
-## 🎛️ Values
+## Values
 
 | Value              | Description                                                                         |
 | :----------------- | :---------------------------------------------------------------------------------- |
@@ -23,7 +20,7 @@ The `alignContent` property aligns a flex container's lines within the flex cont
 | **`SpaceBetween`** | Lines evenly distributed; the first line is at the start, the last line at the end. |
 | **`SpaceAround`**  | Lines evenly distributed with equal space around them.                              |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -53,7 +50,7 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Flex Wrap](./flex-wrap.md)** - Enable wrapping to use this property.
-- **[Align Items](./align-items.md)** - Align items within a single line.
+- [CSS Grid Layout](./grid.md)
+- [Align Self](./align-self.md)

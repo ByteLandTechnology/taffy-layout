@@ -1,18 +1,15 @@
 ---
-title: Align Items（交叉轴对齐）
-sidebar_position: 6
+title: 交叉轴对齐 (Align Items)
+sidebar_position: 14
 ---
 
-# 🎯 Align Items（交叉轴对齐）
+# 交叉轴对齐 (Align Items)
 
 **控制子元素沿交叉轴的对齐方式。**
 
 `alignItems` 属性定义了弹性子元素在当前行**交叉轴**上的默认对齐行为。可以将其视为交叉轴方向（垂直于主轴）的 `justifyContent`。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [align-items](https://developer.mozilla.org/zh-CN/docs/Web/CSS/align-items)
-
-## 🎛️ 取值
+## 取值
 
 | 值              | 描述                                                                    |
 | :-------------- | :---------------------------------------------------------------------- |
@@ -22,7 +19,7 @@ sidebar_position: 6
 | **`Center`**    | 子元素在交叉轴上居中对齐。                                              |
 | **`Baseline`**  | 子元素根据文本基线对齐。                                                |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -39,9 +36,9 @@ const labelStyle = new Style({
 });
 
 // 创建不同高度的子元素以演示对齐效果
-const child1 = tree.newLeaf(new Style({ size: { width: 40, height: 20 } }));
-const child2 = tree.newLeaf(new Style({ size: { width: 40, height: 40 } }));
-const child3 = tree.newLeaf(new Style({ size: { width: 40, height: 60 } }));
+const child1 = tree.newLeaf(new Style({ size: { width: 50, height: 20 } }));
+const child2 = tree.newLeaf(new Style({ size: { width: 50, height: 40 } }));
+const child3 = tree.newLeaf(new Style({ size: { width: 50, height: 60 } }));
 
 const rootStyle = new Style({
   display: Display.Flex,
@@ -62,7 +59,7 @@ tree.computeLayout(root, { width: 300, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[Align Self（自身对齐）](./align-self.md)** - 为单个子元素覆盖此属性。
-- **[Align Content（多行对齐）](./align-content.md)** - 在多行容器中对齐各个行。
+- [自身对齐 (Align Self)](./align-self.md)
+- [主轴对齐 (Justify Content)](./justify-content.md)

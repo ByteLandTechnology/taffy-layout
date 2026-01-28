@@ -1,4 +1,9 @@
-# ⚡ 性能
+---
+title: 性能
+sidebar_position: 2
+---
+
+# 性能
 
 **保持 Taffy 布局快速运行的技巧。**
 
@@ -71,7 +76,7 @@ tree.computeLayout(root, { width: 200, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 🐢 常见陷阱
+## 常见陷阱
 
 ### 1. 过度嵌套
 
@@ -86,7 +91,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 - **优化**：确保您的测量回调很快。避免在测量内进行 DOM 回流或繁重计算。
 
-## 🚀 优化模式
+## 优化模式
 
 ### 重用样式
 
@@ -164,7 +169,7 @@ const layout = tree.getLayout(node);
 const [x, y, w, h] = layout.get("x", "y", "width", "height");
 ```
 
-## 🔬 基准测试
+## 基准测试
 
 使用 `performance.now()` 测量您的布局过程。
 

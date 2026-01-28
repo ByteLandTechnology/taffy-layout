@@ -44,7 +44,7 @@ test("i18n_zh-CN_styling_justify-content example 1", async () => {
   const tree = new TaffyTree();
 
   const style = new Style({
-    size: { width: 40, height: 40 },
+    size: { width: 50, height: 50 },
   });
 
   const child1 = tree.newLeaf(style);

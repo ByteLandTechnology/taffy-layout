@@ -3,16 +3,13 @@ title: Display
 sidebar_position: 1
 ---
 
-# 📺 Display
+# Display
 
 **Define the layout behavior of a node.**
 
 The `display` property determines the inner layout algorithm used for a node's children.
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [display](https://developer.mozilla.org/en-US/docs/Web/CSS/display)
-
-## 🎛️ Values
+## Values
 
 | Value       | Description                                                                                                   |
 | :---------- | :------------------------------------------------------------------------------------------------------------ |
@@ -21,13 +18,13 @@ The `display` property determines the inner layout algorithm used for a node's c
 | **`Block`** | Use the **Block** algorithm. (Currently limited support in Taffy, often behaves like a specific Flex config). |
 | **`None`**  | The node is removed from the layout. It takes up zero space and is skipped.                                   |
 
-## 💻 Example
+## Example
 
 ```tsx live
 // Grid demo
 const gridTree = new TaffyTree();
 const gridStyle = new Style();
-gridStyle.size = { width: 40, height: 40 };
+gridStyle.size = { width: 60, height: 40 };
 const gridChild1 = gridTree.newLeaf(gridStyle);
 const gridChild2 = gridTree.newLeaf(gridStyle);
 const gridChild3 = gridTree.newLeaf(gridStyle);
@@ -64,7 +61,7 @@ console.log(`Flex mode: Flex, Grid columns: 2`);
 // Flex demo setup
 const flexTree = new TaffyTree();
 const flexStyle = new Style();
-flexStyle.size = { width: 40, height: 40 };
+flexStyle.size = { width: 60, height: 40 };
 const flexChild1 = flexTree.newLeaf(flexStyle);
 const flexChild2 = flexTree.newLeaf(flexStyle);
 
@@ -89,5 +86,6 @@ return (
 
 ## Next Steps
 
-- [Flexbox Properties](./flexbox/)
-- [Grid Layout](./grid/)
+- [Sizing](./size.md)
+- [Flexbox Properties](./flex-direction.md)
+- [Grid Layout](./grid.md)

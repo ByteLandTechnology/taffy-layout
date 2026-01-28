@@ -1,18 +1,15 @@
 ---
 title: Inset
-sidebar_position: 14
+sidebar_position: 23
 ---
 
-# 🖼️ Inset
+# Inset
 
 **Position an element relative to its edges.**
 
 The `inset` property (historically `top`, `right`, `bottom`, `left`) defines the offsets for positioned elements. Its behavior depends on the `position` property.
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [inset](https://developer.mozilla.org/en-US/docs/Web/CSS/inset)
-
-## 🎛️ Properties
+## Properties
 
 `inset` is a helper property in Taffy (and CSS shorthand) that sets:
 
@@ -23,12 +20,12 @@ The `inset` property (historically `top`, `right`, `bottom`, `left`) defines the
 | **`left`**   | Distance from the left edge.   |
 | **`right`**  | Distance from the right edge.  |
 
-## 📐 Behavior
+## Behavior
 
 - **For `Position.Absolute`**: Offsets are relative to the _nearest positioned ancestor_.
 - **For `Position.Relative`**: Offsets move the item relative to its _normal position_ in the flow.
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -56,6 +53,7 @@ tree.computeLayout(root, { width: 200, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Position](./position.md)** - Choose between Relative and Absolute positioning.
+- [Overflow](./overflow.md)
+- [Position](./position.md)

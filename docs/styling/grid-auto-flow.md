@@ -1,18 +1,15 @@
 ---
 title: Grid Auto Flow
-sidebar_position: 19
+sidebar_position: 21
 ---
 
-# 🌊 Grid Auto Flow
+# Grid Auto Flow
 
 **Control how auto-placed items flow into the grid.**
 
 If you have more items than explicit cells, or if you don't place items explicitly, `gridAutoFlow` controls how they fill the grid.
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [grid-auto-flow](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-flow)
-
-## 🎛️ Values
+## Values
 
 | Value             | Description                                                 |
 | :---------------- | :---------------------------------------------------------- |
@@ -21,7 +18,7 @@ If you have more items than explicit cells, or if you don't place items explicit
 | **`RowDense`**    | Like Row, but attempts to backfill holes in the grid.       |
 | **`ColumnDense`** | Like Column, but attempts to backfill holes.                |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -66,5 +63,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Next Steps
 
-- **[Grid Templates](./grid-templates.md)** - Define the grid structure.
-- [Grid Placement](./grid-placement.md)
+- [Position](./position.md)
+- [Grid Templates](./grid-templates.md)

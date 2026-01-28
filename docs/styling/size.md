@@ -1,5 +1,6 @@
 ---
 title: Sizing
+sidebar_position: 2
 ---
 
 # Sizing
@@ -40,7 +41,7 @@ console.log(tree.printTree(root));
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 📏 Width and Height
+## Width and Height
 
 **Control the precise dimensions of an element.**
 
@@ -49,7 +50,7 @@ Use `size`, `minSize`, and `maxSize` to set boundaries for an element's dimensio
 > [!TIP]
 > 🔗 **MDN Documentation**: [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), [min-width](https://developer.mozilla.org/en-US/docs/Web/CSS/min-width), [max-width](https://developer.mozilla.org/en-US/docs/Web/CSS/max-width)
 
-## 🎛️ Properties
+## Properties
 
 These properties take a `Size` object containing `width` and `height`.
 
@@ -59,7 +60,7 @@ These properties take a `Size` object containing `width` and `height`.
 | **`minSize`** | Minimum size. Prevents the item from shrinking below this value.         |
 | **`maxSize`** | Maximum size. Prevents the item from growing above this value.           |
 
-## 📐 Dimension Values
+## Dimension Values
 
 The `width` and `height` properties accept specific value types:
 
@@ -69,7 +70,7 @@ The `width` and `height` properties accept specific value types:
 | **Points**  | Exact pixel value.                               | `150`                                                                           |
 | **Percent** | Percentage of parent's size.                     | `"50%"` or `0.5` (if using float helpers) usually string `"50%"` in JS binding. |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -109,7 +110,7 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Aspect Ratio](./aspect-ratio.md)** - Maintain width/height ratio.
-- **[Margin, Padding, Border](./margin-padding-border.md)** - Add spacing around the size.
+- [Aspect Ratio](./aspect-ratio.md)
+- [Margin](./margin.md)

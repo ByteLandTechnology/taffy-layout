@@ -50,8 +50,18 @@ test("cookbook_holy-grail-layout example 1", async () => {
     gap: { width: 0, height: 10 },
   });
 
-  const header = tree.newLeaf(new Style({ size: { height: 50 } }));
-  const footer = tree.newLeaf(new Style({ size: { height: 50 } }));
+  const header = tree.newLeaf(
+    new Style({
+      size: { width: "100%", height: 50 },
+      flexShrink: 0,
+    }),
+  );
+  const footer = tree.newLeaf(
+    new Style({
+      size: { width: "100%", height: 50 },
+      flexShrink: 0,
+    }),
+  );
 
   const bodyRowStyle = new Style({
     display: Display.Flex,
@@ -61,15 +71,14 @@ test("cookbook_holy-grail-layout example 1", async () => {
   });
 
   const left = tree.newLeaf(
-    new Style({ size: { width: 100, height: "100%" } }),
+    new Style({ size: { width: 100, height: "auto" } }),
   );
   const right = tree.newLeaf(
-    new Style({ size: { width: 100, height: "100%" } }),
+    new Style({ size: { width: 100, height: "auto" } }),
   );
   const main = tree.newLeaf(
     new Style({
       flexGrow: 1,
-      size: { width: "auto", height: "100%" },
     }),
   );
 

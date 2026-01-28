@@ -1,5 +1,6 @@
 ---
-title: 尺寸、空间和单位
+title: 尺寸、空间与单位
+sidebar_position: 4
 ---
 
 # 尺寸、空间和单位
@@ -75,7 +76,7 @@ return (
 
 Taffy 的行为类似于 `box-sizing: border-box`：
 
-```
+```text
 ┌─────────────────────────┐
 │  Margin                 │
 │  ┌───────────────────┐  │
@@ -126,8 +127,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 下一步
 
-- [Flexbox 布局](../styling/index.md)
-- [CSS Grid 布局](../styling/index.md)
-- [尺寸控制](../styling/size.md)
-- [间距（外边距/内边距）](../styling/margin-padding-border.md)
-- [间距（Gap）](../styling/gap.md)
+- [计算函数 (Measure Functions)](./measure-functions.md)
+- [样式指南 (Styling Guide)](../styling/index.md)

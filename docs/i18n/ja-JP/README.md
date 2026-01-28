@@ -7,7 +7,7 @@
 
 WebAssembly で高速に動作する [Taffy](https://github.com/DioxusLabs/taffy) レイアウトエンジンの JavaScript バインディング。CSS の Flexbox と Grid をほぼネイティブ性能で利用できます。
 
-## ✨ 特徴
+## 特徴
 
 - **🚀 高性能**：WebAssembly によるレイアウト計算
 - **📦 充実の CSS 対応**：Flexbox と CSS Grid を実装
@@ -16,13 +16,13 @@ WebAssembly で高速に動作する [Taffy](https://github.com/DioxusLabs/taffy
 - **🌳 ツリー型 API**：複雑な階層構造にも効率的
 - **💡 なじみやすい API**：CSS 風のプロパティ名と値
 
-## 📦 インストール
+## インストール
 
 ```bash
 npm install taffy-layout
 ```
 
-## 🚀 クイックスタート
+## クイックスタート
 
 ```typescript
 import {
@@ -90,16 +90,16 @@ console.log(
 );
 ```
 
-## 📚 ドキュメント
+## ドキュメント
 
 - [はじめに](intro.md)
 - [クイックスタート](getting-started/installation.md)
-- [コアコンセプト](core-concepts/overview.md)
+- [コアコンセプト](core-concepts/index.md)
 - [スタイリングガイド](styling/index.md)
 - [高度な使い方](advanced/index.md)
 - [クックブック](cookbook/index.md)
 
-## 📖 API リファレンス
+## API リファレンス
 
 ### TaffyTree
 
@@ -127,7 +127,7 @@ console.log(
 
 [ドキュメントを見る](../../api/index.md#type-aliases)
 
-## 📐 カスタムテキスト計測
+## カスタムテキスト計測
 
 テキストなど動的な計測が必要な場合は、測定コールバックを渡せます。
 
@@ -155,7 +155,7 @@ tree.computeLayoutWithMeasure(
 );
 ```
 
-## 🔧 エラーハンドリング
+## エラーハンドリング
 
 失敗する可能性のあるメソッドは `TaffyError` をスローします。try-catch で処理してください。
 
@@ -172,7 +172,7 @@ try {
 }
 ```
 
-## 🌐 ブラウザ対応
+## ブラウザ対応
 
 WebAssembly をサポートするモダンブラウザで動作します。
 
@@ -181,7 +181,7 @@ WebAssembly をサポートするモダンブラウザで動作します。
 - Safari 11+
 - Edge 16+
 
-## 📚 サンプル
+## サンプル
 
 ### Flexbox 行レイアウト
 
@@ -258,7 +258,7 @@ imgStyle.aspectRatio = 16 / 9; // 16:9
 imgStyle.size = { width: "100%", height: "auto" };
 ```
 
-## 🏗️ ソースからのビルド
+## ソースからのビルド
 
 ```bash
 # リポジトリを取得
@@ -270,16 +270,19 @@ npm install
 
 # WebAssembly モジュールをビルド
 npm run build
+```
 
-# テストを実行
+## テストの実行
+
+```bash
 npm test
 ```
 
-## 📄 ライセンス
+## ライセンス
 
 MIT License - 詳細は [LICENSE](../../../LICENSE) を参照してください。
 
-## 🙏 謝辞
+## 謝辞
 
 - [Taffy](https://github.com/DioxusLabs/taffy) - 本プロジェクトがラップしている Rust 製レイアウトエンジン
 - [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) - Rust/WebAssembly の相互運用を支えるツール

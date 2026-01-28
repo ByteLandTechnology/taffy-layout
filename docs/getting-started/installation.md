@@ -3,13 +3,13 @@ title: Installation
 sidebar_position: 1
 ---
 
-# 📦 Installation
+# Installation
 
 ```bash
 npm install taffy-layout
 ```
 
-## ✅ Requirements
+## Requirements
 
 - **Node.js**: Version 12 or higher.
 - **Browser**: Modern browser with **WebAssembly** support:
@@ -18,7 +18,7 @@ npm install taffy-layout
   - Safari 11+
   - Edge 16+
 
-## 🌐 Browser Usage
+## Browser Usage
 
 Using Taffy in the browser via ES Modules:
 
@@ -37,7 +37,7 @@ Using Taffy in the browser via ES Modules:
 </script>
 ```
 
-## 🖥️ Node.js Usage
+## Node.js Usage
 
 Using Taffy in a Node.js environment:
 
@@ -51,11 +51,11 @@ await loadTaffy();
 const tree = new TaffyTree();
 ```
 
-## 📘 TypeScript Support
+## TypeScript Support
 
 Taffy Layout includes **complete TypeScript definitions** out of the box. No additional installation (like `@types/taffy-layout`) is needed. You get full Intellisense for `Style`, `Layout`, and `TaffyTree`.
 
-## ⏭️ Next Steps
+## Next Steps
 
 - 👉 **[Quick Start Guide](./quick-start.md)** - Create your first Taffy layout.
 - 📖 **[API Reference](../api/index.md)** - View the full API documentation.

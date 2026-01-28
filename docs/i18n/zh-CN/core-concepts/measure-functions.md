@@ -1,5 +1,6 @@
 ---
 title: 测量函数
+sidebar_position: 5
 ---
 
 # 测量函数
@@ -13,10 +14,6 @@ title: 测量函数
 ## 工作原理
 
 测量函数是 Taffy 在布局过程中调用的回调。它问您："给定这些约束，这个内容有多大？"
-
-```text
-measure(known_dimensions, available_space) -> Size { width, height }
-```
 
 ### 参数
 
@@ -91,5 +88,5 @@ return (
 
 ## 下一步
 
-- [性能调优](../advanced/performance.md)
-- [布局实例手册](../cookbook/)
+- [样式指南 (Styling Guide)](../styling/index.md)
+- [布局参考 (Cookbook)](../cookbook/)

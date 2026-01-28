@@ -1,8 +1,9 @@
 ---
 title: Flex Row Cards
+sidebar_position: 1
 ---
 
-# 🃏 Flex Row Cards
+# Flex Row Cards
 
 **A row of evenly sized cards—great for stats, toolbars, and panels.**
 
@@ -12,13 +13,13 @@ title: Flex Row Cards
 └────────────────────────────────────┘
 ```
 
-## 🔑 Key Ideas
+## Key Ideas
 
 - `display: flex` + `flexDirection: row`
 - `flexGrow` splits remaining space evenly
 - `gap` controls spacing
 
-## 💻 Code
+## Code
 
 ```tsx live
 const tree = new TaffyTree();
@@ -45,7 +46,7 @@ tree.computeLayout(root, { width: 500, height: 120 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Related Guides
+## Related Guides
 
 - **[Flex Grow/Shrink](../styling/flex-basis-grow-shrink.md)**
 - **[Spacing](../styling/margin-padding-border.md)**

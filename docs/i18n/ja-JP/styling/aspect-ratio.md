@@ -1,18 +1,15 @@
 ---
-title: Aspect Ratio（アスペクト比）
-sidebar_position: 15
+title: アスペクト比 (Aspect Ratio)
+sidebar_position: 3
 ---
 
-# 🖼️ Aspect Ratio（アスペクト比）
+# アスペクト比 (Aspect Ratio)
 
 **幅と高さの特定の比率を維持します。**
 
 `aspectRatio` プロパティは、アイテムの寸法の推奨比率を設定します。一方の寸法（例：幅）が設定され、もう一方（高さ）が `auto` の場合、Taffy は比率を満たすように欠落している寸法を計算します。
 
-> [!TIP]
-> 🔗 **MDN ドキュメント**: [aspect-ratio](https://developer.mozilla.org/ja/docs/Web/CSS/aspect-ratio)
-
-## 🎛️ 使用法
+## 使用法
 
 `width / height` を表す単一の数値を渡します。
 
@@ -21,7 +18,7 @@ sidebar_position: 15
 - `1.77` ≈ 16:9
 - `0.56` ≈ 9:16
 
-## 💻 例
+## 例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -48,6 +45,7 @@ tree.computeLayout(root, { width: 300, height: 300 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ 次のステップ
+## 次のステップ
 
-- **[Width and Height（幅と高さ）](./size.md)** - 明示的な寸法を設定します。
+- [マージン (Margin)](./margin.md)
+- [サイジング (Sizing)](./size.md)

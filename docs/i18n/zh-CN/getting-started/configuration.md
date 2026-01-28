@@ -3,13 +3,13 @@ title: 配置
 sidebar_position: 5
 ---
 
-# ⚙️ 配置
+# 配置
 
 **针对您的特定用例优化 Taffy。**
 
 Taffy 开箱即用，但您可以根据性能、精度或资源约束进行调优。
 
-## 💾 容量预分配
+## 容量预分配
 
 如果您大约知道需要多少节点，可以使用容量初始化树以减少内存重新分配并提高启动性能。
 
@@ -31,7 +31,7 @@ tree.computeLayout(root, { width: 200, height: 40 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 🎯 舍入设置
+## 舍入设置
 
 控制布局值是吸附到整数（像素）还是保持精确浮点数。
 
@@ -78,11 +78,14 @@ console.log(`Precise Width: ${layout1.width}`);
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## 🗑️ 内存管理
+## 内存管理
 
-Taffy 使用 WebAssembly，因此虽然 JavaScript 会被垃圾回收，但底层 Rust 结构在某些绑定中是手动管理的。**不过，在这个 JS 绑定版本中，`TaffyTree` 管理自己的生命周期。**
+尽管 Taffy 的 JavaScript 绑定使用 `FinalizationRegistry` 在 `TaffyTree` 对象被垃圾回收时自动清理 WASM 内存，但在频繁创建树的高性能应用（如游戏循环）中，仅依赖 GC 可能是不够的。
 
-如果您要创建许多树（例如在游戏循环中每帧创建一个），应该显式清除或释放它们以避免 WASM 堆内存泄漏。
+为了防止 WASM 堆中的内存峰值或泄漏，您应该显式管理内存：
+
+- **重用（推荐）：** 使用 `.clear()` 重置树而不释放其内存分配。这非常适合游戏循环或递归布局，因为它避免了持续的分配开销。
+- **销毁：** 如果您完全完成了树的使用并希望立即释放其内存，请使用 `.free()`。
 
 ```ts
 const tree = new TaffyTree();
@@ -97,7 +100,7 @@ tree.clear();
 tree.free();
 ```
 
-## ⏭️ 下一步
+## 下一步
 
-- 🎨 **[样式指南](../styling/index.md)** - 了解 Flexbox 和 Grid。
-- 🛠️ **[高级主题](../advanced/index.md)** - 调试和内部原理。
+- **[样式指南](../styling/index.md)** - 了解 Flexbox 和 Grid。
+- **[高级主题](../advanced/index.md)** - 调试和内部原理。

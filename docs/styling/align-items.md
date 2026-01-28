@@ -1,18 +1,15 @@
 ---
 title: Align Items
-sidebar_position: 6
+sidebar_position: 14
 ---
 
-# 🎯 Align Items
+# Align Items
 
 **Control alignment of items along the cross axis.**
 
 The `alignItems` property defines the default behavior for how flexible items are laid out along the **cross axis** on the current line. Think of it as the `justifyContent` for the cross axis (perpendicular to the main axis).
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [align-items](https://developer.mozilla.org/en-US/docs/Web/CSS/align-items)
-
-## 🎛️ Values
+## Values
 
 | Value           | Description                                                                                     |
 | :-------------- | :---------------------------------------------------------------------------------------------- |
@@ -22,7 +19,7 @@ The `alignItems` property defines the default behavior for how flexible items ar
 | **`Center`**    | Items align in the center of the cross axis.                                                    |
 | **`Baseline`**  | Items align based on their text baseline.                                                       |
 
-## 💻 Example
+## Example
 
 ```tsx live
 const tree = new TaffyTree();
@@ -39,9 +36,9 @@ const labelStyle = new Style({
 });
 
 // Create children with different heights to demonstrate alignment
-const child1 = tree.newLeaf(new Style({ size: { width: 40, height: 20 } }));
-const child2 = tree.newLeaf(new Style({ size: { width: 40, height: 40 } }));
-const child3 = tree.newLeaf(new Style({ size: { width: 40, height: 60 } }));
+const child1 = tree.newLeaf(new Style({ size: { width: 50, height: 20 } }));
+const child2 = tree.newLeaf(new Style({ size: { width: 50, height: 40 } }));
+const child3 = tree.newLeaf(new Style({ size: { width: 50, height: 60 } }));
 
 const rootStyle = new Style({
   display: Display.Flex,
@@ -62,7 +59,7 @@ tree.computeLayout(root, { width: 300, height: 100 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## Next Steps
 
-- **[Align Self](./align-self.md)** - Override this property for individual items.
-- **[Align Content](./align-content.md)** - Align standard lines in multi-line containers.
+- [Align Self](./align-self.md)
+- [Justify Content](./justify-content.md)

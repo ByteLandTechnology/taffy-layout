@@ -1,18 +1,15 @@
 ---
 title: Flex Direction
-sidebar_position: 2
+sidebar_position: 8
 ---
 
-# ➡️ Flex Direction
+# Flex Direction
 
 **Define the main axis direction.**
 
 The `flexDirection` property establishes the main-axis, causing items to layout either horizontally (rows) or vertically (columns).
 
-> [!TIP]
-> 🔗 **MDN Documentation**: [flex-direction](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction)
-
-## 🎛️ Values
+## Values
 
 | Value               | Description                                 |
 | :------------------ | :------------------------------------------ |
@@ -21,7 +18,7 @@ The `flexDirection` property establishes the main-axis, causing items to layout 
 | **`RowReverse`**    | Items flow from right to left.              |
 | **`ColumnReverse`** | Items flow from bottom to top.              |
 
-## 📐 Visual Guide
+## Visual Guide
 
 ```text
 Row:
@@ -37,37 +34,127 @@ Column:
 [Item 3]
 ```
 
-## 💻 Example
+## Row
+
+Default behavior. Items are placed from left to right.
 
 ```tsx live
 const tree = new TaffyTree();
 
-const style = new Style({
-  size: { width: 40, height: 40 },
-  margin: { bottom: 5, right: 5 },
+const childStyle = new Style({
+  size: { width: 50, height: 40 },
+  margin: { left: 4, right: 4, top: 4, bottom: 4 },
 });
-
-const child1 = tree.newLeaf(style);
-const child2 = tree.newLeaf(style);
-const child3 = tree.newLeaf(style);
 
 const rootStyle = new Style({
   display: Display.Flex,
-  // CHANGE THIS: Row, Column, RowReverse, ColumnReverse
   flexDirection: FlexDirection.Row,
-  size: { width: 250, height: 150 },
-  padding: { left: 10, right: 10, top: 10, bottom: 10 },
+  size: { width: 200, height: 160 },
+  padding: { left: 8, right: 8, top: 8, bottom: 8 },
 });
 
-const root = tree.newWithChildren(rootStyle, [child1, child2, child3]);
+const root = tree.newWithChildren(rootStyle, [
+  tree.newLeaf(childStyle),
+  tree.newLeaf(childStyle),
+  tree.newLeaf(childStyle),
+]);
 
-tree.computeLayout(root, { width: 250, height: 150 });
+tree.computeLayout(root, { width: 200, height: 160 });
 
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
-## ⏭️ Next Steps
+## RowReverse
 
-- **[Flex Wrap](./flex-wrap.md)** - Handle items overflowing the line.
-- **[Justify Content](./justify-content.md)** - Align items along the direction you chose.
-- [Align Items](./align-items.md)
+Items are placed from right to left.
+
+```tsx live
+const tree = new TaffyTree();
+
+const childStyle = new Style({
+  size: { width: 50, height: 40 },
+  margin: { left: 4, right: 4, top: 4, bottom: 4 },
+});
+
+const rootStyle = new Style({
+  display: Display.Flex,
+  flexDirection: FlexDirection.RowReverse,
+  size: { width: 200, height: 160 },
+  padding: { left: 8, right: 8, top: 8, bottom: 8 },
+});
+
+const root = tree.newWithChildren(rootStyle, [
+  tree.newLeaf(childStyle),
+  tree.newLeaf(childStyle),
+  tree.newLeaf(childStyle),
+]);
+
+tree.computeLayout(root, { width: 200, height: 160 });
+
+return <TaffyTreePreview tree={tree} root={root} />;
+```
+
+## Column
+
+Items are placed from top to bottom.
+
+```tsx live
+const tree = new TaffyTree();
+
+const childStyle = new Style({
+  size: { width: 50, height: 40 },
+  margin: { left: 4, right: 4, top: 4, bottom: 4 },
+});
+
+const rootStyle = new Style({
+  display: Display.Flex,
+  flexDirection: FlexDirection.Column,
+  size: { width: 200, height: 160 },
+  padding: { left: 8, right: 8, top: 8, bottom: 8 },
+});
+
+const root = tree.newWithChildren(rootStyle, [
+  tree.newLeaf(childStyle),
+  tree.newLeaf(childStyle),
+  tree.newLeaf(childStyle),
+]);
+
+tree.computeLayout(root, { width: 200, height: 160 });
+
+return <TaffyTreePreview tree={tree} root={root} />;
+```
+
+## ColumnReverse
+
+Items are placed from bottom to top.
+
+```tsx live
+const tree = new TaffyTree();
+
+const childStyle = new Style({
+  size: { width: 50, height: 40 },
+  margin: { left: 4, right: 4, top: 4, bottom: 4 },
+});
+
+const rootStyle = new Style({
+  display: Display.Flex,
+  flexDirection: FlexDirection.ColumnReverse,
+  size: { width: 200, height: 160 },
+  padding: { left: 8, right: 8, top: 8, bottom: 8 },
+});
+
+const root = tree.newWithChildren(rootStyle, [
+  tree.newLeaf(childStyle),
+  tree.newLeaf(childStyle),
+  tree.newLeaf(childStyle),
+]);
+
+tree.computeLayout(root, { width: 200, height: 160 });
+
+return <TaffyTreePreview tree={tree} root={root} />;
+```
+
+## Next Steps
+
+- [Flex Wrap](./flex-wrap.md)
+- [Justify Content](./justify-content.md)

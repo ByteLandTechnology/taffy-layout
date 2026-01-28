@@ -1,25 +1,22 @@
 ---
-title: Positioning（定位）
-sidebar_position: 13
+title: 定位 (Positioning)
+sidebar_position: 22
 ---
 
-# 📍 Position（定位）
+# 定位 (Positioning)
 
 **控制元素在文档中的放置方式。**
 
 `position` 属性决定元素是参与正常布局流程，还是从流程中移除并手动定位。
 
-> [!TIP]
-> 🔗 **MDN 文档**: [position](https://developer.mozilla.org/zh-CN/docs/Web/CSS/position)
-
-## 🎛️ 取值
+## 取值
 
 | 值             | 描述                                                                                     |
 | :------------- | :--------------------------------------------------------------------------------------- |
 | **`Relative`** | **默认值**。元素保持在文档流中。`inset` 偏移量在视觉上移动它，但它仍在原位置占据空间。   |
 | **`Absolute`** | 元素**从流中移除**。它相对于最近的已定位祖先（具有非默认定位的父元素）或根元素进行定位。 |
 
-## 💻 示例
+## 示例
 
 ```tsx live
 const tree = new TaffyTree();
@@ -40,7 +37,7 @@ const standardItem = new Style({
 
 const absoluteItem = new Style({
   position: Position.Absolute,
-  size: { width: 40, height: 40 },
+  size: { width: 50, height: 50 },
   inset: { top: 0, right: 0, left: "auto", bottom: "auto" },
 });
 
@@ -63,7 +60,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 - 堆叠式 UI
 - 自定义拖拽层
 
-## ⏭️ 后续步骤
+## 后续步骤
 
-- **[Inset（偏移量）](./inset.md)** - 定义上/右/下/左坐标。
-- **[Display（显示模式）](./display.md)** - 在 Flex 和 None 之间切换。
+- [内嵌偏移 (Inset)](./inset.md)
+- [显示模式 (Display)](./display.md)
