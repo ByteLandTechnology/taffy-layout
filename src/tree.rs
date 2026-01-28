@@ -102,12 +102,14 @@ use crate::style::JsStyle;
 use crate::types::{AvailableSizeDto, JsAvailableSizeArg, JsBigIntArray, JsMeasureFunctionArg};
 use crate::{DetailedGridInfoDto, DetailedGridItemsInfoDto, DetailedGridTracksInfoDto};
 
+use js_sys::{Array, BigInt};
 use taffy::TaffyError as NativeTaffyError;
 use taffy::TaffyTree;
 use taffy::prelude::*;
 use taffy::style::{self as TaffyStyle};
 #[cfg(feature = "detailed_layout_info")]
 use taffy::tree::DetailedLayoutInfo;
+use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 
 // =============================================================================
@@ -747,8 +749,11 @@ impl JsTaffyTree {
         self.tree
             .children(NodeId::from(parent))
             .map(|c| {
-                let ids: Vec<u64> = c.into_iter().map(u64::from).collect();
-                serde_wasm_bindgen::to_value(&ids).unwrap().into()
+                let array = Array::new();
+                for &id in c.iter() {
+                    array.push(&BigInt::from(u64::from(id)));
+                }
+                array.unchecked_into()
             })
             .map_err(to_js_error)
     }
