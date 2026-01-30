@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Layout
-
-# Class: Layout
+# Layout
 
 Computed layout result containing position, size, and spacing values for a node.
 

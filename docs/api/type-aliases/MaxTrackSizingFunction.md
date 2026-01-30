@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / MaxTrackSizingFunction
-
-# Type Alias: MaxTrackSizingFunction
+# MaxTrackSizingFunction
 
 ```ts
 type MaxTrackSizingFunction =

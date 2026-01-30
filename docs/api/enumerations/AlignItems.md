@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / AlignItems
-
-# Enumeration: AlignItems
+# AlignItems
 
 Cross-axis alignment enumeration for all children
 

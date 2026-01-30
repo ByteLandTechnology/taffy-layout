@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / JustifyContent
-
-# Enumeration: JustifyContent
+# JustifyContent
 
 Main axis alignment enumeration
 

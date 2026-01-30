@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / RepetitionCount
-
-# Type Alias: RepetitionCount
+# RepetitionCount
 
 ```ts
 type RepetitionCount = number | "auto-fill" | "auto-fit";

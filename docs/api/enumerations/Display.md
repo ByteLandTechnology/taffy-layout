@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Display
-
-# Enumeration: Display
+# Display
 
 Display mode enumeration
 

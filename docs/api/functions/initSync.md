@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / initSync
-
-# Function: initSync()
+# initSync()
 
 ```ts
 function initSync(module): InitOutput;

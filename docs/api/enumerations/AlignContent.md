@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / AlignContent
-
-# Enumeration: AlignContent
+# AlignContent
 
 Multi-line content alignment enumeration
 

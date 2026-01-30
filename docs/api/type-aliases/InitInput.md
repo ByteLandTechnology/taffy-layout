@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / InitInput
-
-# Type Alias: InitInput
+# InitInput
 
 ```ts
 type InitInput =

@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Position
-
-# Enumeration: Position
+# Position
 
 Position mode enumeration
 

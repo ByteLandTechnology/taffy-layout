@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Dimension
-
-# Type Alias: Dimension
+# Dimension
 
 ```ts
 type Dimension = number | `${number}%` | "auto";

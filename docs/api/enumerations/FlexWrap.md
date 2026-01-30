@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / FlexWrap
-
-# Enumeration: FlexWrap
+# FlexWrap
 
 Flex wrap mode enumeration
 

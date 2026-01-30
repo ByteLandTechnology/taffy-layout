@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / default
-
-# Function: default()
+# default()
 
 ```ts
 function default(module_or_path?): Promise<InitOutput>;

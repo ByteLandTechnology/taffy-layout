@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / AlignSelf
-
-# Enumeration: AlignSelf
+# AlignSelf
 
 Cross-axis alignment enumeration for a single element
 

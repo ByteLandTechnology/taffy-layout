@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / StylePropertyArrayValues
-
-# Type Alias: StylePropertyArrayValues\<Keys\>
+# StylePropertyArrayValues\<Keys\>
 
 ```ts
 type StylePropertyArrayValues<Keys> = {

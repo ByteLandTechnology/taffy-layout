@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Overflow
-
-# Enumeration: Overflow
+# Overflow
 
 Overflow handling enumeration
 

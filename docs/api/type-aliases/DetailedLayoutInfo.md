@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / DetailedLayoutInfo
-
-# Type Alias: DetailedLayoutInfo
+# DetailedLayoutInfo
 
 ```ts
 type DetailedLayoutInfo = DetailedGridInfo | undefined;

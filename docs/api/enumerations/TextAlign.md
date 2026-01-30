@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / TextAlign
-
-# Enumeration: TextAlign
+# TextAlign
 
 Text alignment enumeration (for block layout)
 

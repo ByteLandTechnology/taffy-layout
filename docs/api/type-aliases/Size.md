@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Size
-
-# Type Alias: Size\<T\>
+# Size\<T\>
 
 ```ts
 type Size<T> = {

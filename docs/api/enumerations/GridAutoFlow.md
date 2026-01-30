@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / GridAutoFlow
-
-# Enumeration: GridAutoFlow
+# GridAutoFlow
 
 Grid auto flow enumeration
 

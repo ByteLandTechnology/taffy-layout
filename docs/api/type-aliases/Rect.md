@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Rect
-
-# Type Alias: Rect\<T\>
+# Rect\<T\>
 
 ```ts
 type Rect<T> = {

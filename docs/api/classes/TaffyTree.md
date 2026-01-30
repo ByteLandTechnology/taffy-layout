@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / TaffyTree
-
-# Class: TaffyTree
+# TaffyTree
 
 The main layout tree class for creating nodes, computing layouts, and managing a tree of styled elements.
 

@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Point
-
-# Type Alias: Point\<T\>
+# Point\<T\>
 
 ```ts
 type Point<T> = {

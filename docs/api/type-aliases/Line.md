@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Line
-
-# Type Alias: Line\<T\>
+# Line\<T\>
 
 ```ts
 type Line<T> = {

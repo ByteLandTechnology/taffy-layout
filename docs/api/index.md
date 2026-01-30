@@ -1,7 +1,3 @@
-**Taffy Layout API Documentation**
-
----
-
 # Taffy Layout API Documentation
 
 ## Enumerations

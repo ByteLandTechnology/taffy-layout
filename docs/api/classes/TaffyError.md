@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / TaffyError
-
-# Class: TaffyError
+# TaffyError
 
 Error class thrown when a Taffy operation fails, containing a human-readable error message.
 

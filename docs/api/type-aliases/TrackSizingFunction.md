@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / TrackSizingFunction
-
-# Type Alias: TrackSizingFunction
+# TrackSizingFunction
 
 ```ts
 type TrackSizingFunction = {

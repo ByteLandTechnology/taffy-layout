@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / GridTemplateComponent
-
-# Type Alias: GridTemplateComponent
+# GridTemplateComponent
 
 ```ts
 type GridTemplateComponent = TrackSizingFunction | GridTemplateRepetition;

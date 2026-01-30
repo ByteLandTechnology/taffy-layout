@@ -21,5 +21,14 @@
   "propertiesFormat": "table",
   "enumMembersFormat": "table",
   "typeDeclarationFormat": "table",
-  "indexFormat": "table"
+  "indexFormat": "table",
+  "pageTitleTemplates": {
+    "member": "{name}"
+  },
+  "hideBreadcrumbs": true,
+  "hidePageHeader": true,
+  "navigation": {
+    "includeCategories": false,
+    "includeGroups": false
+  }
 }

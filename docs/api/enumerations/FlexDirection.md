@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / FlexDirection
-
-# Enumeration: FlexDirection
+# FlexDirection
 
 Flex direction enumeration
 

@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / Style
-
-# Class: Style
+# Style
 
 CSS layout configuration for a node, including flexbox, sizing, spacing, and alignment properties.
 

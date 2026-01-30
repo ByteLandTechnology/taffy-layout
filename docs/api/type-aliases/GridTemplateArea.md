@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / GridTemplateArea
-
-# Type Alias: GridTemplateArea
+# GridTemplateArea
 
 ```ts
 type GridTemplateArea = {

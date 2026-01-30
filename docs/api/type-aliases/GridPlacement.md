@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / GridPlacement
-
-# Type Alias: GridPlacement
+# GridPlacement
 
 ```ts
 type GridPlacement =

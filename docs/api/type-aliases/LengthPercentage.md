@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / LengthPercentage
-
-# Type Alias: LengthPercentage
+# LengthPercentage
 
 ```ts
 type LengthPercentage = number | `${number}%`;

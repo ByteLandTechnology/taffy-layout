@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / BoxSizing
-
-# Enumeration: BoxSizing
+# BoxSizing
 
 Box sizing enumeration
 

@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / GridTemplateRepetition
-
-# Type Alias: GridTemplateRepetition
+# GridTemplateRepetition
 
 ```ts
 type GridTemplateRepetition = {

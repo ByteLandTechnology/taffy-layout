@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / MeasureFunction
-
-# Type Alias: MeasureFunction()
+# MeasureFunction()
 
 ```ts
 type MeasureFunction = (

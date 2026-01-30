@@ -1,10 +1,4 @@
-[**Taffy Layout API Documentation**](../index.md)
-
----
-
-[Taffy Layout API Documentation](../index.md) / AvailableSpace
-
-# Type Alias: AvailableSpace
+# AvailableSpace
 
 ```ts
 type AvailableSpace = number | "min-content" | "max-content";
