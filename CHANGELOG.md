@@ -1,3 +1,17 @@
+## [2.0.3](https://github.com/ByteLandTechnology/taffy-layout/compare/v2.0.2...v2.0.3) (2026-01-30)
+
+### 🐛 Bug Fixes
+
+- **tree:** correctly cast BigInt array return type in children method ([539a9d5](https://github.com/ByteLandTechnology/taffy-layout/commit/539a9d5bdde86689320101491624766800860b5b))
+
+### 📚 Documentation
+
+- structural refactor and example enhancements ([32ec444](https://github.com/ByteLandTechnology/taffy-layout/commit/32ec444e237774d46ec0d12cc3025a80b1aa8f56))
+
+### 🔧 Chores
+
+- update typedoc config and regenerate docs ([7c9b286](https://github.com/ByteLandTechnology/taffy-layout/commit/7c9b2865e6b5dfea3877877b8fa852539f6ee577))
+
 ## [2.0.2](https://github.com/ByteLandTechnology/taffy-layout/compare/v2.0.1...v2.0.2) (2026-01-25)
 
 ### 📚 Documentation
