@@ -22,8 +22,10 @@ The `inset` property (historically `top`, `right`, `bottom`, `left`) defines the
 
 ## Behavior
 
-- **For `Position.Absolute`**: Offsets are relative to the _nearest positioned ancestor_.
+- **For `Position.Absolute`**: Offsets use the containing block established by the direct parent. Grid placement can define a containing area within a Grid parent.
 - **For `Position.Relative`**: Offsets move the item relative to its _normal position_ in the flow.
+
+The edge names remain physical in both LTR and RTL. The `inset` object requires all four fields; use `"auto"` for unspecified edges, or set individual properties such as `right`.
 
 ## Example
 

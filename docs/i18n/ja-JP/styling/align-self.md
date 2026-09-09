@@ -20,6 +20,10 @@ sidebar_position: 15
 | **`Center`**    | アイテムを中央に配置します。                             |
 | **`Baseline`**  | アイテムをベースラインに配置します。                     |
 
+`Start` / `End` はコンテナの論理方向、`SelfStart` / `SelfEnd` はアイテム自身の `direction` に従って配置します。安全な配置には `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`、`SafeSelfStart`、`SafeSelfEnd` があり、内容が収まらない場合は始端配置に戻して始端側のはみ出しを防ぎます。
+
+Grid の `justifySelf` も同じ `AlignSelf` 列挙型を使い、親の `justifyItems` を上書きします。`alignSelf` または `justifySelf` に `AlignSelf.Auto` または `undefined` を設定すると上書きが解除されます。未設定または解除後の直接プロパティアクセスは `AlignSelf.Auto`、`get("alignSelf")` / `get("justifySelf")` は `undefined` を返します。
+
 ## 例
 
 ```tsx live

@@ -17,8 +17,8 @@ style.flexWrap = FlexWrap.Wrap; // Items wrap to new lines
 
 ## Enumeration Members
 
-| Enumeration Member                     | Value | Description                                            |
-| -------------------------------------- | ----- | ------------------------------------------------------ |
-| <a id="nowrap"></a> `NoWrap`           | `0`   | All flex items are placed on a single line             |
-| <a id="wrap"></a> `Wrap`               | `1`   | Flex items wrap onto multiple lines from top to bottom |
-| <a id="wrapreverse"></a> `WrapReverse` | `2`   | Flex items wrap onto multiple lines from bottom to top |
+| Enumeration Member                                        | Value | Description                                                                          |
+| --------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------ |
+| <a id="enumeration-member-nowrap"></a> `NoWrap`           | `0`   | All flex items are placed on a single line                                           |
+| <a id="enumeration-member-wrap"></a> `Wrap`               | `1`   | Flex items wrap into lines along the cross axis, following the container's direction |
+| <a id="enumeration-member-wrapreverse"></a> `WrapReverse` | `2`   | Flex items wrap into lines in the reverse cross-axis direction                       |

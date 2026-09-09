@@ -7,18 +7,24 @@ sidebar_position: 15
 
 **Override the parent's `alignItems` for a specific item.**
 
-The `alignSelf` property allows the default alignment (or the one specified by `alignItems`) to be overridden for individual flex items.
+The `alignSelf` property overrides `alignItems` for an individual Flexbox or Grid item. Grid's `justifySelf` similarly overrides `justifyItems` and accepts the same `AlignSelf` values.
 
 ## Values
 
-| Value           | Description                                            |
-| :-------------- | :----------------------------------------------------- |
-| **`Auto`**      | **Default**. Inherits the parent's `alignItems` value. |
-| **`Stretch`**   | Item stretches to fill the container's cross size.     |
-| **`FlexStart`** | Item aligns to the start edge.                         |
-| **`FlexEnd`**   | Item aligns to the end edge.                           |
-| **`Center`**    | Item aligns in the center.                             |
-| **`Baseline`**  | Item aligns based on its baseline.                     |
+| Value                       | Description                                            |
+| :-------------------------- | :----------------------------------------------------- |
+| **`Auto`**                  | **Default**. Inherits the parent's `alignItems` value. |
+| **`Stretch`**               | Item stretches to fill the container's cross size.     |
+| **`Start` / `End`**         | Item aligns to the container's logical start/end edge. |
+| **`SelfStart` / `SelfEnd`** | Item aligns using its own direction.                   |
+| **`FlexStart`**             | Item aligns to the start edge.                         |
+| **`FlexEnd`**               | Item aligns to the end edge.                           |
+| **`Center`**                | Item aligns in the center.                             |
+| **`Baseline`**              | Item aligns based on its baseline.                     |
+
+The safe variants are `SafeStart`, `SafeEnd`, `SafeFlexStart`, `SafeFlexEnd`, `SafeCenter`, `SafeSelfStart`, and `SafeSelfEnd`. They fall back to start alignment when needed to prevent overflow before the start edge.
+
+Set either self property to `AlignSelf.Auto` or `undefined` to restore the parent's alignment. For an unset self property, its direct getter returns `AlignSelf.Auto`, while `style.get("alignSelf")` or `style.get("justifySelf")` returns `undefined`.
 
 ## Example
 

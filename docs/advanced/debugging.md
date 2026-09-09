@@ -9,11 +9,11 @@ sidebar_position: 1
 
 ## Print Tree
 
-The most powerful tool at your disposal is `tree.printTree(node)`. It generates a string representation of the tree structure, style configuration, and computed layout.
+`tree.printTree(node)` returns a string showing the subtree, layout modes, and computed geometry. Pass the result to `console.log()` to display it.
 
 ```ts
 const tree = new TaffyTree();
-const root = tree.newLeaf(new Style());
+const root = tree.newLeaf(new Style({ width: 100, height: 100 }));
 tree.computeLayout(root, { width: 100, height: 100 });
 
 console.log(tree.printTree(root));
@@ -22,11 +22,10 @@ console.log(tree.printTree(root));
 **Example Output:**
 
 ```text
-DIV [x: 0    y: 0    w: 100  h: 100  content_w: 100  content_h: 100  border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (1)
-└── LEAF [x: 0    y: 0    w: 50   h: 50   content_w: 50   content_h: 50   border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (2)
+└──  LEAF [x: 0    y: 0    w: 100  h: 100  content_w: 0    content_h: 0    border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (4294967297)
 ```
 
-> **Note**: The actual output format may vary slightly by version but will always show the hierarchy and key constraints.
+`content_w` and `content_h` use the same reachable overflow extents as `layout.contentWidth` and `layout.contentHeight`. An empty leaf can have a fixed box size and zero content extents. See [The Layout Object](../core-concepts/objects-layout.md).
 
 ## Visual Debugging
 
@@ -45,16 +44,21 @@ const root = tree.newLeaf(new Style());
 tree.computeLayout(root, { width: 100, height: 100 });
 
 // Visual debugger function
-function debugDraw(node: any) {
+function debugDraw(node: bigint, parentX = 0, parentY = 0) {
   const layout = tree.getLayout(node);
-  renderer.strokeRect(layout.x, layout.y, layout.width, layout.height, "red");
+  const x = parentX + layout.x;
+  const y = parentY + layout.y;
+  renderer.strokeRect(x, y, layout.width, layout.height, "red");
+  layout.free();
 
   for (const child of tree.children(node)) {
-    debugDraw(child);
+    debugDraw(child, x, y);
   }
 }
 debugDraw(root);
 ```
+
+Layout positions are relative to each node's parent. Accumulate ancestor offsets when drawing into a shared canvas coordinate system, including for absolutely positioned nodes.
 
 ## Isolation
 

@@ -11,12 +11,8 @@ npm install taffy-layout
 
 ## Requirements
 
-- **Node.js**: Version 12 or higher.
-- **Browser**: Modern browser with **WebAssembly** support:
-  - Chrome 57+
-  - Firefox 52+
-  - Safari 11+
-  - Edge 16+
+- **Node.js**: Version 18 or higher.
+- **Browser**: ES Modules, BigInt, JavaScript/WebAssembly BigInt integration, and WebAssembly reference types support.
 
 ## Browser Usage
 

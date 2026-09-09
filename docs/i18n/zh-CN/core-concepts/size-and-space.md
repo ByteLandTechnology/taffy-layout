@@ -70,11 +70,12 @@ return (
 - `number`: 绝对尺寸（通常是像素）
 - `"min-content"`: 最小内容尺寸
 - `"max-content"`: 最大内容尺寸
-- `"auto"`: 让布局决定
+
+`"auto"` 用于样式尺寸，不是 `AvailableSpace` 的有效值。
 
 ## 盒模型
 
-Taffy 的行为类似于 `box-sizing: border-box`：
+`boxSizing` 默认为 `BoxSizing.BorderBox`，此时样式尺寸包含 padding 和 border。设为 `BoxSizing.ContentBox` 后，样式尺寸仅指定内容框；最终 `Layout.size` 仍为边框框尺寸：
 
 ```text
 ┌─────────────────────────┐
@@ -89,12 +90,12 @@ Taffy 的行为类似于 `box-sizing: border-box`：
 └─────────────────────────┘
 ```
 
-- `size` 包含 padding + border
+- `Layout.size` 包含 padding + border
 - margin 是外部间距
 
 ## 百分比
 
-百分比尺寸相对于父内容框：
+百分比尺寸相对于该轴的包含块尺寸解析。普通 Flex 子元素通常使用父内容框，Grid 子元素使用分配到的网格区域；绝对定位子元素通常使用父 padding box（Grid 放置还可能限定区域）。根节点的百分比相对于传入的确定可用尺寸。若参照尺寸尚未确定，百分比可能在该布局阶段无法解析。
 
 ```tsx live
 const tree = new TaffyTree();
@@ -121,9 +122,9 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 常见陷阱
 
-- 没有尺寸的根节点通常使子节点为 0
-- Flex 中的 `auto` 表示内容尺寸
-- `max-content` 触发测量回调
+- 可用空间不会强制所有节点填满它；没有固定尺寸、内容测量或拉伸规则的空叶子可得到零尺寸
+- `"auto"` 的实际尺寸取决于布局算法、内容以及其他约束
+- 使用 `computeLayoutWithMeasure()` 提供内容测量回调；节点 context 是可选的，`"max-content"` 本身不会注册回调
 
 ## 下一步
 

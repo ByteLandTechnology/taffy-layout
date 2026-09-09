@@ -9,7 +9,7 @@ When a leaf node's size depends on its content (e.g. text, images, or platform-s
 
 ## When to Use
 
-Use `computeLayoutWithMeasure()` instead of the standard `computeLayout()` when your tree contains nodes that need custom measurement. Taffy will invoke your callback for leaf nodes that require content-based sizing (e.g. `width: auto` or `measure` mode).
+Use `computeLayoutWithMeasure()` instead of the standard `computeLayout()` when your tree contains nodes that need custom measurement. Taffy invokes your callback when a leaf needs content measurements, such as intrinsic sizing for an auto-sized text node. The callback may run more than once with different constraints, or be skipped when layout can use known dimensions or cached results.
 
 ## How it Works
 
@@ -17,12 +17,17 @@ The measure function is a callback that Taffy invokes during the layout process.
 
 ### Arguments
 
-1.  **`knownDimensions`**: Dimensions that are explicitly defined in the node's style (e.g. if `width: 100` is set, `knownDimensions.width` will be `100`).
-2.  **`availableSpace`**: The space offered by the parent node. This constraints how large the content can be.
+1. **`knownDimensions`**: Dimension hints already determined by the engine for this measurement. Each axis is a number or `undefined`. This is not a copy of the style: even a node with a fixed width can receive `undefined` during a measurement pass.
+2. **`availableSpace`**: The space available for the content after layout accounts for padding, borders, and scrollbars. Each axis is a number, `"min-content"`, or `"max-content"`; handle these keywords before using the value in arithmetic.
+3. **`node`**: The `bigint` ID of the node being measured.
+4. **`context`**: The user value attached through `newLeafWithContext()` or `setNodeContext()`, or `undefined` when no context is attached.
+5. **`style`**: An owned copy of the node's current `Style`. Changing it does not update the tree. Call `style.free()` when finished with the copy.
 
 ### Return Value
 
-The function **must** return a `Size` object containing the measured `width` and `height` in pixels.
+The function must return `{ width, height }` with the measured content dimensions in pixels. Preserve any supplied known dimension when measuring that axis. Taffy then applies the node's padding, borders, box sizing, and size constraints; do not add those edges to the returned content measurement.
+
+The callback must return synchronously. A thrown error or a return value that cannot be decoded as a numeric `{ width, height }` is treated as a zero content measurement by the binding. Handle measurement failures inside the callback; see [Error Handling](../advanced/error-handling.md#measurement-errors).
 
 ## Example
 
@@ -47,8 +52,9 @@ const root = tree.newWithChildren(rootStyle, [measuredNode]);
 tree.computeLayoutWithMeasure(
   root,
   { width: 300, height: 100 },
-  (knownDims, availableSpace) => {
-    // 1. Check if we have known dimensions (style overrides)
+  (knownDims, availableSpace, node, context, measuredStyle) => {
+    measuredStyle.free();
+    // 1. Preserve dimensions already known for this measurement
     // 2. Otherwise, calculate based on available space or content intrinsic size
     const width =
       knownDims.width ??
@@ -85,6 +91,10 @@ return (
 
 - **Cache Results**: Measurement can be expensive. Cache the result based on the inputs (`knownDimensions`, `availableSpace`, content string, etc.) to avoid re-calculating identical measures.
 - **Avoid Side Effects**: The measure function should be pure. Do not modify the DOM or external state inside it.
+
+## Cache Invalidation
+
+Taffy caches measured results. Mutating an attached context object in place or changing data read by the callback does not notify the tree. Call `tree.markDirty(node)` for each affected measured node, or `tree.setNodeContext(node, updatedContext)`, before recomputing. A different callback passed to `computeLayoutWithMeasure()` also does not invalidate existing caches by itself.
 
 ## Next Steps
 

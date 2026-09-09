@@ -59,7 +59,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## API Reference
 
-- [GridAutoFlow Enum](../../api/enumerations/GridAutoFlow.md)
+- [GridAutoFlow Enum](../api/enumerations/GridAutoFlow.md)
 
 ## Next Steps
 

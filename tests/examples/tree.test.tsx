@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -154,11 +167,8 @@ test("tree example 10", async () => {
 test("tree example 11", async () => {
   const tree = new TaffyTree();
   const nodeId = tree.newLeaf(new Style());
-  try {
-    const removedId: bigint = tree.remove(nodeId);
-  } catch (e) {
-    console.error("Node doesn't exist");
-  }
+  const removedId: bigint = tree.remove(nodeId);
+  // nodeId is no longer valid and must not be passed to this tree again.
 });
 
 test("tree example 12", async () => {
@@ -325,14 +335,32 @@ test("tree example 30", async () => {
 
 test("tree example 31", async () => {
   const tree = new TaffyTree();
-  const rootId = tree.newLeaf(new Style());
-  const nodeId = rootId;
+  const content = { text: "Original text" };
+  const style = new Style();
+  const nodeId = tree.newLeafWithContext(style, content);
+  style.free();
   const availableSpace = { width: 100, height: 100 };
+  const measureText: MeasureFunction = (
+    known,
+    _available,
+    _node,
+    context,
+    measuredStyle,
+  ) => {
+    measuredStyle.free();
+    // Approximate single-line text using an 8-pixel character width.
+    return {
+      width: known.width ?? (context?.text?.length ?? 0) * 8,
+      height: known.height ?? 16,
+    };
+  };
+  tree.computeLayoutWithMeasure(nodeId, availableSpace, measureText);
 
-  // After updating text content
-  tree.setNodeContext(nodeId, { text: "Updated text" });
+  // Mutating the attached object does not automatically invalidate measurement.
+  content.text = "Updated, longer text";
   tree.markDirty(nodeId);
-  tree.computeLayout(rootId, availableSpace);
+  tree.computeLayoutWithMeasure(nodeId, availableSpace, measureText);
+  tree.free();
 });
 
 test("tree example 32", async () => {
@@ -348,24 +376,40 @@ test("tree example 32", async () => {
 
 test("tree example 33", async () => {
   const tree = new TaffyTree();
-  const rootId = tree.newLeaf(new Style());
-
-  const measureText = (text: string, width: number) => ({
-    width: 0,
-    height: 0,
+  const textStyle = new Style();
+  const textNode = tree.newLeafWithContext(textStyle, {
+    text: "Hello, measured text",
   });
+  textStyle.free();
 
   tree.computeLayoutWithMeasure(
-    rootId,
+    textNode,
     { width: 800, height: "max-content" },
     (known, available, node, context, style) => {
-      if (context?.text) {
-        const measured = measureText(context.text, available.width as number);
-        return { width: measured.width, height: measured.height };
-      }
-      return { width: 0, height: 0 };
+      style.free(); // This example only needs the attached text.
+      const text: string = context?.text ?? "";
+      // Approximate monospaced measurement; real text uses font metrics.
+      const naturalWidth = text.length * 8;
+      const minimumWidth = Math.max(
+        0,
+        ...text.split(/\s+/).map((word) => word.length * 8),
+      );
+      const width =
+        known.width ??
+        (available.width === "min-content"
+          ? minimumWidth
+          : available.width === "max-content"
+            ? naturalWidth
+            : Math.min(naturalWidth, Math.max(0, available.width)));
+      const lines =
+        text.length === 0 ? 0 : Math.ceil(naturalWidth / Math.max(8, width));
+      return { width, height: known.height ?? lines * 16 };
     },
   );
+  const layout = tree.getLayout(textNode);
+  console.log(layout.width, layout.height);
+  layout.free();
+  tree.free();
 });
 
 test("tree example 34", async () => {

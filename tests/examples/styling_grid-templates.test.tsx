@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -57,12 +70,14 @@ test("styling_grid-templates example 1", async () => {
   });
 
   const childStyle = new Style({
+    size: { width: 24, height: 24 },
     alignSelf: AlignSelf.Center,
     justifySelf: AlignSelf.Center,
   });
   const child1 = tree.newLeaf(childStyle);
   const child2 = tree.newLeaf(childStyle);
   const child3 = tree.newLeaf(childStyle);
+  // These items create an implicit second row.
   const child4 = tree.newLeaf(childStyle);
   const child5 = tree.newLeaf(childStyle);
   const child6 = tree.newLeaf(childStyle);
@@ -84,4 +99,15 @@ test("styling_grid-templates example 1", async () => {
   console.log(`Columns: 3`);
 
   return <TaffyTreePreview tree={tree} root={root} />;
+});
+
+test("styling_grid-templates example 2", async () => {
+  const namedGrid = new Style({
+    display: Display.Grid,
+    gridTemplateAreas: [
+      { name: "header", rowStart: 1, rowEnd: 2, columnStart: 1, columnEnd: 3 },
+    ],
+    gridTemplateAreaRowCount: 3,
+    gridTemplateAreaColumnCount: 4,
+  });
 });

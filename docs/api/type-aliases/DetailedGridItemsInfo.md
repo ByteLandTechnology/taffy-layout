@@ -12,7 +12,8 @@ type DetailedGridItemsInfo = {
 Information about a grid item's placement.
 
 Specifies which grid lines the item spans on both axes.
-Line numbers are 1-indexed, with 1 being the first line.
+Line numbers are 1-indexed from the first generated line, including leading
+implicit tracks. They can differ from the explicit grid line numbers used in styles.
 
 ## Properties
 

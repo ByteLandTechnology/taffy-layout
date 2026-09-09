@@ -37,7 +37,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 ## クイックノート
 
 - `margin` は、`left`、`right`、`top`、`bottom` を含む `Rect` です。
-- `Auto` を受け入れ、コンテンツを中央に配置します（`margin: auto` のように）。
+- 各辺は数値、パーセント文字列、`"auto"` を受け取ります。例えば水平の余りを両側で分けるには `margin: { left: "auto", right: "auto", top: 0, bottom: 0 }` と指定します。中央配置できる軸や条件はレイアウトモードに依存します。
 
 ## 次のステップ
 

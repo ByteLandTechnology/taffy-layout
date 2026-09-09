@@ -48,5 +48,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Related Guides
 
-- **[Flex Grow/Shrink](../styling/flex-basis-grow-shrink.md)**
-- **[Spacing](../styling/margin-padding-border.md)**
+- **[Flex Grow/Shrink](../styling/flex-grow.md)**
+- **[Spacing](../styling/margin.md)**

@@ -24,9 +24,9 @@ features:
   - title: Lightning Fast
     details: Written in Rust and compiled to WebAssembly. Benchmarked for maximum efficiency and minimal latency.
   - title: Flexbox & Grid
-    details: Complete and robust support for both CSS Flexbox and CSS Grid layout algorithms, ensuring pixel-perfect results.
+    details: CSS Flexbox and Grid layout algorithms for computing positions and sizes without a browser DOM.
   - title: Modern Standard
-    details: Fully compliant with modern CSS layout specifications, making it familiar to any web developer.
+    details: Familiar CSS layout concepts exposed through a typed JavaScript API. See the styling guide for supported properties and values.
   - title: Multi-Platform
     details: Run everywhere. Perfect for game engines, desktop apps, mobile frameworks, and high-performance web apps.
 ---

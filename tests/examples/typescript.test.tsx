@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -99,7 +112,13 @@ test("typescript example 3", async () => {
     style,
   ): Size<number> => {
     const ctx = context as TextContext | undefined;
-    if (!ctx?.text) return { width: 0, height: 0 };
+    style.free(); // This measurement does not need to read the style copy.
+    if (!ctx?.text) {
+      return {
+        width: knownDimensions.width ?? 0,
+        height: knownDimensions.height ?? 0,
+      };
+    }
 
     const width =
       knownDimensions.width ?? measureTextWidth(ctx.text, ctx.fontSize);
@@ -208,15 +227,15 @@ test("typescript example 9", async () => {
   const tree = new TaffyTree();
   const style = new Style();
   style.display = Display.Grid;
-  const gridNode = tree.newLeaf(style);
+  const child = tree.newLeaf(new Style());
+  const gridNode = tree.newWithChildren(style, [child]);
   tree.computeLayout(gridNode, { width: 100, height: 100 });
 
   const info: DetailedLayoutInfo = tree.detailedLayoutInfo(gridNode);
 
-  if (info && typeof info === "object" && "Grid" in info) {
-    const grid = info.Grid as DetailedGridInfo;
-    console.log("Rows:", grid.rows.sizes);
-    console.log("Columns:", grid.columns.sizes);
+  if (info !== null) {
+    console.log("Rows:", info.rows.sizes);
+    console.log("Columns:", info.columns.sizes);
   }
 });
 
@@ -288,20 +307,20 @@ test("typescript example 14", async () => {
   const display = style.get("display"); // Display | undefined
 
   // Individual flat property - returns exact type
-  const width = style.get("width"); // Dimension
+  const width = style.get("width"); // Dimension | undefined
 
   // Optional properties return undefined when not set
   const alignItems = style.get("alignItems"); // AlignItems | undefined
 
   // Two properties - returns tuple for destructuring
-  const [d, w] = style.get("display", "width"); // [Display | undefined, Dimension]
+  const [d, w] = style.get("display", "width"); // [Display | undefined, Dimension | undefined]
 
   // Three properties - returns tuple for destructuring
   const [d2, w2, f] = style.get("display", "width", "flexGrow");
 
-  // Four or more properties - returns array
+  // Four literal keys also return a typed tuple
   const values = style.get("display", "width", "flexGrow", "flexShrink");
-  // values type is: (Display | Dimension | number | undefined)[]
+  // values: [Display | undefined, Dimension | undefined, number | undefined, number | undefined]
 });
 
 test("typescript example 15", async () => {
@@ -330,9 +349,9 @@ test("typescript example 16", async () => {
   // Three properties - returns tuple for destructuring
   const [x, y, w] = layout.get("x", "y", "width");
 
-  // Four or more properties - returns array
+  // Four literal keys also return a typed tuple
   const values = layout.get("x", "y", "width", "height");
-  // values type is: number[]
+  // values type is: [number, number, number, number]
 
   tree.free();
 });

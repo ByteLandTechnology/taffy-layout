@@ -14,6 +14,10 @@ import {
   BoxSizing,
   TextAlign,
   GridAutoFlow,
+  Clear,
+  Direction,
+  Float,
+  TaffyTree,
 } from "../src/index";
 
 describe("Style Class Properties", () => {
@@ -1784,5 +1788,106 @@ describe("Style Class Properties", () => {
         expect(paddingTop).toBe(5);
       });
     });
+  });
+});
+
+describe("Invalid enum input", () => {
+  beforeAll(setupTaffy);
+
+  it("ignores invalid raw enum values without corrupting state", () => {
+    const style = new Style({
+      display: Display.Grid,
+      direction: Direction.Rtl,
+      float: Float.Right,
+      clear: Clear.Both,
+      alignItems: AlignItems.Center,
+    });
+
+    style.set({
+      display: 255 as Display,
+      direction: 1.5 as Direction,
+      float: Number.NaN as Float,
+      clear: -1 as Clear,
+      alignItems: 99 as AlignItems,
+    });
+
+    expect(
+      style.get("display", "direction", "float", "clear", "alignItems"),
+    ).toEqual([
+      Display.Grid,
+      Direction.Rtl,
+      Float.Right,
+      Clear.Both,
+      AlignItems.Center,
+    ]);
+  });
+});
+
+describe("Dimension constraints and tree style updates", () => {
+  beforeAll(setupTaffy);
+
+  it("preserves min/max dimensions through layout and tree style edits", () => {
+    const tree = new TaffyTree();
+    const child = tree.newLeaf(
+      new Style({
+        width: 10,
+        height: 100,
+        minSize: { width: "50%", height: "auto" },
+        maxSize: { width: "auto", height: "50%" },
+      }),
+    );
+    const root = tree.newWithChildren(
+      new Style({ display: Display.Block, width: 200, height: 100 }),
+      [child],
+    );
+
+    tree.computeLayout(root, { width: 200, height: 100 });
+    expect(tree.getLayout(child).get("width", "height")).toEqual([100, 50]);
+
+    const constrained = tree.getStyle(child);
+    expect(constrained.get("minSize", "maxSize")).toEqual([
+      { width: "50%", height: "auto" },
+      { width: "auto", height: "50%" },
+    ]);
+    expect(constrained.minWidth).toBe("50%");
+    expect(constrained.maxHeight).toBe("50%");
+    constrained.minWidth = 60;
+    constrained.maxHeight = 30;
+    tree.setStyle(child, constrained);
+    tree.computeLayout(root, { width: 200, height: 100 });
+    expect(tree.getLayout(child).get("width", "height")).toEqual([60, 30]);
+
+    const unconstrained = tree.getStyle(child);
+    unconstrained.set({
+      minSize: { width: "auto", height: "auto" },
+      maxSize: { width: "auto", height: "auto" },
+    });
+    tree.setStyle(child, unconstrained);
+    tree.computeLayout(root, { width: 200, height: 100 });
+    expect(tree.getLayout(child).get("width", "height")).toEqual([10, 100]);
+  });
+
+  it("applies percentage min-height and max-width from scalar properties", () => {
+    const tree = new TaffyTree();
+    const style = new Style({ width: 300, height: 1 });
+    style.set({ minHeight: "20%", maxWidth: "75%" });
+    const child = tree.newLeaf(style);
+    const root = tree.newWithChildren(
+      new Style({ display: Display.Block, width: 200, height: 100 }),
+      [child],
+    );
+
+    tree.computeLayout(root, { width: 200, height: 100 });
+    expect(tree.getLayout(child).get("width", "height")).toEqual([150, 20]);
+    expect(tree.getStyle(child).get("minHeight", "maxWidth")).toEqual([
+      "20%",
+      "75%",
+    ]);
+
+    style.minSize = { width: "auto", height: 30 };
+    style.maxSize = { width: 120, height: "auto" };
+    tree.setStyle(child, style);
+    tree.computeLayout(root, { width: 200, height: 100 });
+    expect(tree.getLayout(child).get("width", "height")).toEqual([120, 30]);
   });
 });

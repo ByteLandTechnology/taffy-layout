@@ -11,12 +11,8 @@ npm install taffy-layout
 
 ## 動作環境
 
-- **Node.js**: バージョン 12 以上。
-- **ブラウザ**: **WebAssembly** をサポートするモダンブラウザ：
-  - Chrome 57+
-  - Firefox 52+
-  - Safari 11+
-  - Edge 16+
+- **Node.js**: バージョン 18 以上。
+- **ブラウザ**: ES Modules、BigInt、JavaScript/WebAssembly 間の BigInt 連携、および WebAssembly reference types のサポートが必要です。
 
 ## ブラウザでの使用
 
@@ -58,4 +54,4 @@ Taffy Layout は**完全な TypeScript 型定義**を含んでおり、すぐに
 ## 次のステップ
 
 - **[クイックスタートガイド](./quick-start.md)** - 最初の Taffy レイアウトを作成します。
-- **[API リファレンス](../../api/index.md)** - 完全な API ドキュメントを確認します。
+- **[API リファレンス](../../../api/index.md)** - 完全な API ドキュメントを確認します。

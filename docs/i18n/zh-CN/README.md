@@ -10,7 +10,7 @@
 ## 特性
 
 - **🚀 高性能**：WebAssembly 驱动的布局计算
-- **📦 完整 CSS 支持**：实现 Flexbox 与 CSS Grid
+- **📦 布局算法**：支持 Flexbox、CSS Grid、Block 与 FlowRoot
 - **🔧 自定义测量**：支持自定义文本/内容测量回调
 - **📝 TypeScript 友好**：完整类型定义
 - **🌳 基于树的 API**：适合复杂场景的高效树结构
@@ -134,20 +134,24 @@ console.log(
 ```typescript
 const tree = new TaffyTree();
 const textStyle = new Style();
-const rootNode = tree.newLeaf(new Style());
 const measureTextWidth = (text: string) => text.length * 8;
 const measureTextHeight = (text: string, width: number) => 20;
 
 const textNode = tree.newLeafWithContext(textStyle, { text: "Hello, World!" });
+const rootNode = tree.newWithChildren(new Style(), [textNode]);
 
 tree.computeLayoutWithMeasure(
   rootNode,
   { width: 800, height: "max-content" },
   (known, available, node, context, style) => {
+    style.free(); // 本例不需要测量回调传入的独立样式副本
     if (context?.text) {
       // 在这里实现文本测量逻辑
-      const width = measureTextWidth(context.text);
-      const height = measureTextHeight(context.text, available.width as number);
+      const limit =
+        typeof available.width === "number" ? available.width : Infinity;
+      const width =
+        known.width ?? Math.min(measureTextWidth(context.text), limit);
+      const height = known.height ?? measureTextHeight(context.text, width);
       return { width, height };
     }
     return { width: 0, height: 0 };
@@ -157,7 +161,7 @@ tree.computeLayoutWithMeasure(
 
 ## 错误处理
 
-可能失败的方法会抛出 `TaffyError`。使用 try-catch 处理：
+对返回受检查错误的方法，可用 try-catch 处理 `TaffyError`。节点 ID 必须来自同一棵树且仍有效；无效 ID 也可能触发 WebAssembly panic。详见[错误处理](advanced/error-handling.md)。
 
 ```typescript
 try {
@@ -174,12 +178,7 @@ try {
 
 ## 浏览器支持
 
-支持所有具备 WebAssembly 的现代浏览器：
-
-- Chrome 57+
-- Firefox 52+
-- Safari 11+
-- Edge 16+
+浏览器需支持 ES Modules、BigInt、JavaScript 与 WebAssembly 间的 BigInt 互操作，以及 WebAssembly reference types；仅支持基础 WebAssembly 不足以运行当前绑定。
 
 ## 示例
 
@@ -225,6 +224,7 @@ gridStyle.gridTemplateAreas = [
 gridStyle.gridTemplateRowNames = [
   ["header-start"],
   ["header-end", "content-start"],
+  [],
   ["content-end", "footer-start"],
   ["footer-end"],
 ];
@@ -260,15 +260,20 @@ imgStyle.size = { width: "100%", height: "auto" };
 
 ## 从源码构建
 
+开发工具要求 Node.js 22.14 或更高的 22.x 版本，或 Node.js 24.10 及以上；这高于已发布包的 Node.js 18 运行要求。还需安装 Rust 1.85 或更高版本及 Cargo，并准备 WebAssembly 编译目标：
+
 ```bash
 # 克隆仓库
 git clone https://github.com/ByteLandTechnology/taffy-layout.git
 cd taffy-layout
 
+# 安装 WebAssembly 编译目标
+rustup target add wasm32-unknown-unknown
+
 # 安装依赖
 npm install
 
-# 构建 WebAssembly 模块
+# 构建 WebAssembly、TypeScript 产物及文档
 npm run build
 ```
 

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -47,14 +60,15 @@ test("cookbook_sticky-footer example 1", async () => {
   const pageStyle = new Style({
     display: Display.Flex,
     flexDirection: FlexDirection.Column,
-    size: { width: 300, height: 300 }, // Fixed height to simulate viewport
+    width: 300,
+    minHeight: 300, // Fill the viewport, while allowing taller content
   });
 
   const header = tree.newLeaf(
-    new Style({ size: { width: "100%", height: 50 }, margin: { bottom: 10 } }),
+    new Style({ width: "100%", height: 50, marginBottom: 10, flexShrink: 0 }),
   );
   const footer = tree.newLeaf(
-    new Style({ size: { width: "100%", height: 50 }, margin: { top: 10 } }),
+    new Style({ width: "100%", height: 50, marginTop: 10, flexShrink: 0 }),
   );
 
   // Content grows to fill space

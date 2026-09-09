@@ -8,6 +8,8 @@ import {
   AlignItems,
   JustifyContent,
   GridAutoFlow,
+  Position,
+  type StylePropertyValues,
 } from "../src/index";
 
 describe("Layout Computation", () => {
@@ -852,4 +854,59 @@ describe("printTree", () => {
     rootStyle.free();
     childStyle.free();
   });
+});
+
+describe("Content size extents", () => {
+  beforeAll(setupTaffy);
+
+  it.each([
+    {
+      name: "overflow after the scroll origin",
+      root: { padding: { left: 10, right: 10, top: 10, bottom: 10 } },
+      child: { width: 150, height: 80, flexShrink: 0 },
+      expected: { width: 160, height: 90 },
+    },
+    {
+      name: "overflow before the scroll origin",
+      root: {},
+      child: {
+        position: Position.Absolute,
+        left: -30,
+        top: -20,
+        width: 40,
+        height: 25,
+      },
+      expected: { width: 10, height: 5 },
+    },
+    {
+      name: "an empty node",
+      root: {},
+      child: undefined,
+      expected: { width: 0, height: 0 },
+    },
+  ] satisfies {
+    name: string;
+    root: StylePropertyValues;
+    child: StylePropertyValues | undefined;
+    expected: { width: number; height: number };
+  }[])(
+    "preserves content-size accessors for $name",
+    ({ root, child, expected }) => {
+      const tree = new TaffyTree();
+      const children = child ? [tree.newLeaf(new Style(child))] : [];
+      const node = tree.newWithChildren(
+        new Style({ width: 100, height: 50, ...root }),
+        children,
+      );
+      tree.computeLayout(node, { width: 100, height: 50 });
+      // Negative start-side overflow must not be added to the reachable extent.
+      const layout = tree.getLayout(node);
+      expect(layout.contentWidth).toBe(expected.width);
+      expect(layout.contentHeight).toBe(expected.height);
+      expect(layout.contentSize).toEqual(expected);
+      expect(
+        layout.get("contentWidth", "contentHeight", "contentSize"),
+      ).toEqual([expected.width, expected.height, expected]);
+    },
+  );
 });

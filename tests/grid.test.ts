@@ -7,6 +7,7 @@ import {
   GridAutoFlow,
   AlignItems,
   JustifyContent,
+  type TrackSizingFunction,
 } from "../src/index";
 
 describe("Grid Style Properties", () => {
@@ -893,4 +894,144 @@ describe("Grid Layout Computation", () => {
       child2Style.free();
     });
   });
+});
+
+describe("Implicit grid row sizing", () => {
+  beforeAll(setupTaffy);
+
+  it("resolves percentage heights in implicit grid rows", () => {
+    const tree = new TaffyTree();
+    const first = tree.newLeaf(new Style({ height: "50%" }));
+    const second = tree.newLeaf(new Style({ width: 50, height: 20 }));
+    const root = tree.newWithChildren(
+      new Style({ display: Display.Grid, width: 100, height: 100 }),
+      [first, second],
+    );
+
+    tree.computeLayout(root, { width: 100, height: 100 });
+    expect(tree.getLayout(first).get("x", "y", "width", "height")).toEqual([
+      0, 0, 100, 20,
+    ]);
+    expect(tree.getLayout(second).get("x", "y", "width", "height")).toEqual([
+      0, 40, 50, 20,
+    ]);
+  });
+});
+
+describe("Grid track sizing and serialization", () => {
+  beforeAll(setupTaffy);
+
+  it.each([
+    "gridAutoRows",
+    "gridAutoColumns",
+    "gridTemplateRows",
+    "gridTemplateColumns",
+  ] as const)(
+    "resolves percentages in %s against the container",
+    (property) => {
+      const columns = property.endsWith("Columns");
+      const tracks: TrackSizingFunction[] = [
+        { min: "50%", max: "50%" },
+        { min: "50%", max: "50%" },
+      ];
+      const tree = new TaffyTree();
+      const children = [tree.newLeaf(new Style()), tree.newLeaf(new Style())];
+      const style = new Style({
+        display: Display.Grid,
+        width: 200,
+        height: 200,
+        gridAutoFlow: columns ? GridAutoFlow.Column : GridAutoFlow.Row,
+      });
+      style[property] = tracks;
+      const root = tree.newWithChildren(style, children);
+
+      tree.computeLayout(root, { width: 200, height: 200 });
+      expect(
+        children.map((child) =>
+          tree.getLayout(child).get("x", "y", "width", "height"),
+        ),
+      ).toEqual(
+        columns
+          ? [
+              [0, 0, 100, 200],
+              [100, 0, 100, 200],
+            ]
+          : [
+              [0, 0, 200, 100],
+              [0, 100, 200, 100],
+            ],
+      );
+      expect(tree.getStyle(root).get(property)).toEqual(tracks);
+      expect(style[property]).toEqual(tracks);
+    },
+  );
+
+  it("resolves percentage tracks nested in a repeat", () => {
+    const tree = new TaffyTree();
+    const children = [tree.newLeaf(new Style()), tree.newLeaf(new Style())];
+    const style = new Style({
+      display: Display.Grid,
+      width: 200,
+      height: 20,
+      gridTemplateColumns: [{ count: 2, tracks: [{ min: "50%", max: "50%" }] }],
+    });
+    const root = tree.newWithChildren(style, children);
+
+    tree.computeLayout(root, { width: 200, height: 20 });
+    expect(tree.getLayout(children[0]).width).toBe(100);
+    expect(tree.getLayout(children[1]).get("x", "width")).toEqual([100, 100]);
+    expect(style.gridTemplateColumns).toEqual([
+      {
+        count: 2,
+        tracks: [{ min: "50%", max: "50%" }],
+        lineNames: [],
+      },
+    ]);
+  });
+
+  it("limits a track with a percentage maximum and a numeric minimum", () => {
+    const tree = new TaffyTree();
+    const child = tree.newLeaf(new Style());
+    const root = tree.newWithChildren(
+      new Style({
+        display: Display.Grid,
+        width: 200,
+        height: 20,
+        gridTemplateColumns: [{ min: 0, max: "50%" }],
+      }),
+      [child],
+    );
+
+    tree.computeLayout(root, { width: 200, height: 20 });
+    expect(tree.getLayout(child).width).toBe(100);
+  });
+
+  it.each([
+    "gridAutoRows",
+    "gridAutoColumns",
+    "gridTemplateRows",
+    "gridTemplateColumns",
+  ] as const)(
+    "preserves existing track values through %s reads",
+    (property) => {
+      const tracks: TrackSizingFunction[] = [
+        { min: 12, max: 24 },
+        { min: "25%", max: "75%" },
+        { min: "auto", max: "1.5fr" },
+        { min: "min-content", max: "max-content" },
+        { min: "max-content", max: "min-content" },
+        { min: "auto", max: "fit-content" },
+        { min: "auto", max: "auto" },
+      ];
+      const tree = new TaffyTree();
+      const original = new Style({ [property]: tracks });
+      const node = tree.newLeaf(original);
+      const copied = tree.getStyle(node);
+
+      expect(copied[property]).toEqual(tracks);
+      expect(copied.get(property)).toEqual(tracks);
+      original.set({ [property]: copied.get(property) });
+      expect(original.get(property)).toEqual(tracks);
+    },
+  );
 });

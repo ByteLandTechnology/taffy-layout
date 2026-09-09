@@ -52,23 +52,27 @@ Use `size`, `minSize`, and `maxSize` to set boundaries for an element's dimensio
 
 ## Properties
 
-These properties take a `Size` object containing `width` and `height`.
+These properties require a `Size` object containing both `width` and `height`. Use scalar properties such as `width`, `minHeight`, or `maxWidth` to update one axis.
 
 | Property      | Description                                                              |
 | :------------ | :----------------------------------------------------------------------- |
 | **`size`**    | Ideal size. If `auto`, size is determined by content or flex/grid rules. |
 | **`minSize`** | Minimum size. Prevents the item from shrinking below this value.         |
-| **`maxSize`** | Maximum size. Prevents the item from growing above this value.           |
+| **`maxSize`** | Maximum size constraint, subject to minimum sizes and box-model limits.  |
+
+A minimum larger than the corresponding maximum takes precedence. The final box also cannot be smaller than its padding and border.
 
 ## Dimension Values
 
 The `width` and `height` properties accept specific value types:
 
-| Value       | Description                                      | Example (JS)                                                                    |
-| :---------- | :----------------------------------------------- | :------------------------------------------------------------------------------ |
-| **Auto**    | Size to content (or stretch in some flex cases). | `"auto"`                                                                        |
-| **Points**  | Exact pixel value.                               | `150`                                                                           |
-| **Percent** | Percentage of parent's size.                     | `"50%"` or `0.5` (if using float helpers) usually string `"50%"` in JS binding. |
+| Value       | Description                                          | Example (JS) |
+| :---------- | :--------------------------------------------------- | :----------- |
+| **Auto**    | Size to content (or stretch in some flex cases).     | `"auto"`     |
+| **Points**  | Preferred pixel size, subject to layout constraints. | `150`        |
+| **Percent** | Percentage of the containing block's size.           | `"50%"`      |
+
+These same value forms apply to `minSize`, `maxSize`, and `flexBasis`. A numeric value such as `0.5` means half a pixel; use a percentage string for a relative size.
 
 ## Example
 

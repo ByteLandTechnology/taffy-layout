@@ -18,9 +18,10 @@ style.display = Display.None; // Hide element from layout
 
 ## Enumeration Members
 
-| Enumeration Member         | Value | Description                                                     |
-| -------------------------- | ----- | --------------------------------------------------------------- |
-| <a id="block"></a> `Block` | `0`   | Block-level layout where element takes the full available width |
-| <a id="flex"></a> `Flex`   | `1`   | Flexbox layout for one-dimensional item arrangement             |
-| <a id="grid"></a> `Grid`   | `2`   | CSS Grid layout for two-dimensional item arrangement            |
-| <a id="none"></a> `None`   | `3`   | Element is removed from layout calculation entirely             |
+| Enumeration Member                                  | Value | Description                                                                  |
+| --------------------------------------------------- | ----- | ---------------------------------------------------------------------------- |
+| <a id="enumeration-member-block"></a> `Block`       | `0`   | Block layout for the element's children, including flow, margins, and floats |
+| <a id="enumeration-member-flex"></a> `Flex`         | `1`   | Flexbox layout for one-dimensional item arrangement                          |
+| <a id="enumeration-member-flowroot"></a> `FlowRoot` | `4`   | Block layout that always establishes a new block formatting context          |
+| <a id="enumeration-member-grid"></a> `Grid`         | `2`   | CSS Grid layout for two-dimensional item arrangement                         |
+| <a id="enumeration-member-none"></a> `None`         | `3`   | Element is removed from layout calculation entirely                          |

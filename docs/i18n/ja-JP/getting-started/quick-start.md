@@ -58,6 +58,13 @@ console.log(`Container: ${containerLayout.width}x${containerLayout.height}`);
 
 // 6. デバッグ：ツリー構造全体を出力
 console.log(tree.printTree(container));
+
+// 7. 使用済みの所有オブジェクトを解放
+containerLayout.free();
+child1Layout.free();
+containerStyle.free();
+childStyle.free();
+tree.free();
 ```
 
 ## 次のステップ

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -50,13 +63,13 @@ test("i18n_ja-JP_cookbook_grid-dashboard example 1", async () => {
 
     // 列：Nav (1fr)、Main (3fr)
     gridTemplateColumns: [
-      { type: "Flex", value: 1 },
-      { type: "Flex", value: 3 },
+      { min: 0, max: "1fr" },
+      { min: 0, max: "3fr" },
     ],
     // 行：Header (60px)、Content (1fr)
     gridTemplateRows: [
-      { type: "Length", value: 60 },
-      { type: "Flex", value: 1 },
+      { min: 60, max: 60 },
+      { min: 0, max: "1fr" },
     ],
   });
 

@@ -20,6 +20,10 @@ sidebar_position: 16
 | **`SpaceBetween`** | 行は均等に配置され、最初の行は始端、最後の行は終端に配置されます。 |
 | **`SpaceAround`**  | 行は均等に配置され、各行の周囲に等しいスペースが設けられます。     |
 
+このプロパティは Grid の行全体の配置と、`Display.Block` / `Display.FlowRoot` 内のコンテンツのブロック軸配置にも使われます。例えば高さ `100` のブロックコンテナに `AlignContent.Center` を指定すると、高さ `20` の単一の子要素は `y = 40` に配置されます。
+
+`Start`、`End`、`SpaceEvenly`、および `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter` も使えます。安全な値は内容が収まらない場合に始端配置へ戻ります。未設定時の読み取り値は `undefined` で、表のデフォルト動作は Flex レイアウトを対象としています。
+
 ## 例
 
 ```tsx live
@@ -27,7 +31,7 @@ const tree = new TaffyTree();
 
 const itemStyle = new Style({
   size: { width: 80, height: 30 },
-  margin: { bottom: 5 },
+  marginBottom: 5,
 });
 
 // 折り返しを強制するために十分な数の子要素を作成

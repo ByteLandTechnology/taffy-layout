@@ -7,7 +7,7 @@ sidebar_position: 3
 
 **Maintain a specific ratio between width and height.**
 
-The `aspectRatio` property sets a preferred ratio for the item's dimensions. If one dimension is set (e.g., width) and the other is `auto` (height), Taffy will calculate the missing dimension to satisfy the ratio.
+The `aspectRatio` property sets a preferred ratio for the item's dimensions. It can derive an auto dimension from the other dimension. Explicit sizes, min/max constraints, and the surrounding layout still determine the final dimensions.
 
 ## Usage
 

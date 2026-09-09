@@ -59,7 +59,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## API 参考
 
-- [GridAutoFlow 枚举](../../api/enumerations/GridAutoFlow.md)
+- [GridAutoFlow 枚举](../../../api/enumerations/GridAutoFlow.md)
 
 ## 后续步骤
 

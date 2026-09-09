@@ -15,7 +15,6 @@
 //! Each enum implements:
 //! - `From<JsEnum> for taffy::style::Enum` - Convert from JS to Taffy
 //! - `From<taffy::style::Enum> for JsEnum` - Convert from Taffy to JS
-//! - `TryFrom<u32> for JsEnum` - Convert from raw number (for setter handling)
 
 use wasm_bindgen::prelude::*;
 
@@ -40,7 +39,7 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen(js_name = Display)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsDisplay {
-    /// Block-level layout where element takes the full available width
+    /// Block layout for the element's children, including flow, margins, and floats
     Block = 0,
     /// Flexbox layout for one-dimensional item arrangement
     Flex = 1,
@@ -48,6 +47,8 @@ pub enum JsDisplay {
     Grid = 2,
     /// Element is removed from layout calculation entirely
     None = 3,
+    /// Block layout that always establishes a new block formatting context
+    FlowRoot = 4,
 }
 
 impl From<JsDisplay> for taffy::style::Display {
@@ -57,6 +58,7 @@ impl From<JsDisplay> for taffy::style::Display {
             JsDisplay::Flex => taffy::style::Display::Flex,
             JsDisplay::Grid => taffy::style::Display::Grid,
             JsDisplay::None => taffy::style::Display::None,
+            JsDisplay::FlowRoot => taffy::style::Display::FlowRoot,
         }
     }
 }
@@ -68,6 +70,7 @@ impl From<taffy::style::Display> for JsDisplay {
             taffy::style::Display::Flex => JsDisplay::Flex,
             taffy::style::Display::Grid => JsDisplay::Grid,
             taffy::style::Display::None => JsDisplay::None,
+            taffy::style::Display::FlowRoot => JsDisplay::FlowRoot,
         }
     }
 }
@@ -94,7 +97,7 @@ impl From<taffy::style::Display> for JsDisplay {
 pub enum JsPosition {
     /// Element participates in normal document flow
     Relative = 0,
-    /// Element is positioned relative to its nearest positioned ancestor
+    /// Element is removed from flow and positioned within its parent layout container
     Absolute = 1,
 }
 
@@ -117,6 +120,110 @@ impl From<taffy::style::Position> for JsPosition {
 }
 
 // =============================================================================
+// Writing Direction
+// =============================================================================
+
+/// Writing direction used for logical layout and bidirectional positioning.
+#[wasm_bindgen(js_name = Direction)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum JsDirection {
+    /// Left-to-right writing direction
+    Ltr = 0,
+    /// Right-to-left writing direction
+    Rtl = 1,
+}
+
+impl From<JsDirection> for taffy::style::Direction {
+    fn from(val: JsDirection) -> Self {
+        match val {
+            JsDirection::Ltr => taffy::style::Direction::Ltr,
+            JsDirection::Rtl => taffy::style::Direction::Rtl,
+        }
+    }
+}
+
+impl From<taffy::style::Direction> for JsDirection {
+    fn from(val: taffy::style::Direction) -> Self {
+        match val {
+            taffy::style::Direction::Ltr => JsDirection::Ltr,
+            taffy::style::Direction::Rtl => JsDirection::Rtl,
+        }
+    }
+}
+
+// =============================================================================
+// Float and Clear
+// =============================================================================
+
+/// Controls whether a box floats to the left or right in block layout.
+#[wasm_bindgen(js_name = Float)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum JsFloat {
+    /// Float to the physical left side of the containing block
+    Left = 0,
+    /// Float to the physical right side of the containing block
+    Right = 1,
+    /// Do not float
+    None = 2,
+}
+
+impl From<JsFloat> for taffy::style::Float {
+    fn from(val: JsFloat) -> Self {
+        match val {
+            JsFloat::Left => taffy::style::Float::Left,
+            JsFloat::Right => taffy::style::Float::Right,
+            JsFloat::None => taffy::style::Float::None,
+        }
+    }
+}
+
+impl From<taffy::style::Float> for JsFloat {
+    fn from(val: taffy::style::Float) -> Self {
+        match val {
+            taffy::style::Float::Left => JsFloat::Left,
+            taffy::style::Float::Right => JsFloat::Right,
+            taffy::style::Float::None => JsFloat::None,
+        }
+    }
+}
+
+/// Controls which preceding floats a box must clear in block layout.
+#[wasm_bindgen(js_name = Clear)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum JsClear {
+    /// Clear preceding left floats
+    Left = 0,
+    /// Clear preceding right floats
+    Right = 1,
+    /// Clear preceding floats on both sides
+    Both = 2,
+    /// Do not clear preceding floats
+    None = 3,
+}
+
+impl From<JsClear> for taffy::style::Clear {
+    fn from(val: JsClear) -> Self {
+        match val {
+            JsClear::Left => taffy::style::Clear::Left,
+            JsClear::Right => taffy::style::Clear::Right,
+            JsClear::Both => taffy::style::Clear::Both,
+            JsClear::None => taffy::style::Clear::None,
+        }
+    }
+}
+
+impl From<taffy::style::Clear> for JsClear {
+    fn from(val: taffy::style::Clear) -> Self {
+        match val {
+            taffy::style::Clear::Left => JsClear::Left,
+            taffy::style::Clear::Right => JsClear::Right,
+            taffy::style::Clear::Both => JsClear::Both,
+            taffy::style::Clear::None => JsClear::None,
+        }
+    }
+}
+
+// =============================================================================
 // Flex Direction
 // =============================================================================
 
@@ -130,17 +237,17 @@ impl From<taffy::style::Position> for JsPosition {
 /// import { Style, FlexDirection } from 'taffy-layout';
 ///
 /// const style = new Style();
-/// style.flexDirection = FlexDirection.Row;     // Horizontal, left to right
+/// style.flexDirection = FlexDirection.Row;     // Horizontal, following direction (LTR by default)
 /// style.flexDirection = FlexDirection.Column;  // Vertical, top to bottom
 /// ```
 #[wasm_bindgen(js_name = FlexDirection)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsFlexDirection {
-    /// Main axis runs horizontally from left to right
+    /// Main axis follows the container's horizontal writing direction (LTR or RTL)
     Row = 0,
     /// Main axis runs vertically from top to bottom
     Column = 1,
-    /// Main axis runs horizontally from right to left
+    /// Main axis runs opposite to the container's horizontal writing direction
     RowReverse = 2,
     /// Main axis runs vertically from bottom to top
     ColumnReverse = 3,
@@ -190,9 +297,9 @@ impl From<taffy::style::FlexDirection> for JsFlexDirection {
 pub enum JsFlexWrap {
     /// All flex items are placed on a single line
     NoWrap = 0,
-    /// Flex items wrap onto multiple lines from top to bottom
+    /// Flex items wrap into lines along the cross axis, following the container's direction
     Wrap = 1,
-    /// Flex items wrap onto multiple lines from bottom to top
+    /// Flex items wrap into lines in the reverse cross-axis direction
     WrapReverse = 2,
 }
 
@@ -250,32 +357,70 @@ pub enum JsAlignItems {
     Baseline = 5,
     /// Items stretched to fill the container
     Stretch = 6,
+    /// Items aligned to the start edge determined by the item's own direction
+    SelfStart = 7,
+    /// Items aligned to the end edge determined by the item's own direction
+    SelfEnd = 8,
+    /// Safe start alignment that avoids start-edge overflow
+    SafeStart = 9,
+    /// Safe end alignment that avoids start-edge overflow
+    SafeEnd = 10,
+    /// Safe flex-start alignment that avoids start-edge overflow
+    SafeFlexStart = 11,
+    /// Safe flex-end alignment that avoids start-edge overflow
+    SafeFlexEnd = 12,
+    /// Safe center alignment that avoids start-edge overflow
+    SafeCenter = 13,
+    /// Safe self-start alignment that avoids start-edge overflow
+    SafeSelfStart = 14,
+    /// Safe self-end alignment that avoids start-edge overflow
+    SafeSelfEnd = 15,
 }
 
 impl From<JsAlignItems> for taffy::style::AlignItems {
     fn from(val: JsAlignItems) -> Self {
         match val {
-            JsAlignItems::Start => taffy::style::AlignItems::Start,
-            JsAlignItems::End => taffy::style::AlignItems::End,
-            JsAlignItems::FlexStart => taffy::style::AlignItems::FlexStart,
-            JsAlignItems::FlexEnd => taffy::style::AlignItems::FlexEnd,
-            JsAlignItems::Center => taffy::style::AlignItems::Center,
-            JsAlignItems::Baseline => taffy::style::AlignItems::Baseline,
-            JsAlignItems::Stretch => taffy::style::AlignItems::Stretch,
+            JsAlignItems::Start => taffy::style::AlignItems::START,
+            JsAlignItems::End => taffy::style::AlignItems::END,
+            JsAlignItems::FlexStart => taffy::style::AlignItems::FLEX_START,
+            JsAlignItems::FlexEnd => taffy::style::AlignItems::FLEX_END,
+            JsAlignItems::Center => taffy::style::AlignItems::CENTER,
+            JsAlignItems::Baseline => taffy::style::AlignItems::BASELINE,
+            JsAlignItems::Stretch => taffy::style::AlignItems::STRETCH,
+            JsAlignItems::SelfStart => taffy::style::AlignItems::SELF_START,
+            JsAlignItems::SelfEnd => taffy::style::AlignItems::SELF_END,
+            JsAlignItems::SafeStart => taffy::style::AlignItems::SAFE_START,
+            JsAlignItems::SafeEnd => taffy::style::AlignItems::SAFE_END,
+            JsAlignItems::SafeFlexStart => taffy::style::AlignItems::SAFE_FLEX_START,
+            JsAlignItems::SafeFlexEnd => taffy::style::AlignItems::SAFE_FLEX_END,
+            JsAlignItems::SafeCenter => taffy::style::AlignItems::SAFE_CENTER,
+            JsAlignItems::SafeSelfStart => taffy::style::AlignItems::SAFE_SELF_START,
+            JsAlignItems::SafeSelfEnd => taffy::style::AlignItems::SAFE_SELF_END,
         }
     }
 }
 
 impl From<taffy::style::AlignItems> for JsAlignItems {
     fn from(val: taffy::style::AlignItems) -> Self {
-        match val {
-            taffy::style::AlignItems::Start => JsAlignItems::Start,
-            taffy::style::AlignItems::End => JsAlignItems::End,
-            taffy::style::AlignItems::FlexStart => JsAlignItems::FlexStart,
-            taffy::style::AlignItems::FlexEnd => JsAlignItems::FlexEnd,
-            taffy::style::AlignItems::Center => JsAlignItems::Center,
-            taffy::style::AlignItems::Baseline => JsAlignItems::Baseline,
-            taffy::style::AlignItems::Stretch => JsAlignItems::Stretch,
+        use taffy::style::{AlignItemsKeyword as Keyword, AlignmentSafety as Safety};
+
+        match (val.keyword, val.safety) {
+            (Keyword::Start, Safety::Unsafe) => JsAlignItems::Start,
+            (Keyword::End, Safety::Unsafe) => JsAlignItems::End,
+            (Keyword::FlexStart, Safety::Unsafe) => JsAlignItems::FlexStart,
+            (Keyword::FlexEnd, Safety::Unsafe) => JsAlignItems::FlexEnd,
+            (Keyword::SelfStart, Safety::Unsafe) => JsAlignItems::SelfStart,
+            (Keyword::SelfEnd, Safety::Unsafe) => JsAlignItems::SelfEnd,
+            (Keyword::Center, Safety::Unsafe) => JsAlignItems::Center,
+            (Keyword::Start, Safety::Safe) => JsAlignItems::SafeStart,
+            (Keyword::End, Safety::Safe) => JsAlignItems::SafeEnd,
+            (Keyword::FlexStart, Safety::Safe) => JsAlignItems::SafeFlexStart,
+            (Keyword::FlexEnd, Safety::Safe) => JsAlignItems::SafeFlexEnd,
+            (Keyword::SelfStart, Safety::Safe) => JsAlignItems::SafeSelfStart,
+            (Keyword::SelfEnd, Safety::Safe) => JsAlignItems::SafeSelfEnd,
+            (Keyword::Center, Safety::Safe) => JsAlignItems::SafeCenter,
+            (Keyword::Baseline, _) => JsAlignItems::Baseline,
+            (Keyword::Stretch, _) => JsAlignItems::Stretch,
         }
     }
 }
@@ -316,33 +461,71 @@ pub enum JsAlignSelf {
     Baseline = 6,
     /// Item stretched to fill the container
     Stretch = 7,
+    /// Item aligned to the start edge determined by its own direction
+    SelfStart = 8,
+    /// Item aligned to the end edge determined by its own direction
+    SelfEnd = 9,
+    /// Safe start alignment that avoids start-edge overflow
+    SafeStart = 10,
+    /// Safe end alignment that avoids start-edge overflow
+    SafeEnd = 11,
+    /// Safe flex-start alignment that avoids start-edge overflow
+    SafeFlexStart = 12,
+    /// Safe flex-end alignment that avoids start-edge overflow
+    SafeFlexEnd = 13,
+    /// Safe center alignment that avoids start-edge overflow
+    SafeCenter = 14,
+    /// Safe self-start alignment that avoids start-edge overflow
+    SafeSelfStart = 15,
+    /// Safe self-end alignment that avoids start-edge overflow
+    SafeSelfEnd = 16,
 }
 
 impl From<JsAlignSelf> for taffy::style::AlignSelf {
     fn from(val: JsAlignSelf) -> Self {
         match val {
-            JsAlignSelf::Auto => taffy::style::AlignSelf::Stretch,
-            JsAlignSelf::Start => taffy::style::AlignSelf::Start,
-            JsAlignSelf::End => taffy::style::AlignSelf::End,
-            JsAlignSelf::FlexStart => taffy::style::AlignSelf::FlexStart,
-            JsAlignSelf::FlexEnd => taffy::style::AlignSelf::FlexEnd,
-            JsAlignSelf::Center => taffy::style::AlignSelf::Center,
-            JsAlignSelf::Baseline => taffy::style::AlignSelf::Baseline,
-            JsAlignSelf::Stretch => taffy::style::AlignSelf::Stretch,
+            JsAlignSelf::Auto => taffy::style::AlignSelf::STRETCH,
+            JsAlignSelf::Start => taffy::style::AlignSelf::START,
+            JsAlignSelf::End => taffy::style::AlignSelf::END,
+            JsAlignSelf::FlexStart => taffy::style::AlignSelf::FLEX_START,
+            JsAlignSelf::FlexEnd => taffy::style::AlignSelf::FLEX_END,
+            JsAlignSelf::Center => taffy::style::AlignSelf::CENTER,
+            JsAlignSelf::Baseline => taffy::style::AlignSelf::BASELINE,
+            JsAlignSelf::Stretch => taffy::style::AlignSelf::STRETCH,
+            JsAlignSelf::SelfStart => taffy::style::AlignSelf::SELF_START,
+            JsAlignSelf::SelfEnd => taffy::style::AlignSelf::SELF_END,
+            JsAlignSelf::SafeStart => taffy::style::AlignSelf::SAFE_START,
+            JsAlignSelf::SafeEnd => taffy::style::AlignSelf::SAFE_END,
+            JsAlignSelf::SafeFlexStart => taffy::style::AlignSelf::SAFE_FLEX_START,
+            JsAlignSelf::SafeFlexEnd => taffy::style::AlignSelf::SAFE_FLEX_END,
+            JsAlignSelf::SafeCenter => taffy::style::AlignSelf::SAFE_CENTER,
+            JsAlignSelf::SafeSelfStart => taffy::style::AlignSelf::SAFE_SELF_START,
+            JsAlignSelf::SafeSelfEnd => taffy::style::AlignSelf::SAFE_SELF_END,
         }
     }
 }
 
 impl From<taffy::style::AlignSelf> for JsAlignSelf {
     fn from(val: taffy::style::AlignSelf) -> Self {
-        match val {
-            taffy::style::AlignSelf::Start => JsAlignSelf::Start,
-            taffy::style::AlignSelf::End => JsAlignSelf::End,
-            taffy::style::AlignSelf::FlexStart => JsAlignSelf::FlexStart,
-            taffy::style::AlignSelf::FlexEnd => JsAlignSelf::FlexEnd,
-            taffy::style::AlignSelf::Center => JsAlignSelf::Center,
-            taffy::style::AlignSelf::Baseline => JsAlignSelf::Baseline,
-            taffy::style::AlignSelf::Stretch => JsAlignSelf::Stretch,
+        use taffy::style::{AlignItemsKeyword as Keyword, AlignmentSafety as Safety};
+
+        match (val.keyword, val.safety) {
+            (Keyword::Start, Safety::Unsafe) => JsAlignSelf::Start,
+            (Keyword::End, Safety::Unsafe) => JsAlignSelf::End,
+            (Keyword::FlexStart, Safety::Unsafe) => JsAlignSelf::FlexStart,
+            (Keyword::FlexEnd, Safety::Unsafe) => JsAlignSelf::FlexEnd,
+            (Keyword::SelfStart, Safety::Unsafe) => JsAlignSelf::SelfStart,
+            (Keyword::SelfEnd, Safety::Unsafe) => JsAlignSelf::SelfEnd,
+            (Keyword::Center, Safety::Unsafe) => JsAlignSelf::Center,
+            (Keyword::Start, Safety::Safe) => JsAlignSelf::SafeStart,
+            (Keyword::End, Safety::Safe) => JsAlignSelf::SafeEnd,
+            (Keyword::FlexStart, Safety::Safe) => JsAlignSelf::SafeFlexStart,
+            (Keyword::FlexEnd, Safety::Safe) => JsAlignSelf::SafeFlexEnd,
+            (Keyword::SelfStart, Safety::Safe) => JsAlignSelf::SafeSelfStart,
+            (Keyword::SelfEnd, Safety::Safe) => JsAlignSelf::SafeSelfEnd,
+            (Keyword::Center, Safety::Safe) => JsAlignSelf::SafeCenter,
+            (Keyword::Baseline, _) => JsAlignSelf::Baseline,
+            (Keyword::Stretch, _) => JsAlignSelf::Stretch,
         }
     }
 }
@@ -356,7 +539,8 @@ impl From<taffy::style::AlignSelf> for JsAlignSelf {
 /// Controls the distribution of space between and around content items along the cross axis
 /// in a multi-line flex container. This corresponds to the CSS `align-content` property.
 ///
-/// **Note**: This property only has effect when `flex-wrap` is set to `Wrap` or `WrapReverse`.
+/// In Flexbox, this property distributes wrapped lines. In Grid it aligns row
+/// tracks; in block layout it aligns the block content vertically.
 ///
 /// @example
 /// ```typescript
@@ -387,36 +571,58 @@ pub enum JsAlignContent {
     SpaceAround = 7,
     /// Lines evenly distributed with equal space between each
     SpaceEvenly = 8,
+    /// Safe start alignment that avoids start-edge overflow
+    SafeStart = 9,
+    /// Safe end alignment that avoids start-edge overflow
+    SafeEnd = 10,
+    /// Safe flex-start alignment that avoids start-edge overflow
+    SafeFlexStart = 11,
+    /// Safe flex-end alignment that avoids start-edge overflow
+    SafeFlexEnd = 12,
+    /// Safe center alignment that avoids start-edge overflow
+    SafeCenter = 13,
 }
 
 impl From<JsAlignContent> for taffy::style::AlignContent {
     fn from(val: JsAlignContent) -> Self {
         match val {
-            JsAlignContent::Start => taffy::style::AlignContent::Start,
-            JsAlignContent::End => taffy::style::AlignContent::End,
-            JsAlignContent::FlexStart => taffy::style::AlignContent::FlexStart,
-            JsAlignContent::FlexEnd => taffy::style::AlignContent::FlexEnd,
-            JsAlignContent::Center => taffy::style::AlignContent::Center,
-            JsAlignContent::Stretch => taffy::style::AlignContent::Stretch,
-            JsAlignContent::SpaceBetween => taffy::style::AlignContent::SpaceBetween,
-            JsAlignContent::SpaceAround => taffy::style::AlignContent::SpaceAround,
-            JsAlignContent::SpaceEvenly => taffy::style::AlignContent::SpaceEvenly,
+            JsAlignContent::Start => taffy::style::AlignContent::START,
+            JsAlignContent::End => taffy::style::AlignContent::END,
+            JsAlignContent::FlexStart => taffy::style::AlignContent::FLEX_START,
+            JsAlignContent::FlexEnd => taffy::style::AlignContent::FLEX_END,
+            JsAlignContent::Center => taffy::style::AlignContent::CENTER,
+            JsAlignContent::Stretch => taffy::style::AlignContent::STRETCH,
+            JsAlignContent::SpaceBetween => taffy::style::AlignContent::SPACE_BETWEEN,
+            JsAlignContent::SpaceAround => taffy::style::AlignContent::SPACE_AROUND,
+            JsAlignContent::SpaceEvenly => taffy::style::AlignContent::SPACE_EVENLY,
+            JsAlignContent::SafeStart => taffy::style::AlignContent::SAFE_START,
+            JsAlignContent::SafeEnd => taffy::style::AlignContent::SAFE_END,
+            JsAlignContent::SafeFlexStart => taffy::style::AlignContent::SAFE_FLEX_START,
+            JsAlignContent::SafeFlexEnd => taffy::style::AlignContent::SAFE_FLEX_END,
+            JsAlignContent::SafeCenter => taffy::style::AlignContent::SAFE_CENTER,
         }
     }
 }
 
 impl From<taffy::style::AlignContent> for JsAlignContent {
     fn from(val: taffy::style::AlignContent) -> Self {
-        match val {
-            taffy::style::AlignContent::Start => JsAlignContent::Start,
-            taffy::style::AlignContent::End => JsAlignContent::End,
-            taffy::style::AlignContent::FlexStart => JsAlignContent::FlexStart,
-            taffy::style::AlignContent::FlexEnd => JsAlignContent::FlexEnd,
-            taffy::style::AlignContent::Center => JsAlignContent::Center,
-            taffy::style::AlignContent::Stretch => JsAlignContent::Stretch,
-            taffy::style::AlignContent::SpaceBetween => JsAlignContent::SpaceBetween,
-            taffy::style::AlignContent::SpaceAround => JsAlignContent::SpaceAround,
-            taffy::style::AlignContent::SpaceEvenly => JsAlignContent::SpaceEvenly,
+        use taffy::style::{AlignContentKeyword as Keyword, AlignmentSafety as Safety};
+
+        match (val.keyword, val.safety) {
+            (Keyword::Start, Safety::Unsafe) => JsAlignContent::Start,
+            (Keyword::End, Safety::Unsafe) => JsAlignContent::End,
+            (Keyword::FlexStart, Safety::Unsafe) => JsAlignContent::FlexStart,
+            (Keyword::FlexEnd, Safety::Unsafe) => JsAlignContent::FlexEnd,
+            (Keyword::Center, Safety::Unsafe) => JsAlignContent::Center,
+            (Keyword::Start, Safety::Safe) => JsAlignContent::SafeStart,
+            (Keyword::End, Safety::Safe) => JsAlignContent::SafeEnd,
+            (Keyword::FlexStart, Safety::Safe) => JsAlignContent::SafeFlexStart,
+            (Keyword::FlexEnd, Safety::Safe) => JsAlignContent::SafeFlexEnd,
+            (Keyword::Center, Safety::Safe) => JsAlignContent::SafeCenter,
+            (Keyword::Stretch, _) => JsAlignContent::Stretch,
+            (Keyword::SpaceBetween, _) => JsAlignContent::SpaceBetween,
+            (Keyword::SpaceAround, _) => JsAlignContent::SpaceAround,
+            (Keyword::SpaceEvenly, _) => JsAlignContent::SpaceEvenly,
         }
     }
 }
@@ -459,36 +665,58 @@ pub enum JsJustifyContent {
     SpaceAround = 7,
     /// Items evenly distributed with equal space between each
     SpaceEvenly = 8,
+    /// Safe start alignment that avoids start-edge overflow
+    SafeStart = 9,
+    /// Safe end alignment that avoids start-edge overflow
+    SafeEnd = 10,
+    /// Safe flex-start alignment that avoids start-edge overflow
+    SafeFlexStart = 11,
+    /// Safe flex-end alignment that avoids start-edge overflow
+    SafeFlexEnd = 12,
+    /// Safe center alignment that avoids start-edge overflow
+    SafeCenter = 13,
 }
 
 impl From<JsJustifyContent> for taffy::style::JustifyContent {
     fn from(val: JsJustifyContent) -> Self {
         match val {
-            JsJustifyContent::Start => taffy::style::JustifyContent::Start,
-            JsJustifyContent::End => taffy::style::JustifyContent::End,
-            JsJustifyContent::FlexStart => taffy::style::JustifyContent::FlexStart,
-            JsJustifyContent::FlexEnd => taffy::style::JustifyContent::FlexEnd,
-            JsJustifyContent::Center => taffy::style::JustifyContent::Center,
-            JsJustifyContent::Stretch => taffy::style::JustifyContent::Stretch,
-            JsJustifyContent::SpaceBetween => taffy::style::JustifyContent::SpaceBetween,
-            JsJustifyContent::SpaceAround => taffy::style::JustifyContent::SpaceAround,
-            JsJustifyContent::SpaceEvenly => taffy::style::JustifyContent::SpaceEvenly,
+            JsJustifyContent::Start => taffy::style::JustifyContent::START,
+            JsJustifyContent::End => taffy::style::JustifyContent::END,
+            JsJustifyContent::FlexStart => taffy::style::JustifyContent::FLEX_START,
+            JsJustifyContent::FlexEnd => taffy::style::JustifyContent::FLEX_END,
+            JsJustifyContent::Center => taffy::style::JustifyContent::CENTER,
+            JsJustifyContent::Stretch => taffy::style::JustifyContent::STRETCH,
+            JsJustifyContent::SpaceBetween => taffy::style::JustifyContent::SPACE_BETWEEN,
+            JsJustifyContent::SpaceAround => taffy::style::JustifyContent::SPACE_AROUND,
+            JsJustifyContent::SpaceEvenly => taffy::style::JustifyContent::SPACE_EVENLY,
+            JsJustifyContent::SafeStart => taffy::style::JustifyContent::SAFE_START,
+            JsJustifyContent::SafeEnd => taffy::style::JustifyContent::SAFE_END,
+            JsJustifyContent::SafeFlexStart => taffy::style::JustifyContent::SAFE_FLEX_START,
+            JsJustifyContent::SafeFlexEnd => taffy::style::JustifyContent::SAFE_FLEX_END,
+            JsJustifyContent::SafeCenter => taffy::style::JustifyContent::SAFE_CENTER,
         }
     }
 }
 
 impl From<taffy::style::JustifyContent> for JsJustifyContent {
     fn from(val: taffy::style::JustifyContent) -> Self {
-        match val {
-            taffy::style::JustifyContent::Start => JsJustifyContent::Start,
-            taffy::style::JustifyContent::End => JsJustifyContent::End,
-            taffy::style::JustifyContent::FlexStart => JsJustifyContent::FlexStart,
-            taffy::style::JustifyContent::FlexEnd => JsJustifyContent::FlexEnd,
-            taffy::style::JustifyContent::Center => JsJustifyContent::Center,
-            taffy::style::JustifyContent::Stretch => JsJustifyContent::Stretch,
-            taffy::style::JustifyContent::SpaceBetween => JsJustifyContent::SpaceBetween,
-            taffy::style::JustifyContent::SpaceAround => JsJustifyContent::SpaceAround,
-            taffy::style::JustifyContent::SpaceEvenly => JsJustifyContent::SpaceEvenly,
+        use taffy::style::{AlignContentKeyword as Keyword, AlignmentSafety as Safety};
+
+        match (val.keyword, val.safety) {
+            (Keyword::Start, Safety::Unsafe) => JsJustifyContent::Start,
+            (Keyword::End, Safety::Unsafe) => JsJustifyContent::End,
+            (Keyword::FlexStart, Safety::Unsafe) => JsJustifyContent::FlexStart,
+            (Keyword::FlexEnd, Safety::Unsafe) => JsJustifyContent::FlexEnd,
+            (Keyword::Center, Safety::Unsafe) => JsJustifyContent::Center,
+            (Keyword::Start, Safety::Safe) => JsJustifyContent::SafeStart,
+            (Keyword::End, Safety::Safe) => JsJustifyContent::SafeEnd,
+            (Keyword::FlexStart, Safety::Safe) => JsJustifyContent::SafeFlexStart,
+            (Keyword::FlexEnd, Safety::Safe) => JsJustifyContent::SafeFlexEnd,
+            (Keyword::Center, Safety::Safe) => JsJustifyContent::SafeCenter,
+            (Keyword::Stretch, _) => JsJustifyContent::Stretch,
+            (Keyword::SpaceBetween, _) => JsJustifyContent::SpaceBetween,
+            (Keyword::SpaceAround, _) => JsJustifyContent::SpaceAround,
+            (Keyword::SpaceEvenly, _) => JsJustifyContent::SpaceEvenly,
         }
     }
 }
@@ -499,8 +727,10 @@ impl From<taffy::style::JustifyContent> for JsJustifyContent {
 
 /// Overflow handling enumeration
 ///
-/// Defines how content that exceeds the container boundaries is handled.
+/// Controls overflow sizing, automatic minimum sizes, and scrollbar space.
 /// This corresponds to the CSS `overflow` property.
+/// Taffy computes layout only; clipping, drawing, and scrolling are implemented
+/// by the renderer consuming the layout.
 ///
 /// @example
 /// ```typescript
@@ -512,13 +742,13 @@ impl From<taffy::style::JustifyContent> for JsJustifyContent {
 #[wasm_bindgen(js_name = Overflow)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsOverflow {
-    /// Content is not clipped and may render outside the container
+    /// Visible overflow semantics; retain content-based automatic minimum sizes
     Visible = 0,
-    /// Content is clipped at the container boundary, but unlike Hidden, this forbids all scrolling
+    /// Clipped, non-scrollable overflow semantics; retain content-based automatic minimum sizes
     Clip = 1,
-    /// Content is clipped at the container boundary
+    /// Hidden overflow semantics; allow the automatic minimum size to shrink to zero
     Hidden = 2,
-    /// Always display scrollbars for scrollable content
+    /// Reserve scrollbar space using scrollbarWidth and allow zero automatic minimum sizes
     Scroll = 3,
 }
 
@@ -691,3 +921,139 @@ impl From<taffy::style::GridAutoFlow> for JsGridAutoFlow {
         }
     }
 }
+
+pub(crate) trait CheckedJsEnum: Sized {
+    fn from_repr(value: u8) -> Option<Self>;
+}
+
+macro_rules! impl_checked_js_enum {
+    ($enum:ident { $($variant:ident),+ $(,)? }) => {
+        impl CheckedJsEnum for $enum {
+            fn from_repr(value: u8) -> Option<Self> {
+                match value {
+                    $(value if value == $enum::$variant as u8 => Some($enum::$variant),)+
+                    _ => None,
+                }
+            }
+        }
+    };
+}
+
+impl_checked_js_enum!(JsDisplay {
+    Block,
+    Flex,
+    Grid,
+    None,
+    FlowRoot
+});
+impl_checked_js_enum!(JsPosition { Relative, Absolute });
+impl_checked_js_enum!(JsDirection { Ltr, Rtl });
+impl_checked_js_enum!(JsFloat { Left, Right, None });
+impl_checked_js_enum!(JsClear {
+    Left,
+    Right,
+    Both,
+    None
+});
+impl_checked_js_enum!(JsFlexDirection {
+    Row,
+    Column,
+    RowReverse,
+    ColumnReverse
+});
+impl_checked_js_enum!(JsFlexWrap {
+    NoWrap,
+    Wrap,
+    WrapReverse
+});
+impl_checked_js_enum!(JsAlignItems {
+    Start,
+    End,
+    FlexStart,
+    FlexEnd,
+    Center,
+    Baseline,
+    Stretch,
+    SelfStart,
+    SelfEnd,
+    SafeStart,
+    SafeEnd,
+    SafeFlexStart,
+    SafeFlexEnd,
+    SafeCenter,
+    SafeSelfStart,
+    SafeSelfEnd
+});
+impl_checked_js_enum!(JsAlignSelf {
+    Auto,
+    Start,
+    End,
+    FlexStart,
+    FlexEnd,
+    Center,
+    Baseline,
+    Stretch,
+    SelfStart,
+    SelfEnd,
+    SafeStart,
+    SafeEnd,
+    SafeFlexStart,
+    SafeFlexEnd,
+    SafeCenter,
+    SafeSelfStart,
+    SafeSelfEnd
+});
+impl_checked_js_enum!(JsAlignContent {
+    Start,
+    End,
+    FlexStart,
+    FlexEnd,
+    Center,
+    Stretch,
+    SpaceBetween,
+    SpaceAround,
+    SpaceEvenly,
+    SafeStart,
+    SafeEnd,
+    SafeFlexStart,
+    SafeFlexEnd,
+    SafeCenter
+});
+impl_checked_js_enum!(JsJustifyContent {
+    Start,
+    End,
+    FlexStart,
+    FlexEnd,
+    Center,
+    Stretch,
+    SpaceBetween,
+    SpaceAround,
+    SpaceEvenly,
+    SafeStart,
+    SafeEnd,
+    SafeFlexStart,
+    SafeFlexEnd,
+    SafeCenter
+});
+impl_checked_js_enum!(JsOverflow {
+    Visible,
+    Clip,
+    Hidden,
+    Scroll
+});
+impl_checked_js_enum!(JsBoxSizing {
+    BorderBox,
+    ContentBox
+});
+impl_checked_js_enum!(JsTextAlign {
+    Auto,
+    LegacyLeft,
+    LegacyRight,
+    LegacyCenter
+});
+impl_checked_js_enum!(JsGridAutoFlow {
+    Row,
+    Column,
+    RowDense,
+    ColumnDense
+});

@@ -38,14 +38,19 @@ tree.computeLayout(root, {
   height: 60,
 });
 
-console.log(`子 1 (収縮なし): 200px, 子 2 (収縮: 1): 200px (収縮します)`);
+const firstLayout = tree.getLayout(child1);
+const secondLayout = tree.getLayout(child2);
+console.log(`子 1: ${firstLayout.width}px, 子 2: ${secondLayout.width}px`);
+// 子 1: 200px, 子 2: 80px
+firstLayout.free();
+secondLayout.free();
 
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
 ## クイックノート
 
-- デフォルト値は `1` です。これは、デフォルトでオーバーフローを防ぐためにアイテムが収縮することを意味します。
+- デフォルト値は `1` です。収縮量は係数とフレックス基準サイズに応じて分配されます。自動最小サイズや `minSize` に制限されるため、必ずコンテナ内に収まるとは限りません。
 - `0` に設定すると、アイテムの収縮を防ぐことができます。
 
 ## 次のステップ

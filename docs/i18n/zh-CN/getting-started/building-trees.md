@@ -9,15 +9,15 @@ Taffy 中的布局以节点树的形式表示。每个节点都有一个 `Style`
 
 ## 关键操作
 
-| 操作             | 方法                                            | 描述                                       |
-| :--------------- | :---------------------------------------------- | :----------------------------------------- |
-| **创建叶子节点** | `tree.newLeaf(style)`                           | 创建一个没有子节点的节点（如文本、图像）。 |
-| **创建父节点**   | `tree.newWithChildren(style, children[])`       | 创建一个带有初始子节点的节点。             |
-| **添加子节点**   | `tree.addChild(parent, child)`                  | 将子节点追加到父节点。                     |
-| **插入子节点**   | `tree.insertChildAtIndex(parent, index, child)` | 在特定位置插入子节点。                     |
-| **删除子节点**   | `tree.removeChild(parent, child)`               | 删除特定的子节点。                         |
-| **获取样式**     | `tree.getStyle(node)`                           | 检索节点的样式对象。                       |
-| **设置样式**     | `tree.setStyle(node, style)`                    | 更新节点的样式。                           |
+| 操作               | 方法                                            | 描述                                       |
+| :----------------- | :---------------------------------------------- | :----------------------------------------- |
+| **创建叶子节点**   | `tree.newLeaf(style)`                           | 创建一个没有子节点的节点（如文本、图像）。 |
+| **创建父节点**     | `tree.newWithChildren(style, children[])`       | 创建一个带有初始子节点的节点。             |
+| **添加子节点**     | `tree.addChild(parent, child)`                  | 将子节点追加到父节点。                     |
+| **插入子节点**     | `tree.insertChildAtIndex(parent, index, child)` | 在特定位置插入子节点。                     |
+| **解除子节点关系** | `tree.removeChild(parent, child)`               | 从父节点移除子节点关系，子节点本身仍有效。 |
+| **获取样式**       | `tree.getStyle(node)`                           | 检索节点的样式对象。                       |
+| **设置样式**       | `tree.setStyle(node, style)`                    | 更新节点的样式。                           |
 
 ## 创建节点
 
@@ -73,9 +73,11 @@ tree.insertChildAtIndex(parent, 0, firstChild); // 索引: 0，之前的子节�
 const newChild = tree.newLeaf(new Style());
 tree.replaceChildAtIndex(parent, 1, newChild);
 
-// 删除子节点
+// 解除子节点与父节点的关系
 tree.removeChild(parent, firstChild);
 ```
+
+`removeChild()` 和 `setChildren()` 只更新父子关系，不删除节点。`remove(node)` 仅删除指定节点，并解除其直接子节点的父级关联；后代节点仍有效。`clear()` 才会清空整棵树。
 
 ## 更新样式
 

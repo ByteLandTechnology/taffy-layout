@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -99,25 +112,26 @@ test("i18n_zh-CN_README example 1", async () => {
 test("i18n_zh-CN_README example 2", async () => {
   const tree = new TaffyTree();
   const textStyle = new Style();
-  const rootNode = tree.newLeaf(new Style());
   const measureTextWidth = (text: string) => text.length * 8;
   const measureTextHeight = (text: string, width: number) => 20;
 
   const textNode = tree.newLeafWithContext(textStyle, {
     text: "Hello, World!",
   });
+  const rootNode = tree.newWithChildren(new Style(), [textNode]);
 
   tree.computeLayoutWithMeasure(
     rootNode,
     { width: 800, height: "max-content" },
     (known, available, node, context, style) => {
+      style.free(); // 本例不需要测量回调传入的独立样式副本
       if (context?.text) {
         // 在这里实现文本测量逻辑
-        const width = measureTextWidth(context.text);
-        const height = measureTextHeight(
-          context.text,
-          available.width as number,
-        );
+        const limit =
+          typeof available.width === "number" ? available.width : Infinity;
+        const width =
+          known.width ?? Math.min(measureTextWidth(context.text), limit);
+        const height = known.height ?? measureTextHeight(context.text, width);
         return { width, height };
       }
       return { width: 0, height: 0 };
@@ -172,6 +186,7 @@ test("i18n_zh-CN_README example 6", async () => {
   gridStyle.gridTemplateRowNames = [
     ["header-start"],
     ["header-end", "content-start"],
+    [],
     ["content-end", "footer-start"],
     ["footer-end"],
   ];

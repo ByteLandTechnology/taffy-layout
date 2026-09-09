@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -67,7 +80,7 @@ test("i18n_zh-CN_styling_flex-shrink example 1", async () => {
     height: 60,
   });
 
-  console.log(`子节点 1 (不收缩): 200px, 子节点 2 (收缩: 1): 200px (会被压缩)`);
+  console.log(`子节点 1 (不收缩): 200px, 子节点 2 (收缩: 1): 80px`);
 
   return <TaffyTreePreview tree={tree} root={root} />;
 });

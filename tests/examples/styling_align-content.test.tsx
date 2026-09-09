@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -45,7 +58,7 @@ test("styling_align-content example 1", async () => {
 
   const itemStyle = new Style({
     size: { width: 80, height: 30 },
-    margin: { bottom: 5 },
+    marginBottom: 5,
   });
 
   // Create enough children to force wrapping
@@ -54,7 +67,7 @@ test("styling_align-content example 1", async () => {
   const rootStyle = new Style({
     display: Display.Flex,
     flexDirection: FlexDirection.Row,
-    flexWrap: FlexWrap.Wrap, // Required for alignContent to work
+    flexWrap: FlexWrap.Wrap, // Enable line alignment in this Flexbox example
     size: { width: 200, height: 200 }, // Must have extra vertical space
 
     // CHANGE THIS TO TEST DIFFERENT VALUES

@@ -16,7 +16,7 @@ Taffy 开箱即用，但您可以根据性能、精度或资源约束进行调�
 ```tsx live
 // 初始化为可容纳 1,000 个节点
 const tree = TaffyTree.withCapacity(1000);
-console.log(`Initial Node Capacity: ${tree.totalNodeCount()}`); // 0 个实际节点
+console.log(`Initial Node Count: ${tree.totalNodeCount()}`); // 0 个实际节点
 
 const style = new Style({
   display: Display.Flex,
@@ -80,12 +80,16 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 内存管理
 
-尽管 Taffy 的 JavaScript 绑定使用 `FinalizationRegistry` 在 `TaffyTree` 对象被垃圾回收时自动清理 WASM 内存，但在频繁创建树的高性能应用（如游戏循环）中，仅依赖 GC 可能是不够的。
+在支持 `FinalizationRegistry` 的环境中，绑定会在 `TaffyTree`、`Style`、`Layout` 和 `TaffyError` 对象被回收后清理它们持有的 WASM 分配。回收时机不确定；没有 `FinalizationRegistry` 时不会自动执行这一步。
 
 为了防止 WASM 堆中的内存峰值或泄漏，您应该显式管理内存：
 
-- **重用（推荐）：** 使用 `.clear()` 重置树而不释放其内存分配。这非常适合游戏循环或递归布局，因为它避免了持续的分配开销。
+- **重用：** 使用 `.clear()` 清空节点结构并保留节点存储容量，减少重建树时的部分分配开销。
 - **销毁：** 如果您完全完成了树的使用并希望立即释放其内存，请使用 `.free()`。
+
+`clear()` 重置节点结构并保留容量，不是释放所有资源的替代品。当前引擎在 `clear()` / `remove()` 时可能仍保留已关联的 context 引用；需要释放整棵树持有的这些引用时，使用 `tree.free()`。
+
+创建节点或调用 `setStyle()` 后，树已经复制了样式，可以释放不再使用的输入 `Style`。`getStyle()`、`getLayout()` 和测量回调中的样式都是独立对象，也应在使用完毕后调用 `.free()`；释放树不会释放这些仍由 JavaScript 持有的副本。释放后的对象不能再次使用。
 
 ```ts
 const tree = new TaffyTree();
@@ -93,7 +97,7 @@ const tree = new TaffyTree();
 // ... 使用树 ...
 
 // 选项 1：重用树（推荐）
-// 清除所有节点但保持已分配的内存
+// 清除所有节点并保留节点存储容量
 tree.clear();
 
 // 选项 2：完全释放

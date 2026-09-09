@@ -62,6 +62,23 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
+## 命名区域与模板尺寸
+
+`gridTemplateAreas` 是命名区域数组。`rowStart` / `columnStart` 从 `1` 开始，`rowEnd` / `columnEnd` 是不包含在区域内的结束网格线。只设置数组时，模板行列数由区域的最大结束位置推断。
+
+```typescript
+const style = new Style({
+  display: Display.Grid,
+  gridTemplateAreas: [
+    { name: "main", rowStart: 1, rowEnd: 2, columnStart: 1, columnEnd: 2 },
+  ],
+  gridTemplateAreaRowCount: 2,
+  gridTemplateAreaColumnCount: 3,
+});
+```
+
+此模板包含 `2` 行 `3` 列，未命名的单元格相当于 CSS 中的 `.`。显式行列数是最小值，读回的有效尺寸不会小于当前命名区域的范围。替换或清空数组会重新推断范围，只有通过两个 count 属性显式设置的最小值会保留；将某个 count 设为 `0` 可清除该轴的显式最小值。`getStyle()`、`setStyle()` 和测量回调的样式副本都保留这一区别。
+
 ## 后续步骤
 
 - [网格模板 (Grid Templates)](./grid-templates.md)

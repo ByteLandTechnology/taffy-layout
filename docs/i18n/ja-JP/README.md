@@ -10,7 +10,7 @@ WebAssembly で高速に動作する [Taffy](https://github.com/DioxusLabs/taffy
 ## 特徴
 
 - **🚀 高性能**：WebAssembly によるレイアウト計算
-- **📦 充実の CSS 対応**：Flexbox と CSS Grid を実装
+- **📦 レイアウトアルゴリズム**：Flexbox、CSS Grid、Block、FlowRoot に対応
 - **🔧 カスタム計測**：テキスト/コンテンツ計測用コールバックに対応
 - **📝 TypeScript 対応**：型定義を同梱
 - **🌳 ツリー型 API**：複雑な階層構造にも効率的
@@ -88,7 +88,16 @@ console.log(
 console.log(
   `Child 2: ${child2Layout.width}x${child2Layout.height} at (${child2Layout.x}, ${child2Layout.y})`,
 );
+
+containerLayout.free();
+child1Layout.free();
+child2Layout.free();
+containerStyle.free();
+childStyle.free();
+tree.free();
 ```
+
+`Style` はツリーへコピーされ、`getStyle()` / `getLayout()` は独立した所有オブジェクトを返します。使用後はそれぞれ `.free()` で解放します。詳細は[メモリ管理](getting-started/configuration.md#メモリ管理)を参照してください。
 
 ## ドキュメント
 
@@ -134,52 +143,68 @@ console.log(
 ```typescript
 const tree = new TaffyTree();
 const textStyle = new Style();
-const rootNode = tree.newLeaf(new Style());
-const measureTextWidth = (text: string) => text.length * 8;
-const measureTextHeight = (text: string, width: number) => 20;
+// 簡略化した等幅・文字単位折り返しの測定例（1文字8px、1行20px）
 
 const textNode = tree.newLeafWithContext(textStyle, { text: "Hello, World!" });
+const rootStyle = new Style();
+const rootNode = tree.newWithChildren(rootStyle, [textNode]);
+textStyle.free();
+rootStyle.free();
 
 tree.computeLayoutWithMeasure(
   rootNode,
   { width: 800, height: "max-content" },
   (known, available, node, context, style) => {
-    if (context?.text) {
-      // ここに独自のテキスト計測ロジックを実装
-      const width = measureTextWidth(context.text);
-      const height = measureTextHeight(context.text, available.width as number);
-      return { width, height };
-    }
-    return { width: 0, height: 0 };
+    style.free(); // 第5引数は所有コピー。この例では読み取る必要はありません
+    const text = typeof context?.text === "string" ? context.text : "";
+    const naturalWidth = text.length * 8;
+    const limit =
+      typeof available.width === "number"
+        ? Math.max(0, available.width)
+        : available.width === "min-content"
+          ? Math.min(8, naturalWidth)
+          : naturalWidth;
+    const width = known.width ?? Math.min(naturalWidth, limit);
+    const columns = Math.max(1, Math.floor(width / 8));
+    const height = known.height ?? Math.ceil(text.length / columns) * 20;
+    return { width, height };
   },
 );
+
+const textLayout = tree.getLayout(textNode);
+console.log(`Text: ${textLayout.width}x${textLayout.height}`); // Text: 104x20
+textLayout.free();
+tree.free();
 ```
 
 ## エラーハンドリング
 
-失敗する可能性のあるメソッドは `TaffyError` をスローします。try-catch で処理してください。
+検査済みエラーを返すメソッドの `TaffyError` は try-catch で処理できます。ノード ID は同じツリーに属し、現在も有効である必要があります。無効な ID は WebAssembly panic になる場合もあります。[エラー処理](advanced/error-handling.md)も参照してください。
 
 ```typescript
+import { TaffyTree, Style, TaffyError } from "taffy-layout";
+
+const tree = new TaffyTree();
+const style = new Style();
+const nodeId = tree.newLeaf(style);
+style.free();
 try {
-  const tree = new TaffyTree();
-  const style = new Style();
-  const nodeId = tree.newLeaf(style);
-  console.log("Created node:", nodeId);
+  tree.getChildAtIndex(nodeId, 0); // 有効な親ですが子がないため範囲外
 } catch (e) {
   if (e instanceof TaffyError) {
     console.error("Error:", e.message);
+    e.free();
+  } else {
+    throw e;
   }
+} finally {
+  tree.free();
 }
 ```
 
 ## ブラウザ対応
 
-WebAssembly をサポートするモダンブラウザで動作します。
-
-- Chrome 57+
-- Firefox 52+
-- Safari 11+
-- Edge 16+
+WebAssembly reference types、JavaScript と WebAssembly 間の BigInt 連携、および ES Modules に対応するブラウザが必要です。基本的な WebAssembly 対応だけでは現在のバインディングを実行できません。
 
 ## サンプル
 
@@ -225,6 +250,7 @@ gridStyle.gridTemplateAreas = [
 gridStyle.gridTemplateRowNames = [
   ["header-start"],
   ["header-end", "content-start"],
+  [],
   ["content-end", "footer-start"],
   ["footer-end"],
 ];
@@ -260,10 +286,15 @@ imgStyle.size = { width: "100%", height: "auto" };
 
 ## ソースからのビルド
 
+開発ツールには Node.js `22.14` 以降の `22.x`、または `24.10` 以降が必要です（リリースツールの要件）。Rust は `1.85` 以降と `wasm32-unknown-unknown` ターゲットを使用します。公開パッケージを利用するだけなら Node.js `18` 以降です。
+
 ```bash
 # リポジトリを取得
 git clone https://github.com/ByteLandTechnology/taffy-layout.git
 cd taffy-layout
+
+# WebAssembly ターゲットを追加
+rustup target add wasm32-unknown-unknown
 
 # 依存関係をインストール
 npm install

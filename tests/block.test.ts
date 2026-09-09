@@ -1,6 +1,14 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { setupTaffy } from "./utils";
-import { TaffyTree, Style, Display, TextAlign } from "../src/index";
+import {
+  TaffyTree,
+  Style,
+  Display,
+  TextAlign,
+  AlignContent,
+  Clear,
+  Float,
+} from "../src/index";
 
 describe("Block Style Properties", () => {
   beforeAll(async () => {
@@ -499,5 +507,46 @@ describe("Block Layout Computation", () => {
       rootStyle.free();
       childStyle.free();
     });
+  });
+});
+
+describe("Float clearance and content alignment", () => {
+  beforeAll(setupTaffy);
+
+  it("contains floats in a flow root and applies clear", () => {
+    const tree = new TaffyTree();
+    const floated = tree.newLeaf(
+      new Style({ float: Float.Left, width: 20, height: 30 }),
+    );
+    const cleared = tree.newLeaf(
+      new Style({ clear: Clear.Both, width: 30, height: 10 }),
+    );
+    const root = tree.newWithChildren(
+      new Style({ display: Display.FlowRoot, width: 100 }),
+      [floated, cleared],
+    );
+
+    tree.computeLayout(root, { width: 100, height: "max-content" });
+
+    expect(tree.getLayout(floated).y).toBe(0);
+    expect(tree.getLayout(cleared).y).toBe(30);
+    expect(tree.getLayout(root).height).toBe(40);
+  });
+
+  it("applies align-content to block layout", () => {
+    const tree = new TaffyTree();
+    const child = tree.newLeaf(new Style({ width: 20, height: 20 }));
+    const root = tree.newWithChildren(
+      new Style({
+        display: Display.Block,
+        alignContent: AlignContent.Center,
+        width: 100,
+        height: 100,
+      }),
+      [child],
+    );
+
+    tree.computeLayout(root, { width: 100, height: 100 });
+    expect(tree.getLayout(child).y).toBe(40);
   });
 });

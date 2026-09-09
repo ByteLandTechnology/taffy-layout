@@ -13,9 +13,9 @@ Taffy は、Rust で書かれ WebAssembly にコンパイルされた高性能�
 
 Taffy は Rust で書かれ WebAssembly にコンパイルされているため、純粋な JavaScript 実装よりもネイティブコードに近いパフォーマンス特性を持ちます。
 
-### 完全な CSS サポート
+### CSS レイアウトアルゴリズム
 
-Taffy は CSS Flexbox と CSS Grid レイアウトエンジンの両方を、Web ブラウザと完全な互換性を持って実装しています。
+Taffy は Flexbox、CSS Grid、ブロックレイアウトを提供します。JavaScript バインディングで利用できるプロパティと値は API リファレンスを参照してください。テキストの測定と描画はアプリケーションが担当します。
 
 ### ツリーベース API
 

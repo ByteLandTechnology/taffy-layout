@@ -45,7 +45,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## クイックノート
 
-- `flexBasis` は `auto` のサイジングに影響を与えます。
+- `flexBasis` のデフォルトは `"auto"` で、主軸の `width` / `height` またはコンテンツから基準サイズを決めます。数値やパーセントを指定すると、主軸の `size` より先にフレックス基準サイズとして使われます。
 - `width`（または `flexDirection` によっては `height`）に似ていますが、flex アイテムに固有のものです。
 
 ## 次のステップ

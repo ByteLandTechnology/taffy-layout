@@ -62,6 +62,21 @@ tree.computeLayout(root, { width: 200, height: 200 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
+## Inspecting Computed Tracks
+
+After computing layout, `tree.detailedLayoutInfo(node)` returns Grid details, or `null` for a node without Grid details. The returned `rows` and `columns` objects contain:
+
+- `negativeImplicitTracks`, `explicitTracks`, and `positiveImplicitTracks`: the counts before, within, and after the explicit grid.
+- `positions`: each track's `{ start, end }` coordinates relative to the container's border box. They include border, padding, gaps, and content alignment offsets.
+- `sizes`: each track's `end - start` size.
+- `gutters`: actual distances between adjacent tracks, including any extra space distributed by content alignment. The array has one more entry than `sizes`, with `0` at both ends; an empty axis has `gutters: [0]`.
+
+All three arrays use logical track order: top-to-bottom for rows, left-to-right for LTR columns, and right-to-left for RTL columns. Each position still stores physical left/top in `start` and physical right/bottom in `end`. Collapsed auto-fit tracks remain in the arrays with zero size.
+
+`items` contains one-based row and column line numbers relative to the full grid, including implicit tracks. These line numbers follow the same logical direction as the track arrays. Use `positions` when drawing a Grid overlay; the first track can begin away from the container edge even though the first gutter is `0`.
+
+Read these details after laying out a current Grid container with children. The method returns the last stored Grid details: changing the node to another display mode or removing its children can leave earlier details in place, even after recomputing. A node that has never produced Grid details returns `null`. Detailed track coordinates remain unrounded when normal layout rounding is enabled.
+
 ## Next Steps
 
 - [Grid Templates](./grid-templates.md)

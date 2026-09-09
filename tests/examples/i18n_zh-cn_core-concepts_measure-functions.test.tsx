@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -47,7 +60,10 @@ test("i18n_zh-CN_core-concepts_measure-functions example 1", async () => {
   // 此节点没有固定尺寸，因此 Taffy 将询问测量函数
   style.size = { width: "auto", height: "auto" };
 
-  const measuredNode = tree.newLeaf(style);
+  const measuredNode = tree.newLeafWithContext(style, {
+    width: 150,
+    height: 50,
+  });
 
   const rootStyle = new Style();
   rootStyle.display = Display.Flex;
@@ -61,20 +77,27 @@ test("i18n_zh-CN_core-concepts_measure-functions example 1", async () => {
   tree.computeLayoutWithMeasure(
     root,
     { width: 300, height: 100 },
-    (knownDims, availableSpace) => {
-      // 1. 检查是否有已知尺寸（样式覆盖）
+    (knownDims, availableSpace, node, context, measuredStyle) => {
+      measuredStyle.free(); // 本例只使用上下文，不需要样式副本
+      // 1. 使用本次测量提供的尺寸提示（本例没有 padding 或 border）
       // 2. 否则，基于可用空间或内容固有尺寸计算
+      const contentWidth = context?.width ?? 150;
+      const contentHeight = context?.height ?? 50;
       const width =
         knownDims.width ??
         (typeof availableSpace.width === "number"
-          ? Math.min(availableSpace.width, 150)
-          : 150);
+          ? Math.min(availableSpace.width, contentWidth)
+          : contentWidth);
 
-      const height = knownDims.height ?? 50;
+      const height = knownDims.height ?? contentHeight;
 
       return { width, height };
     },
   );
+
+  const measuredLayout = tree.getLayout(measuredNode);
+  const measuredSize = measuredLayout.size;
+  measuredLayout.free();
 
   return (
     <div style={{ display: "flex", gap: 10 }}>
@@ -82,8 +105,7 @@ test("i18n_zh-CN_core-concepts_measure-functions example 1", async () => {
       <div style={{ padding: 10, background: "#f0f0f0", borderRadius: 4 }}>
         <strong>Measured Size:</strong>
         <br />
-        {tree.getLayout(measuredNode).width} x{" "}
-        {tree.getLayout(measuredNode).height}
+        {measuredSize.width} x {measuredSize.height}
       </div>
     </div>
   );

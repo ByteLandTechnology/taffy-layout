@@ -7,15 +7,17 @@ sidebar_position: 2
 
 **例外と無効な状態を安全に処理します。**
 
-Taffy の操作は通常エラーをスローしませんが、無効な API 使用（存在しないノードへのアクセスなど）により `TaffyError` が発生する可能性があります。
+ツリーのメソッドには、同じツリーで作成され、現在も有効なノード ID を渡してください。`remove()` や `clear()` 後の古い ID、別のツリーの ID は使わないでください。無効な ID の検査は一律ではなく、WebAssembly panic になる経路もあるため、必ず `TaffyError` として捕捉できるとは限りません。
+
+検査済みのエラーを返すメソッドでは、それを `TaffyError` に変換します。有効な親ノードに対して子のインデックスが範囲外の場合などが該当します。
+
+測定コールバックの例外は別扱いで、現在のバインディングでは呼び出し元へ再送出されず測定値ゼロにフォールバックします。コールバック内で失敗を記録し、`computeLayoutWithMeasure()` の終了後に確認してください。
 
 ## 一般的なエラーシナリオ
 
-| エラー型                    | 原因                                                             | 解決策                                                           |
-| :-------------------------- | :--------------------------------------------------------------- | :--------------------------------------------------------------- |
-| **`InvalidInputNode`**      | 解放されたまたは存在しなかったノード ID にアクセスする。         | ノード ID が有効なアクティブなノードと一致することを確認します。 |
-| **`ChildIndexOutOfBounds`** | `childCount` 以上のインデックスで `getChildAtIndex` を呼び出す。 | アクセス前に `childCount` をチェックします。                     |
-| **`InvalidParentNode`**     | 親にアタッチされていない子を削除する。                           | ツリー構造を慎重に追跡します。                                   |
+| エラー型                    | 原因                                                             | 解決策                                       |
+| :-------------------------- | :--------------------------------------------------------------- | :------------------------------------------- |
+| **`ChildIndexOutOfBounds`** | `childCount` 以上のインデックスで `getChildAtIndex` を呼び出す。 | アクセス前に `childCount` をチェックします。 |
 
 ## ベストプラクティス
 
@@ -25,17 +27,20 @@ Taffy の操作は通常エラーをスローしませんが、無効な API 使
 import { TaffyTree, Style, TaffyError } from "taffy-layout";
 
 const tree = new TaffyTree();
-const someNodeId = tree.newLeaf(new Style());
+const parentNode = tree.newLeaf(new Style());
 
 try {
-  // 例：無効な可能性があるノードにアクセスしようとする
-  const layout = tree.getLayout(someNodeId);
+  // 親は有効ですが子がないため、インデックス 0 は範囲外です
+  tree.getChildAtIndex(parentNode, 0);
 } catch (e) {
   if (e instanceof TaffyError) {
     console.error(`Taffy Layout Error: ${e.message}`);
+    e.free();
   } else {
     throw e;
   }
+} finally {
+  tree.free();
 }
 ```
 
@@ -49,7 +54,7 @@ const parentNode = tree.newLeaf(new Style());
 const index = 0;
 
 const count = tree.childCount(parentNode);
-if (index < count) {
+if (Number.isInteger(index) && index >= 0 && index < count) {
   const child = tree.getChildAtIndex(parentNode, index);
   // ... 子を安全に使用
 }

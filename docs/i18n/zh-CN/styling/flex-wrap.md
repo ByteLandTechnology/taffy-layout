@@ -9,6 +9,8 @@ sidebar_position: 9
 
 `flexWrap` 属性控制当子元素在主轴方向的单行中放不下时的行为。
 
+下表的上下方向以 `FlexDirection.Row` 为例。换行沿交叉轴进行：列布局会产生左右排列的列，并受 `direction` 影响；`WrapReverse` 反转交叉轴的排列方向。
+
 ## 取值
 
 | 值                | 描述                                                                                    |
@@ -24,7 +26,8 @@ const tree = new TaffyTree();
 
 const style = new Style({
   size: { width: 60, height: 40 },
-  margin: { bottom: 5, right: 5 },
+  marginBottom: 5,
+  marginRight: 5,
 });
 
 // 创建多个子元素以强制换行

@@ -12,7 +12,8 @@ type GridTemplateArea = {
 
 Named grid area definition.
 
-Defines a named area within the grid and its boundaries.
+Defines a named area within the grid and its boundaries. Line numbers start
+at 1 and end lines are exclusive.
 
 ## Properties
 

@@ -9,15 +9,15 @@ Layouts in Taffy are represented as a tree of nodes. Each node has a `Style`, an
 
 ## Key Operations
 
-| Operation         | Method                                          | Description                                         |
-| :---------------- | :---------------------------------------------- | :-------------------------------------------------- |
-| **Create Leaf**   | `tree.newLeaf(style)`                           | Create a node without children (e.g., text, image). |
-| **Create Parent** | `tree.newWithChildren(style, children[])`       | Create a node with initial children.                |
-| **Add Child**     | `tree.addChild(parent, child)`                  | Append a child to a parent.                         |
-| **Insert**        | `tree.insertChildAtIndex(parent, index, child)` | Insert a child at a specific position.              |
-| **Remove**        | `tree.removeChild(parent, child)`               | Remove a specific child.                            |
-| **Get Styles**    | `tree.getStyle(node)`                           | Retrieve the style object for a node.               |
-| **Set Styles**    | `tree.setStyle(node, style)`                    | Update the style for a node.                        |
+| Operation         | Method                                          | Description                                                         |
+| :---------------- | :---------------------------------------------- | :------------------------------------------------------------------ |
+| **Create Leaf**   | `tree.newLeaf(style)`                           | Create a node without children (e.g., text, image).                 |
+| **Create Parent** | `tree.newWithChildren(style, children[])`       | Create a node with initial children.                                |
+| **Add Child**     | `tree.addChild(parent, child)`                  | Append a child to a parent.                                         |
+| **Insert**        | `tree.insertChildAtIndex(parent, index, child)` | Insert a child at a specific position.                              |
+| **Detach Child**  | `tree.removeChild(parent, child)`               | Remove the parent-child relationship, keeping the child node alive. |
+| **Get Styles**    | `tree.getStyle(node)`                           | Retrieve the style object for a node.                               |
+| **Set Styles**    | `tree.setStyle(node, style)`                    | Update the style for a node.                                        |
 
 ## Creating Nodes
 
@@ -76,6 +76,8 @@ tree.replaceChildAtIndex(parent, 1, newChild);
 // Remove a child
 tree.removeChild(parent, firstChild);
 ```
+
+Removing or replacing a child relationship does not delete the detached node. `tree.remove(node)` deletes only the specified node and detaches its direct children; descendants remain valid nodes. `tree.clear()` removes all nodes from the tree.
 
 ## Updating Styles
 

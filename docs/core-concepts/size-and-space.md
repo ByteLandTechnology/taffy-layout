@@ -70,11 +70,12 @@ return (
 - `number`: absolute size (usually pixels)
 - `"min-content"`: minimum content size
 - `"max-content"`: maximum content size
-- `"auto"`: let layout decide
+
+`"auto"` is a style dimension value; it is not accepted as available space.
 
 ## Box Model
 
-Taffy behaves like `box-sizing: border-box`:
+Styles default to `BoxSizing.BorderBox`. Set `boxSizing` to `BoxSizing.ContentBox` to specify content dimensions instead:
 
 ```text
 ┌─────────────────────────┐
@@ -89,12 +90,13 @@ Taffy behaves like `box-sizing: border-box`:
 └─────────────────────────┘
 ```
 
-- `size` includes padding + border
+- With `BoxSizing.BorderBox`, style `size` includes padding and border
+- With `BoxSizing.ContentBox`, padding and border are added to style `size`
 - margin is external spacing
 
 ## Percentages
 
-Percent sizes are relative to the parent content box:
+Percent sizes resolve against the containing block when that dimension is definite. For ordinary in-flow Flexbox or Block children this is the parent's content box; Grid items use their grid area, and absolute positioning can establish a different containing rectangle.
 
 ```tsx live
 const tree = new TaffyTree();
@@ -121,9 +123,9 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Common Pitfalls
 
-- A root without size often results in 0 width/height for children
-- `auto` inside Flex means content-sized
-- `max-content` triggers measurement callbacks
+- Auto-sized nodes depend on their content, available space, and layout constraints
+- Flex growth, shrinkage, and alignment can change an auto-sized node's final size
+- Content measurement requires `computeLayoutWithMeasure()`; cached or already-known dimensions can skip the callback
 
 ## Next Steps
 

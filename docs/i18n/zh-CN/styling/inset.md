@@ -22,7 +22,7 @@ sidebar_position: 23
 
 ## 行为
 
-- **对于 `Position.Absolute`**：偏移量相对于*最近的已定位祖先*。
+- **对于 `Position.Absolute`**：由直接父布局容器定位，通常相对于父 padding box 的边缘；Grid 中指定网格线时还可限定定位区域。
 - **对于 `Position.Relative`**：偏移量相对于元素在流中的*正常位置*。
 
 ## 示例

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -43,7 +56,7 @@ const TaffyTreePreview = (_props: any) => null;
 test("i18n_ja-JP_getting-started_configuration example 1", async () => {
   // 1,000 ノードを収容できるように初期化
   const tree = TaffyTree.withCapacity(1000);
-  console.log(`Initial Node Capacity: ${tree.totalNodeCount()}`); // 実際のノードは 0
+  console.log(`Initial Node Count: ${tree.totalNodeCount()}`); // 実際のノードは 0
 
   const style = new Style({
     display: Display.Flex,
@@ -82,16 +95,18 @@ test("i18n_ja-JP_getting-started_configuration example 2", async () => {
 
   // 1. デフォルト（丸め有効）
   tree.computeLayout(root, { width: 150, height: 60 });
-  let layout1 = tree.getLayout(child1);
-  // layout1.width はアルゴリズムに応じて 51 または 50 に丸められる場合があります
+  const roundedLayout = tree.getLayout(child1);
+  // roundedLayout.width は整数になります。隣接する境界から幅を計算します。
+  roundedLayout.free();
 
   // 2. 丸めを無効化
   tree.disableRounding();
   tree.computeLayout(root, { width: 150, height: 60 });
-  layout1 = tree.getLayout(child1);
+  const layout1 = tree.getLayout(child1);
   // layout1.width は正確に 50.5 になります
 
   console.log(`Precise Width: ${layout1.width}`);
+  layout1.free();
 
   return <TaffyTreePreview tree={tree} root={root} />;
 });

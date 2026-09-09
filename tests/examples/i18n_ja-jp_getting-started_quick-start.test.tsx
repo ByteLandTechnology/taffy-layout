@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -77,4 +90,11 @@ test("i18n_ja-JP_getting-started_quick-start example 1", async () => {
 
   // 6. デバッグ：ツリー構造全体を出力
   console.log(tree.printTree(container));
+
+  // 7. 使用済みの所有オブジェクトを解放
+  containerLayout.free();
+  child1Layout.free();
+  containerStyle.free();
+  childStyle.free();
+  tree.free();
 });

@@ -7,18 +7,22 @@ sidebar_position: 13
 
 **Align items along the main axis.**
 
-The `justifyContent` property aligns items along the **main axis** (horizontal if `flexDirection` is `Row`; vertical if `Column`).
+The `justifyContent` property aligns Flexbox items along the **main axis** (horizontal if `flexDirection` is `Row`; vertical if `Column`). In Grid, it aligns the column tracks along the inline axis. The property is initially `undefined`; Flexbox uses flex-start alignment by default.
 
 ## Values
 
-| Value              | Description                                                                      |
-| :----------------- | :------------------------------------------------------------------------------- |
-| **`FlexStart`**    | **Default**. Items pack toward the start of the line.                            |
-| **`FlexEnd`**      | Items pack toward the end of the line.                                           |
-| **`Center`**       | Items are centered along the line.                                               |
-| **`SpaceBetween`** | Items are evenly distributed. First item at start, last item at end.             |
-| **`SpaceAround`**  | Items are evenly distributed with equal space around them.                       |
-| **`SpaceEvenly`**  | Items are evenly distributed with equal space between any two items (and edges). |
+| Value               | Description                                                                      |
+| :------------------ | :------------------------------------------------------------------------------- |
+| **`FlexStart`**     | **Default**. Items pack toward the start of the line.                            |
+| **`Start` / `End`** | Align to the logical start/end edge, independent of a reversed flex direction.   |
+| **`Stretch`**       | Stretch auto-sized Grid tracks; in Flexbox this behaves as flex-start.           |
+| **`FlexEnd`**       | Items pack toward the end of the line.                                           |
+| **`Center`**        | Items are centered along the line.                                               |
+| **`SpaceBetween`**  | Items are evenly distributed. First item at start, last item at end.             |
+| **`SpaceAround`**   | Items are evenly distributed with equal space around them.                       |
+| **`SpaceEvenly`**   | Items are evenly distributed with equal space between any two items (and edges). |
+
+`SafeStart`, `SafeEnd`, `SafeFlexStart`, `SafeFlexEnd`, and `SafeCenter` fall back to start alignment when the requested alignment would overflow before the start edge.
 
 ## Example
 
@@ -51,7 +55,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## API Reference
 
-- [JustifyContent Enum](../../api/enumerations/JustifyContent.md)
+- [JustifyContent Enum](../api/enumerations/JustifyContent.md)
 
 ## Next Steps
 

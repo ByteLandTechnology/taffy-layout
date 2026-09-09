@@ -19,8 +19,9 @@ sidebar_position: 4
 
 ## Key Rules
 
-- Parent: `flexDirection: column`
+- Parent: `flexDirection: FlexDirection.Column`, auto height, and a viewport-sized `minHeight`
 - Content: `flexGrow: 1`
+- Header and footer: `flexShrink: 0`
 
 ## Code
 
@@ -31,14 +32,15 @@ const tree = new TaffyTree();
 const pageStyle = new Style({
   display: Display.Flex,
   flexDirection: FlexDirection.Column,
-  size: { width: 300, height: 300 }, // Fixed height to simulate viewport
+  width: 300,
+  minHeight: 300, // Fill the viewport, while allowing taller content
 });
 
 const header = tree.newLeaf(
-  new Style({ size: { width: "100%", height: 50 }, margin: { bottom: 10 } }),
+  new Style({ width: "100%", height: 50, marginBottom: 10, flexShrink: 0 }),
 );
 const footer = tree.newLeaf(
-  new Style({ size: { width: "100%", height: 50 }, margin: { top: 10 } }),
+  new Style({ width: "100%", height: 50, marginTop: 10, flexShrink: 0 }),
 );
 
 // Content grows to fill space
@@ -56,7 +58,9 @@ tree.computeLayout(root, { width: 300, height: 300 });
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
+Here the empty content area grows to 180 pixels and the footer starts at `y: 250`. If the content needs 500 pixels of height, the page grows to 620 pixels and the footer moves to `y: 570`. Supply children or a [measure function](../core-concepts/measure-functions.md) for real content.
+
 ## Related Guides
 
-- **[Flex Grow](../styling/flex-basis-grow-shrink.md)**
+- **[Flex Grow](../styling/flex-grow.md)**
 - **[Size](../styling/size.md)**

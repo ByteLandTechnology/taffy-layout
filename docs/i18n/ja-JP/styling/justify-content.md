@@ -20,6 +20,8 @@ sidebar_position: 13
 | **`SpaceAround`**  | アイテムを均等に分布し、各アイテムの周りのスペースを等しくする。                      |
 | **`SpaceEvenly`**  | 任意の 2 つのアイテム間（および端）のスペースが等しくなるようにアイテムを均等に分布。 |
 
+Grid では列トラック全体の配置を制御します。`Start`、`End`、`Stretch`、および `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter` も使えます。安全な値は内容が収まらない場合に始端配置へ戻ります。未設定時の読み取り値は `undefined` で、表のデフォルト値は Flex レイアウトの動作を示します。
+
 ## 例
 
 ```tsx live
@@ -51,7 +53,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## API リファレンス
 
-- [JustifyContent 列挙型](../../api/enumerations/JustifyContent.md)
+- [JustifyContent 列挙型](../../../api/enumerations/JustifyContent.md)
 
 ## 次のステップ
 

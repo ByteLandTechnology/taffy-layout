@@ -36,8 +36,8 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Quick Notes
 
-- `margin` is a `Rect` containing `left`, `right`, `top`, `bottom`.
-- It accepts `Auto` to center content (like `margin: auto`).
+- `margin` requires all four `Rect` fields: `left`, `right`, `top`, and `bottom`. Use scalar properties such as `marginBottom` to set individual edges.
+- Edges accept numbers, percentage strings, or `"auto"`. Auto margins absorb available space according to the layout mode; for example, left and right auto margins can center a fixed-width block horizontally.
 
 ## Next Steps
 

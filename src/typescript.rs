@@ -33,9 +33,11 @@ const TS_APPEND_CONTENT: &'static str = r#"
  * This is passed to `computeLayout()` to define the container constraints.
  *
  * @remarks
- * - Use `number` when you have a fixed container size
- * - Use `"min-content"` to shrink-wrap to the minimum content size
- * - Use `"max-content"` to expand to fit all content without wrapping
+ * - Use `number` to offer a definite amount of space
+ * - Use `"min-content"` for an intrinsic minimum-content constraint
+ * - Use `"max-content"` for an intrinsic maximum-content constraint
+ * Available space does not override explicit sizes, min/max constraints, or
+ * Flexbox wrapping rules. It is not a guaranteed final size.
  *
  * @example
  * ```typescript
@@ -109,10 +111,24 @@ export type Size<T> = {
  * @param availableSpace - The available space constraints for the node. Can be definite
  *                         pixels, "min-content", or "max-content".
  * @param node - The node ID (`bigint`) of the node being measured
- * @param context - User-provided context attached to the node via `newLeafWithContext()`
- * @param style - The node's current Style configuration
+ * @param context - Value attached via `newLeafWithContext()` or `setNodeContext()`,
+ *                  or `undefined` when the node has no attached context
+ * @param style - An owned copy of the node's current Style; call `free()` when finished
  *
  * @returns - The measured size of the content in pixels
+ *
+ * @remarks
+ * Padding, borders, size constraints, and aspect ratios are applied by the layout
+ * engine around this content measurement. Available space is adjusted for the
+ * content box. Measurements may be cached, so the callback need not run for every
+ * node on every layout pass. Call `markDirty()` after changing measured content
+ * without changing its style or context.
+ * A context is optional; nodes created with `newLeaf()` can also be measured.
+ * Mutating an attached context object or changing the measurement function does
+ * not invalidate cached measurements; mark the affected nodes dirty first.
+ * The callback must be synchronous. Thrown exceptions and invalid return values
+ * are currently converted to a zero content measurement by the binding. Record
+ * failures and handle them outside `computeLayoutWithMeasure()` if needed.
  *
  * @example
  * ```typescript
@@ -142,7 +158,10 @@ export type Size<T> = {
  *   style
  * ): Size<number> => {
  *   const ctx = context as TextContext | undefined;
- *   if (!ctx?.text) return { width: 0, height: 0 };
+ *   style.free(); // This measurement does not need to read the style copy.
+ *   if (!ctx?.text) {
+ *     return { width: knownDimensions.width ?? 0, height: knownDimensions.height ?? 0 };
+ *   }
  *
  *   const width = knownDimensions.width ?? measureTextWidth(ctx.text, ctx.fontSize);
  *   const height = knownDimensions.height ?? ctx.fontSize * 1.2;
@@ -172,7 +191,7 @@ export type MeasureFunction = (
  *
  * @remarks
  * - `number`: Fixed size in pixels
- * - `"{number}%"`: Percentage of parent's size (0-100)
+ * - `"{number}%"`: Percentage resolved against the property's containing size; `"100%"` is the full reference size, and values above 100 are allowed
  * - `"auto"`: Size determined by content or layout algorithm
  *
  * @example
@@ -209,7 +228,7 @@ export type Dimension = number | `${number}%` | "auto";
  *
  * @remarks
  * - `number`: Fixed size in pixels
- * - `"{number}%"`: Percentage of parent's size (0-100)
+ * - `"{number}%"`: Percentage whose reference size depends on the property; `"100%"` is the full reference size, and values above 100 are allowed
  *
  * @example
  * ```typescript
@@ -242,7 +261,7 @@ export type LengthPercentage = number | `${number}%`;
  *
  * @remarks
  * - `number`: Fixed size in pixels
- * - `"{number}%"`: Percentage of parent's size (0-100)
+ * - `"{number}%"`: Percentage whose reference size depends on the property; margin percentages use the containing width, while inset percentages use the corresponding axis
  * - `"auto"`: Automatic value (behavior depends on property)
  *
  * @example
@@ -348,32 +367,36 @@ export type Rect<T> = {
 /**
  * Detailed layout information (for grid layouts).
  *
- * Returned by `detailedLayoutInfo()` for nodes using CSS Grid layout.
- * Contains detailed information about grid tracks and item placement.
+ * Returned by `detailedLayoutInfo()` after computing a grid container's layout.
+ * Contains `rows`, `columns`, and `items` directly, or is `null` if no grid details
+ * have been stored. Childless grids use leaf layout and do not generate details.
+ * Previously stored details can remain after changing display mode or removing
+ * children. Read them after laying out a current grid container with children;
+ * a non-null result alone does not establish that the details are current.
  *
  * @remarks
  * This is only available when the `detailed_layout_info` feature is enabled.
  *
  * @example
  * ```typescript
- * import { TaffyTree, Style, Display, type DetailedLayoutInfo, type DetailedGridInfo } from 'taffy-layout';
+ * import { TaffyTree, Style, Display, type DetailedLayoutInfo } from 'taffy-layout';
  *
  * const tree = new TaffyTree();
  * const style = new Style();
  * style.display = Display.Grid;
- * const gridNode = tree.newLeaf(style);
+ * const child = tree.newLeaf(new Style());
+ * const gridNode = tree.newWithChildren(style, [child]);
  * tree.computeLayout(gridNode, { width: 100, height: 100 });
  *
  * const info: DetailedLayoutInfo = tree.detailedLayoutInfo(gridNode);
  *
- * if (info && typeof info === 'object' && 'Grid' in info) {
- *   const grid = info.Grid as DetailedGridInfo;
- *   console.log('Rows:', grid.rows.sizes);
- *   console.log('Columns:', grid.columns.sizes);
+ * if (info !== null) {
+ *   console.log('Rows:', info.rows.sizes);
+ *   console.log('Columns:', info.columns.sizes);
  * }
  * ```
  */
-export type DetailedLayoutInfo = DetailedGridInfo | undefined;
+export type DetailedLayoutInfo = DetailedGridInfo | null;
 
 /**
  * Detailed information about a grid layout.
@@ -396,32 +419,45 @@ export type DetailedGridInfo = {
 /**
  * Information about grid tracks (rows or columns).
  *
- * Provides detailed sizing and gutter information for a set of grid tracks.
+ * Tracks use logical order: left-to-right for LTR columns, right-to-left for
+ * RTL columns, and top-to-bottom for rows.
  *
  * @property negativeImplicitTracks - Number of implicit tracks before explicit tracks
  * @property explicitTracks - Number of explicitly defined tracks
  * @property positiveImplicitTracks - Number of implicit tracks after explicit tracks
- * @property gutters - Array of gutter sizes between tracks (in pixels)
+ * @property gutters - Physical spacing between tracks, including content alignment
  * @property sizes - Array of track sizes (in pixels)
+ * @property positions - Physical start/end coordinates of each track
  */
 export type DetailedGridTracksInfo = {
   /** Number of implicit tracks before explicit tracks (for negative line numbers) */
   negativeImplicitTracks: number;
-  /** Number of tracks explicitly defined in grid-template-rows/columns */
+  /** Number of explicit tracks, including tracks established by gridTemplateAreas and its counts */
   explicitTracks: number;
   /** Number of implicit tracks created after explicit tracks */
   positiveImplicitTracks: number;
-  /** Gap sizes between tracks in pixels */
+  /**
+   * Physical spacing between adjacent tracks in pixels, including space added
+   * by content alignment. Contains sizes.length + 1 entries with zero at both
+   * ends (or [0] for no tracks).
+   */
   gutters: number[];
   /** Computed sizes of each track in pixels */
   sizes: number[];
+  /**
+   * Physical start/end coordinates relative to the container's border box,
+   * stored in logical track order. Each start is the physical left/top edge;
+   * each end is the physical right/bottom edge.
+   */
+  positions: Line<number>[];
 };
 
 /**
  * Information about a grid item's placement.
  *
  * Specifies which grid lines the item spans on both axes.
- * Line numbers are 1-indexed, with 1 being the first line.
+ * Line numbers are 1-indexed from the first generated line, including leading
+ * implicit tracks. They can differ from the explicit grid line numbers used in styles.
  *
  * @property rowStart - Starting row line number (1-indexed)
  * @property rowEnd - Ending row line number (exclusive)
@@ -513,13 +549,13 @@ export type Line<T> = {
  *
  * @remarks
  * - `number`: Exact number of repetitions (e.g. `repeat(3, ...)`).
- * - `"autoFill"`: Fills the container with as many tracks as possible.
- * - `"autoFit"`: Fills the container, collapsing empty tracks.
+ * - `"auto-fill"`: Fills the container with as many tracks as possible.
+ * - `"auto-fit"`: Fills the container, collapsing empty tracks.
  */
 export type RepetitionCount = number | "auto-fill" | "auto-fit";
 
 /**
- * Minumum track sizing function.
+ * Minimum track sizing function.
  *
  * Defines the minimum size of a grid track.
  */
@@ -529,6 +565,8 @@ export type MinTrackSizingFunction = number | `${number}%` | "auto" | "min-conte
  * Maximum track sizing function.
  *
  * Defines the maximum size of a grid track.
+ * The supported `"fit-content"` token uses a zero-pixel fit-content limit.
+ * Parameterized strings such as `"fit-content(100px)"` are not supported.
  */
 export type MaxTrackSizingFunction = number | `${number}%` | `${number}fr` | "auto" | "min-content" | "max-content" | "fit-content";
 
@@ -558,7 +596,8 @@ export type GridTemplateComponent = TrackSizingFunction | GridTemplateRepetition
 /**
  * Named grid area definition.
  * 
- * Defines a named area within the grid and its boundaries.
+ * Defines a named area within the grid and its boundaries. Line numbers start
+ * at 1 and end lines are exclusive.
  */
 export type GridTemplateArea = {
   /** The name of the grid area */
@@ -593,7 +632,7 @@ export type GridTemplateArea = {
  */
 export type StyleProperty =
   // Layout Mode
-  | "display" | "position" | "boxSizing"
+  | "display" | "position" | "direction" | "float" | "clear" | "boxSizing"
   // Overflow
   | "overflow" | "overflowX" | "overflowY"
   // Flexbox
@@ -620,7 +659,8 @@ export type StyleProperty =
   | "gridColumn" | "gridColumnStart" | "gridColumnEnd"
   | "gridTemplateRows" | "gridTemplateColumns"
   | "gridAutoRows" | "gridAutoColumns"
-  | "gridTemplateAreas" | "gridTemplateRowNames" | "gridTemplateColumnNames";
+  | "gridTemplateAreas" | "gridTemplateAreaRowCount" | "gridTemplateAreaColumnCount"
+  | "gridTemplateRowNames" | "gridTemplateColumnNames";
 
 /**
  * Valid property keys for Layout.get() method.
@@ -699,6 +739,9 @@ export type StylePropertyValues = {
   [K in StyleProperty]?: 
     K extends "display" ? Display :
     K extends "position" ? Position :
+    K extends "direction" ? Direction :
+    K extends "float" ? Float :
+    K extends "clear" ? Clear :
     K extends "boxSizing" ? BoxSizing :
     K extends "overflow" ? Point<Overflow> :
     K extends "overflowX" | "overflowY" ? Overflow :
@@ -727,6 +770,7 @@ export type StylePropertyValues = {
     K extends "gridTemplateRows" | "gridTemplateColumns" ? GridTemplateComponent[] :
     K extends "gridAutoRows" | "gridAutoColumns" ? TrackSizingFunction[] :
     K extends "gridTemplateAreas" ? GridTemplateArea[] :
+    K extends "gridTemplateAreaRowCount" | "gridTemplateAreaColumnCount" ? number :
     K extends "gridTemplateRowNames" | "gridTemplateColumnNames" ? string[][] :
     unknown;
 };
@@ -738,14 +782,16 @@ declare module "./taffy_wasm" {
      * Reads multiple style properties in a single WASM call.
      * Supports both object properties and individual flat properties.
      *
-     * @returns Single value for one key, tuple for 2-3 keys, array for 4+ keys
+     * @returns A single value for one key, values in key order for multiple keys,
+     * or `undefined` when no keys are supplied
      *
      * @throws Error if any property key is unknown.
      *
      * @remarks
-     * - Single property: returns exact value type (including `undefined` for optional properties)
-     * - 2-3 properties: returns typed tuple for destructuring
-     * - 4+ properties: returns array of union types
+     * - Multiple literal keys produce a typed tuple for destructuring
+     * - A dynamic array of keys produces an array of the corresponding value types
+     * - `get("alignSelf")` and `get("justifySelf")` return `undefined` when unset
+     *   or assigned `AlignSelf.Auto`; direct property reads return `AlignSelf.Auto`
      *
      * @example
      * ```typescript
@@ -756,22 +802,23 @@ declare module "./taffy_wasm" {
      * const display = style.get("display"); // Display | undefined
      *
      * // Individual flat property - returns exact type
-     * const width = style.get("width"); // Dimension
+     * const width = style.get("width"); // Dimension | undefined
      *
      * // Optional properties return undefined when not set
      * const alignItems = style.get("alignItems"); // AlignItems | undefined
      *
      * // Two properties - returns tuple for destructuring
-     * const [d, w] = style.get("display", "width"); // [Display | undefined, Dimension]
+     * const [d, w] = style.get("display", "width"); // [Display | undefined, Dimension | undefined]
      *
      * // Three properties - returns tuple for destructuring
      * const [d2, w2, f] = style.get("display", "width", "flexGrow");
      *
-     * // Four or more properties - returns array
+     * // Four literal keys also return a typed tuple
      * const values = style.get("display", "width", "flexGrow", "flexShrink");
-     * // values type is: (Display | Dimension | number | undefined)[]
+     * // values: [Display | undefined, Dimension | undefined, number | undefined, number | undefined]
      * ```
      */
+    get(): undefined;
     get<K extends StyleProperty>(...keys: [K]): StylePropertyValues[K];
     get<K1 extends StyleProperty, K2 extends StyleProperty>(
       ...keys: [K1, K2]
@@ -811,14 +858,15 @@ declare module "./taffy_wasm" {
      * Reads multiple layout properties in a single WASM call.
      * Supports both object properties and individual flat properties.
      *
-     * @returns Single value for one key, tuple for 2-3 keys, array for 4+ keys
+     * @returns A single value for one key, values in key order for multiple keys,
+     * or `undefined` when no keys are supplied
      *
      * @throws Error if any property key is unknown.
      *
      * @remarks
      * - Single property: returns exact value type
-     * - 2-3 properties: returns typed tuple for destructuring
-     * - 4+ properties: returns array of union types
+     * - Multiple literal keys: returns a typed tuple for destructuring
+     * - A dynamic array of keys: returns an array of the corresponding value types
      *
      * @example
      * ```typescript
@@ -839,13 +887,14 @@ declare module "./taffy_wasm" {
      * // Three properties - returns tuple for destructuring
      * const [x, y, w] = layout.get("x", "y", "width");
      *
-     * // Four or more properties - returns array
+     * // Four literal keys also return a typed tuple
      * const values = layout.get("x", "y", "width", "height");
-     * // values type is: number[]
+     * // values type is: [number, number, number, number]
      *
      * tree.free();
      * ```
      */
+    get(): undefined;
     get<K extends LayoutProperty>(...keys: [K]): LayoutPropertyValues[K];
     get<K1 extends LayoutProperty, K2 extends LayoutProperty>(
       ...keys: [K1, K2]
@@ -858,8 +907,7 @@ declare module "./taffy_wasm" {
 }
 
 /**
- * Helper type to convert an array of property keys to an array of their value types.
- * Unlike `TupleToStyleValues`, this returns an array type instead of a tuple.
+ * Maps property keys to value types, preserving tuple or array structure.
  */
 type StylePropertyArrayValues<Keys extends StyleProperty[]> = {
   [K in keyof Keys]: Keys[K] extends StyleProperty ? StylePropertyValues[Keys[K]] : unknown;

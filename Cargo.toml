@@ -13,7 +13,7 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-taffy = { version = "0.9.2", default-features = false, features = ["std", "taffy_tree", "flexbox", "grid", "block_layout", "content_size", "serde", "detailed_layout_info"] }
+taffy = { version = "0.14.0", default-features = false, features = ["std", "taffy_tree", "flexbox", "grid", "block_layout", "float_layout", "content_size", "serde", "detailed_layout_info"] }
 wasm-bindgen = "0.2.106"
 serde = { version = "1.0", features = ["serde_derive"] }
 serde-wasm-bindgen = "0.6"

@@ -47,7 +47,7 @@ return (
         alignItems: "center",
       }}
     >
-      Capacity: {tree.totalNodeCount()}
+      Nodes: {tree.totalNodeCount()}
     </div>
   </div>
 );
@@ -55,7 +55,7 @@ return (
 
 ## 2. Incremental Layouts
 
-Only changed nodes are recalculated. Taffy acts **lazily** and only recomputes the branch affected by the change.
+Taffy reuses cached results when their inputs still match. Changing a node can also affect its ancestors and siblings, so a layout pass is not limited to the changed branch. Style and tree mutations invalidate relevant caches; in-place changes to measured content require `markDirty(node)` or `setNodeContext(node, context)`.
 
 ```tsx live
 const tree = new TaffyTree();
@@ -95,8 +95,7 @@ Custom measure functions (for text/images) are called frequently.
 
 ### Reuse Styles
 
-Creating `Style` objects in tight loops (e.g., game rendering) can be expensive in JS.
-Reuse definition objects where possible.
+Creating `Style` objects allocates WASM memory. Reuse styles for nodes with the same rules; node creation copies the style, so the original can be freed once no longer needed. See [Memory Management](../getting-started/configuration.md#memory-management) for owned style and layout copies.
 
 ```ts
 // ✅ Good
@@ -105,6 +104,7 @@ const ITEM_STYLE = new Style({ flexGrow: 1 });
 for (let i = 0; i < 1000; i++) {
   tree.newLeaf(ITEM_STYLE);
 }
+ITEM_STYLE.free();
 ```
 
 ```ts

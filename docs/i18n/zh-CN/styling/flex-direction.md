@@ -9,6 +9,8 @@ sidebar_position: 8
 
 `flexDirection` 属性确立了主轴，使子元素可以按水平方向（行）或垂直方向（列）排列。
 
+以下示意以默认的 `Direction.Ltr` 为例。设置 `Direction.Rtl` 后，`Row` 从右向左排列，`RowReverse` 从左向右排列；列方向仍沿垂直轴。
+
 ## 取值
 
 | 值                  | 描述                             |

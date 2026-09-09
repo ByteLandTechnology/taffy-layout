@@ -20,6 +20,7 @@ sidebar_position: 4
 ## 关键规则
 
 - 父元素: `flexDirection: column`
+- 页面高度为 `auto`，用 `minHeight` 设置视口的最小高度
 - 内容: `flexGrow: 1`
 
 ## 代码
@@ -31,14 +32,15 @@ const tree = new TaffyTree();
 const pageStyle = new Style({
   display: Display.Flex,
   flexDirection: FlexDirection.Column,
-  size: { width: 300, height: 300 }, // 固定高度以模拟视口
+  size: { width: 300, height: "auto" },
+  minHeight: 300, // 内容较少时至少填满视口，内容增多时允许页面增高
 });
 
 const header = tree.newLeaf(
-  new Style({ size: { width: "100%", height: 50 }, margin: { bottom: 10 } }),
+  new Style({ size: { width: "100%", height: 50 }, marginBottom: 10 }),
 );
 const footer = tree.newLeaf(
-  new Style({ size: { width: "100%", height: 50 }, margin: { top: 10 } }),
+  new Style({ size: { width: "100%", height: 50 }, marginTop: 10 }),
 );
 
 // 内容增长以填充空间
@@ -58,5 +60,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 相关指南
 
-- **[Flex 伸缩](../styling/flex-basis-grow-shrink.md)**
+- **[Flex 伸缩](../styling/flex-grow.md)**
 - **[尺寸](../styling/size.md)**

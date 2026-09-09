@@ -13,9 +13,9 @@ Taffy 是一个高性能、可嵌入的布局引擎，使用 Rust 编写并编�
 
 Taffy 使用 Rust 编写并编译为 WebAssembly，其性能特征比纯 JavaScript 实现更接近原生代码。
 
-### 完整的 CSS 支持
+### CSS 布局算法
 
-Taffy 实现了 CSS Flexbox 和 CSS Grid 布局引擎，与 Web 浏览器具有完整的功能对等性。
+Taffy 提供 Flexbox、CSS Grid 和块布局算法。JavaScript 绑定支持的属性与取值以 API 参考为准；文本测量和绘制由应用负责。
 
 ### 基于树的 API
 

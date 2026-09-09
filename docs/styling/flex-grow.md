@@ -7,7 +7,7 @@ sidebar_position: 11
 
 Control how flex items grow to fill the available space.
 
-The **`flexGrow`** property defines the ability for a flex item to grow if necessary. It accepts a unitless value that serves as a proportion. It dictates what amount of the available space inside the flex container the item should take up.
+The **`flexGrow`** property distributes positive free space between flex items after their initial sizes and gaps are accounted for. It accepts a unitless factor, defaulting to `0`; it does not specify a share of the container's entire size.
 
 ## Example
 
@@ -44,8 +44,8 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Quick Notes
 
-- Without `flexGrow`, items size to their content or defined `size`.
-- If all items have `flexGrow: 1`, the remaining space in the container will be distributed equally to all children.
+- With `flexGrow: 0`, items do not grow to consume free space, but may still shrink.
+- Equal grow factors give equal shares of free space until size constraints intervene. Final widths can differ when the initial sizes differ.
 
 ## Next Steps
 

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -74,7 +87,7 @@ test("advanced_performance example 1", async () => {
           alignItems: "center",
         }}
       >
-        Capacity: {tree.totalNodeCount()}
+        Nodes: {tree.totalNodeCount()}
       </div>
     </div>
   );
@@ -106,6 +119,7 @@ test("advanced_performance example 3", async () => {
   for (let i = 0; i < 1000; i++) {
     tree.newLeaf(ITEM_STYLE);
   }
+  ITEM_STYLE.free();
 });
 
 test("advanced_performance example 4", async () => {

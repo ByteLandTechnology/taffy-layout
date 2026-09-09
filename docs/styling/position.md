@@ -11,10 +11,10 @@ The `position` property determines if an element participates in the normal layo
 
 ## Values
 
-| Value          | Description                                                                                                                                              |
-| :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`Relative`** | **Default**. The element remains in the document flow. `inset` offsets move it visually, but it still takes up space in its original location.           |
-| **`Absolute`** | The element is **removed from the flow**. It is positioned relative to its nearest _positioned_ ancestor (parent with non-default position) or the root. |
+| Value          | Description                                                                                                                                    |
+| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`Relative`** | **Default**. The element remains in the document flow. `inset` offsets move it visually, but it still takes up space in its original location. |
+| **`Absolute`** | The element is **removed from the flow** and positioned in its parent's containing block.                                                      |
 
 ## Example
 

@@ -7,6 +7,8 @@ sidebar_position: 2
 
 The **`TaffyTree`** object represents the entire layout tree and serves as the entry point for layout calculations.
 
+Node IDs are `bigint` values owned by the tree that created them. Pass only live IDs from that same tree; stop using an ID after removing its node or clearing the tree. See [Error Handling](../advanced/error-handling.md) for checked child-index errors and node-ID preconditions.
+
 ## Key Responsibilities
 
 - **Node Management**: Creating, adding, removing, and inserting nodes.

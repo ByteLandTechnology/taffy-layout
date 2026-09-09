@@ -41,12 +41,14 @@ const rootStyle = new Style({
 });
 
 const childStyle = new Style({
+  size: { width: 24, height: 24 },
   alignSelf: AlignSelf.Center,
   justifySelf: AlignSelf.Center,
 });
 const child1 = tree.newLeaf(childStyle);
 const child2 = tree.newLeaf(childStyle);
 const child3 = tree.newLeaf(childStyle);
+// These items create an implicit second row.
 const child4 = tree.newLeaf(childStyle);
 const child5 = tree.newLeaf(childStyle);
 const child6 = tree.newLeaf(childStyle);
@@ -70,9 +72,33 @@ console.log(`Columns: 3`);
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
+## Named Areas and Template Dimensions
+
+`gridTemplateAreas` is an array of named rectangles. Their `rowStart`, `rowEnd`, `columnStart`, and `columnEnd` values are one-based grid line numbers, with end lines exclusive.
+
+```typescript
+import { Display, Style } from "taffy-layout";
+
+const namedGrid = new Style({
+  display: Display.Grid,
+  gridTemplateAreas: [
+    { name: "header", rowStart: 1, rowEnd: 2, columnStart: 1, columnEnd: 3 },
+  ],
+  gridTemplateAreaRowCount: 3,
+  gridTemplateAreaColumnCount: 4,
+});
+```
+
+The named area above spans one row and two columns. The count properties extend the template to three rows and four columns, including unnamed cells (the `.` cells in CSS grid-template-areas).
+
+The effective counts are at least the largest named end line minus one. Reading either count returns this effective dimension. Replacing or clearing `gridTemplateAreas` recalculates the inferred dimensions; only explicitly assigned counts persist. Set a count to `0` to remove that axis's explicit minimum. These rules also apply to `Style.set()`, styles returned by `tree.getStyle()`, and style copies passed to measure callbacks.
+
+Use `gridTemplateRowNames` and `gridTemplateColumnNames` for arrays of names attached to grid lines. They are separate from the named area rectangles.
+
 ## API Reference
 
-- [GridTemplateComponent](../../api/type-aliases/GridTemplateComponent.md)
+- [GridTemplateComponent](../api/type-aliases/GridTemplateComponent.md)
+- [GridTemplateArea](../api/type-aliases/GridTemplateArea.md)
 
 ## Next Steps
 

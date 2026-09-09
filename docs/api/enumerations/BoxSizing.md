@@ -17,7 +17,7 @@ style.boxSizing = BoxSizing.ContentBox; // Size is content only
 
 ## Enumeration Members
 
-| Enumeration Member                   | Value | Description                                                |
-| ------------------------------------ | ----- | ---------------------------------------------------------- |
-| <a id="borderbox"></a> `BorderBox`   | `0`   | The width and height properties include padding and border |
-| <a id="contentbox"></a> `ContentBox` | `1`   | The width and height properties include only the content   |
+| Enumeration Member                                      | Value | Description                                                |
+| ------------------------------------------------------- | ----- | ---------------------------------------------------------- |
+| <a id="enumeration-member-borderbox"></a> `BorderBox`   | `0`   | The width and height properties include padding and border |
+| <a id="enumeration-member-contentbox"></a> `ContentBox` | `1`   | The width and height properties include only the content   |

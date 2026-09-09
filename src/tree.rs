@@ -76,11 +76,15 @@
 //! ## Node IDs
 //!
 //! Node IDs are represented as `bigint` in JavaScript (u64 in Rust). They are stable
-//! for the lifetime of the node and can be stored/compared as needed.
+//! for the lifetime of the node and can be stored/compared as needed. Pass only IDs
+//! of live nodes from the same tree. Removing a node or clearing the tree invalidates
+//! the affected IDs; invalid IDs may cause a WebAssembly trap.
 //!
 //! ## Error Handling
 //!
-//! Methods that can fail throw a `TaffyError` as a JavaScript exception.
+//! Errors returned by the layout engine are exposed as `TaffyError` exceptions.
+//! Node IDs must satisfy the lifetime requirement above; invalid IDs are not
+//! guaranteed to produce a `TaffyError`.
 //!
 //! @example
 //! ```typescript
@@ -98,19 +102,53 @@
 
 use crate::error::{JsTaffyError, map_bool_result, map_node_result, map_void_result, to_js_error};
 use crate::layout::JsLayout;
-use crate::style::JsStyle;
+use crate::style::{GridTemplateAreaCounts, JsStyle};
 use crate::types::{AvailableSizeDto, JsAvailableSizeArg, JsBigIntArray, JsMeasureFunctionArg};
-use crate::{DetailedGridInfoDto, DetailedGridItemsInfoDto, DetailedGridTracksInfoDto};
+#[cfg(feature = "detailed_layout_info")]
+use crate::{
+    DetailedGridInfoDto, DetailedGridItemsInfoDto, DetailedGridTracksInfoDto, JsDetailedLayoutInfo,
+};
 
 use js_sys::{Array, BigInt};
+use std::collections::HashMap;
 use taffy::TaffyError as NativeTaffyError;
 use taffy::TaffyTree;
 use taffy::prelude::*;
 use taffy::style::{self as TaffyStyle};
 #[cfg(feature = "detailed_layout_info")]
 use taffy::tree::DetailedLayoutInfo;
+use taffy::tree::{LayoutInput, LayoutOutput};
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
+
+#[cfg(feature = "detailed_layout_info")]
+fn grid_tracks_info_dto(tracks: &taffy::DetailedGridTracksInfo) -> DetailedGridTracksInfoDto {
+    // Upstream positions retain logical track order, including in RTL grids.
+    // Distances between physical intervals also include content alignment space.
+    let mut gutters = vec![0.0];
+    gutters.extend(
+        tracks
+            .positions
+            .windows(2)
+            .map(|pair| (pair[1].start - pair[0].end).max(pair[0].start - pair[1].end)),
+    );
+    if !tracks.positions.is_empty() {
+        gutters.push(0.0);
+    }
+
+    DetailedGridTracksInfoDto {
+        negative_implicit_tracks: tracks.negative_implicit_tracks,
+        explicit_tracks: tracks.explicit_tracks,
+        positive_implicit_tracks: tracks.positive_implicit_tracks,
+        gutters,
+        sizes: tracks
+            .positions
+            .iter()
+            .map(|track| track.end - track.start)
+            .collect(),
+        positions: tracks.positions.clone(),
+    }
+}
 
 // =============================================================================
 // TaffyTree Struct
@@ -119,12 +157,36 @@ use wasm_bindgen::prelude::*;
 /// The main layout tree class for creating nodes, computing layouts, and managing a tree of styled elements.
 ///
 /// TaffyTree is the entry point for the Taffy layout engine. It manages
-/// a tree of nodes and computes their layouts using CSS Flexbox and Grid algorithms.
+/// a tree of nodes and computes their layouts using Flexbox, Grid, and block algorithms.
+///
+/// Node IDs passed to this instance must identify live nodes created by the same
+/// tree. Removed IDs and IDs invalidated by `clear()` must not be reused.
+/// Invalid IDs may cause a WebAssembly trap instead of a `TaffyError`.
 ///
 #[wasm_bindgen(js_name = TaffyTree)]
 pub struct JsTaffyTree {
     /// The underlying Taffy tree with JsValue context type
     tree: TaffyTree<JsValue>,
+    /// Taffy stores effective counts, so preserve explicit counts separately
+    /// for style copies returned by getStyle() and measure callbacks.
+    explicit_grid_template_area_counts: HashMap<u64, GridTemplateAreaCounts>,
+}
+
+impl Default for JsTaffyTree {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl JsTaffyTree {
+    fn remember_grid_template_area_counts(&mut self, node: u64, style: &JsStyle) {
+        let counts = style.explicit_grid_template_area_counts;
+        if counts == GridTemplateAreaCounts::default() {
+            self.explicit_grid_template_area_counts.remove(&node);
+        } else {
+            self.explicit_grid_template_area_counts.insert(node, counts);
+        }
+    }
 }
 
 #[wasm_bindgen(js_class = "TaffyTree")]
@@ -148,6 +210,7 @@ impl JsTaffyTree {
         console_error_panic_hook::set_once();
         JsTaffyTree {
             tree: TaffyTree::new(),
+            explicit_grid_template_area_counts: HashMap::new(),
         }
     }
 
@@ -168,6 +231,7 @@ impl JsTaffyTree {
         console_error_panic_hook::set_once();
         JsTaffyTree {
             tree: TaffyTree::with_capacity(capacity),
+            explicit_grid_template_area_counts: HashMap::new(),
         }
     }
 
@@ -177,9 +241,10 @@ impl JsTaffyTree {
 
     /// Enables rounding of layout values to whole pixels
     ///
-    /// When enabled (default), computed layout values like position and size
-    /// are rounded to the nearest integer. This prevents sub-pixel rendering
-    /// issues in most rendering contexts.
+    /// When enabled (default), cumulative box edges are rounded to whole pixels.
+    /// Widths and heights are differences between those rounded edges, so equal
+    /// fractional sizes can round differently. Margins and detailed grid track
+    /// measurements can still contain fractions.
     ///
     /// @example
     /// ```typescript
@@ -232,7 +297,9 @@ impl JsTaffyTree {
     /// ```
     #[wasm_bindgen(js_name = newLeaf)]
     pub fn new_leaf(&mut self, style: &JsStyle) -> Result<u64, JsValue> {
-        map_node_result(self.tree.new_leaf(style.inner.clone()))
+        let node = map_node_result(self.tree.new_leaf(style.inner.clone()))?;
+        self.remember_grid_template_area_counts(node, style);
+        Ok(node)
     }
 
     /// Creates a new leaf node with an attached context value
@@ -261,10 +328,12 @@ impl JsTaffyTree {
         style: &JsStyle,
         context: JsValue,
     ) -> Result<u64, JsValue> {
-        map_node_result(
+        let node = map_node_result(
             self.tree
                 .new_leaf_with_context(style.inner.clone(), context),
-        )
+        )?;
+        self.remember_grid_template_area_counts(node, style);
+        Ok(node)
     }
 
     /// Creates a new node with the given children
@@ -301,10 +370,12 @@ impl JsTaffyTree {
     ) -> Result<u64, JsValue> {
         let children: Vec<u64> = serde_wasm_bindgen::from_value(children.into())?;
         let children_ids: Vec<NodeId> = children.iter().map(|&id| NodeId::from(id)).collect();
-        map_node_result(
+        let node = map_node_result(
             self.tree
                 .new_with_children(style.inner.clone(), &children_ids),
-        )
+        )?;
+        self.remember_grid_template_area_counts(node, style);
+        Ok(node)
     }
 
     // =========================================================================
@@ -325,32 +396,32 @@ impl JsTaffyTree {
     #[wasm_bindgen(js_name = clear)]
     pub fn clear(&mut self) {
         self.tree.clear();
+        self.explicit_grid_template_area_counts.clear();
     }
 
     /// Removes a node from the tree
     ///
-    /// The node and all its descendants are removed. If the node has a parent,
-    /// it is automatically removed from the parent's children.
+    /// Only the specified node is deleted. It is detached from its parent, and
+    /// its direct children become parentless. Descendant nodes remain in the tree.
     ///
     /// @param node - The node ID to remove
     ///
     /// @returns - The removed node ID (`bigint`)
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
     /// const tree = new TaffyTree();
     /// const nodeId = tree.newLeaf(new Style());
-    /// try {
-    ///   const removedId: bigint = tree.remove(nodeId);
-    /// } catch (e) {
-    ///   console.error("Node doesn't exist");
-    /// }
+    /// const removedId: bigint = tree.remove(nodeId);
+    /// // nodeId is no longer valid and must not be passed to this tree again.
     /// ```
     #[wasm_bindgen(js_name = remove)]
     pub fn remove(&mut self, node: u64) -> Result<u64, JsValue> {
-        map_node_result(self.tree.remove(NodeId::from(node)))
+        let removed = map_node_result(self.tree.remove(NodeId::from(node)))?;
+        self.explicit_grid_template_area_counts.remove(&removed);
+        Ok(removed)
     }
 
     // =========================================================================
@@ -365,7 +436,7 @@ impl JsTaffyTree {
     /// @param node - The node ID
     /// @param context - Any JavaScript value to attach
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -387,6 +458,9 @@ impl JsTaffyTree {
     /// @param node - The node ID
     ///
     /// @returns - The attached context value, or `undefined` if none is set
+    ///
+    /// Object contexts retain their JavaScript identity. Mutating their fields
+    /// does not mark the node dirty; call `markDirty()` before recomputing.
     ///
     /// @example
     /// ```typescript
@@ -410,6 +484,7 @@ impl JsTaffyTree {
     ///
     /// In JavaScript, this behaves the same as `getNodeContext()` since
     /// JavaScript objects are always passed by reference.
+    /// Field mutations require an explicit `markDirty()` before recomputing.
     ///
     /// @param node - The node ID
     ///
@@ -466,7 +541,7 @@ impl JsTaffyTree {
     /// @param parent - The parent node ID
     /// @param child - The child node ID to add
     ///
-    /// @throws `TaffyError` if the parent or child node does not exist
+    /// @remarks Both node IDs must identify live nodes in this tree.
     ///
     /// @example
     /// ```typescript
@@ -489,7 +564,8 @@ impl JsTaffyTree {
     /// @param index - The position to insert at (0-based)
     /// @param child - The child node ID to insert
     ///
-    /// @throws `TaffyError` if the parent or child node does not exist, or index is out of bounds
+    /// @throws `TaffyError` if the index is out of bounds
+    /// @remarks Both node IDs must identify live nodes in this tree.
     ///
     /// @example
     /// ```typescript
@@ -514,12 +590,13 @@ impl JsTaffyTree {
 
     /// Replaces all children of a node
     ///
-    /// Any existing children are removed and replaced with the new array.
+    /// Existing child relationships are replaced with the new array. Detached
+    /// child nodes remain in the tree.
     ///
     /// @param parent - The parent node ID
     /// @param children - Array of new child node IDs
     ///
-    /// @throws `TaffyError` if the parent node does not exist
+    /// @remarks The parent ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -540,12 +617,15 @@ impl JsTaffyTree {
 
     /// Removes a specific child from a parent
     ///
+    /// The child must currently belong to this parent. It remains in the tree
+    /// after its parent relationship is removed.
+    ///
     /// @param parent - The parent node ID
     /// @param child - The child node ID to remove
     ///
     /// @returns - The removed child ID (`bigint`)
     ///
-    /// @throws `TaffyError` if the parent or child node does not exist
+    /// @remarks Both node IDs must identify live nodes in this tree.
     ///
     /// @example
     /// ```typescript
@@ -570,7 +650,8 @@ impl JsTaffyTree {
     ///
     /// @returns - The removed child ID (`bigint`)
     ///
-    /// @throws `TaffyError` if the parent node does not exist or index is out of bounds
+    /// @throws `TaffyError` if the index is out of bounds
+    /// @remarks Node IDs must identify live nodes in this tree.
     ///
     /// @example
     /// ```typescript
@@ -593,7 +674,8 @@ impl JsTaffyTree {
     ///
     /// @returns - The replaced (old) child ID (`bigint`)
     ///
-    /// @throws `TaffyError` if the parent node does not exist or index is out of bounds
+    /// @throws `TaffyError` if the index is out of bounds
+    /// @remarks Node IDs must identify live nodes in this tree.
     ///
     /// @example
     /// ```typescript
@@ -628,7 +710,8 @@ impl JsTaffyTree {
     ///
     /// @returns - The child node ID (`bigint`)
     ///
-    /// @throws `TaffyError` if the parent node does not exist or index is out of bounds
+    /// @throws `TaffyError` if the index is out of bounds
+    /// @remarks Node IDs must identify live nodes in this tree.
     ///
     /// @example
     /// ```typescript
@@ -645,13 +728,16 @@ impl JsTaffyTree {
 
     /// Removes a range of children
     ///
-    /// Removes children from `start_index` (inclusive) to `end_index` (exclusive).
+    /// Detaches children from `startIndex` (inclusive) to `endIndex` (exclusive).
+    /// The detached nodes remain in the tree.
     ///
     /// @param parent - The parent node ID
     /// @param startIndex - Start of range (inclusive)
     /// @param endIndex - End of range (exclusive)
     ///
-    /// @throws `TaffyError` if the parent node does not exist or range is invalid
+    /// @remarks The parent ID must identify a live node in this tree. Range
+    /// endpoints must be integers satisfying `0 <= startIndex <= endIndex <= childCount(parent)`.
+    /// An invalid range may cause a WebAssembly trap instead of a `TaffyError`.
     ///
     /// @example
     /// ```typescript
@@ -698,7 +784,7 @@ impl JsTaffyTree {
     ///
     /// @returns - The number of direct children
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -736,7 +822,7 @@ impl JsTaffyTree {
     ///
     /// @returns - Array of child node IDs
     ///
-    /// @throws `TaffyError` if the parent node does not exist
+    /// @remarks The parent ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -770,7 +856,7 @@ impl JsTaffyTree {
     /// @param node - The node ID
     /// @param style - The new style configuration
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -782,16 +868,20 @@ impl JsTaffyTree {
     /// ```
     #[wasm_bindgen(js_name = setStyle)]
     pub fn set_style(&mut self, node: u64, style: &JsStyle) -> Result<(), JsValue> {
-        map_void_result(self.tree.set_style(NodeId::from(node), style.inner.clone()))
+        map_void_result(self.tree.set_style(NodeId::from(node), style.inner.clone()))?;
+        self.remember_grid_template_area_counts(node, style);
+        Ok(())
     }
 
     /// Gets the style for a node
     ///
     /// @param node - The node ID
     ///
-    /// @returns - The node's `Style`
+    /// @returns - An owned copy of the node's `Style`; call `free()` when finished
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// Changes to this copy affect the tree only after calling `setStyle()`.
+    ///
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -803,7 +893,14 @@ impl JsTaffyTree {
     #[wasm_bindgen(js_name = getStyle)]
     pub fn style(&self, node: u64) -> Result<JsStyle, JsValue> {
         match self.tree.style(NodeId::from(node)) {
-            Ok(s) => Ok(JsStyle { inner: s.clone() }),
+            Ok(s) => Ok(JsStyle {
+                inner: s.clone(),
+                explicit_grid_template_area_counts: self
+                    .explicit_grid_template_area_counts
+                    .get(&node)
+                    .copied()
+                    .unwrap_or_default(),
+            }),
             Err(e) => Err(JsValue::from(JsTaffyError::from(e))),
         }
     }
@@ -819,9 +916,11 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID
     ///
-    /// @returns - The computed `Layout`
+    /// @returns - An owned snapshot of the computed `Layout`; call `free()` when finished
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// Recomputing the tree does not update an existing Layout snapshot.
+    ///
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -850,7 +949,7 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID
     ///
-    /// @returns - The unrounded `Layout`
+    /// @returns - An owned snapshot of the unrounded `Layout`; call `free()` when finished
     ///
     /// @example
     /// ```typescript
@@ -872,29 +971,21 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID
     ///
-    /// @returns - Detailed grid info or "None" for non-grid nodes
+    /// @returns - An object containing the last stored rows, columns, and items,
+    /// or `null` if no grid details have been stored. A childless grid uses leaf
+    /// layout and does not produce grid details. Previously stored details can
+    /// remain after changing display mode or removing children, so read this
+    /// after computing a current grid container with children.
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// @remarks The node ID must identify a live node in this tree.
     #[cfg(feature = "detailed_layout_info")]
     #[wasm_bindgen(js_name = detailedLayoutInfo)]
-    pub fn detailed_layout_info(&self, node: u64) -> Result<JsValue, JsValue> {
+    pub fn detailed_layout_info(&self, node: u64) -> Result<JsDetailedLayoutInfo, JsValue> {
         match self.tree.detailed_layout_info(NodeId::from(node)) {
             DetailedLayoutInfo::Grid(info) => {
                 let dto = DetailedGridInfoDto {
-                    rows: DetailedGridTracksInfoDto {
-                        negative_implicit_tracks: info.rows.negative_implicit_tracks,
-                        explicit_tracks: info.rows.explicit_tracks,
-                        positive_implicit_tracks: info.rows.positive_implicit_tracks,
-                        gutters: info.rows.gutters.clone(),
-                        sizes: info.rows.sizes.clone(),
-                    },
-                    columns: DetailedGridTracksInfoDto {
-                        negative_implicit_tracks: info.columns.negative_implicit_tracks,
-                        explicit_tracks: info.columns.explicit_tracks,
-                        positive_implicit_tracks: info.columns.positive_implicit_tracks,
-                        gutters: info.columns.gutters.clone(),
-                        sizes: info.columns.sizes.clone(),
-                    },
+                    rows: grid_tracks_info_dto(&info.rows),
+                    columns: grid_tracks_info_dto(&info.columns),
                     items: info
                         .items
                         .iter()
@@ -906,9 +997,11 @@ impl JsTaffyTree {
                         })
                         .collect(),
                 };
-                Ok(serde_wasm_bindgen::to_value(&dto).unwrap_or(JsValue::NULL))
+                Ok(serde_wasm_bindgen::to_value(&dto)
+                    .unwrap_or(JsValue::NULL)
+                    .unchecked_into())
             }
-            DetailedLayoutInfo::None => Ok(JsValue::NULL),
+            DetailedLayoutInfo::None => Ok(JsValue::NULL.unchecked_into()),
         }
     }
 
@@ -923,19 +1016,31 @@ impl JsTaffyTree {
     ///
     /// @param node - The node ID to mark dirty
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
     /// const tree = new TaffyTree();
-    /// const rootId = tree.newLeaf(new Style());
-    /// const nodeId = rootId;
+    /// const content = { text: "Original text" };
+    /// const style = new Style();
+    /// const nodeId = tree.newLeafWithContext(style, content);
+    /// style.free();
     /// const availableSpace = { width: 100, height: 100 };
+    /// const measureText: MeasureFunction = (known, _available, _node, context, measuredStyle) => {
+    ///   measuredStyle.free();
+    ///   // Approximate single-line text using an 8-pixel character width.
+    ///   return {
+    ///     width: known.width ?? (context?.text?.length ?? 0) * 8,
+    ///     height: known.height ?? 16
+    ///   };
+    /// };
+    /// tree.computeLayoutWithMeasure(nodeId, availableSpace, measureText);
     ///
-    /// // After updating text content
-    /// tree.setNodeContext(nodeId, { text: "Updated text" });
+    /// // Mutating the attached object does not automatically invalidate measurement.
+    /// content.text = "Updated, longer text";
     /// tree.markDirty(nodeId);
-    /// tree.computeLayout(rootId, availableSpace);
+    /// tree.computeLayoutWithMeasure(nodeId, availableSpace, measureText);
+    /// tree.free();
     /// ```
     #[wasm_bindgen(js_name = markDirty)]
     pub fn mark_dirty(&mut self, node: u64) -> Result<(), JsValue> {
@@ -951,7 +1056,7 @@ impl JsTaffyTree {
     ///
     /// @returns - true if dirty, false otherwise
     ///
-    /// @throws `TaffyError` if the node does not exist
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -978,31 +1083,49 @@ impl JsTaffyTree {
     /// The measure function is called for leaf nodes (nodes without children) that
     /// require measurement according to the layout algorithm (Flexbox/Grid).
     /// For example, this is used for text nodes or other content that has intrinsic size.
+    /// The callback returns content dimensions; the layout engine applies padding,
+    /// borders, constraints, and aspect ratios. Cached measurements may skip calls.
+    /// Mutating context fields or replacing the callback requires `markDirty()`
+    /// on affected nodes. Callback exceptions or invalid return values currently
+    /// produce a zero content measurement instead of propagating an exception.
+    /// A context is optional; callbacks for nodes without one receive `undefined`.
     ///
     /// @param node - The root node ID to compute layout for
     /// @param availableSpace - The available space constraints
     /// @param measureFunc - A function that measures leaf node content
     ///
-    /// @throws `TaffyError` if the node does not exist or available space is invalid
+    /// @throws `TaffyError` if available space cannot be parsed
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
     /// const tree = new TaffyTree();
-    /// const rootId = tree.newLeaf(new Style());
-    ///
-    /// const measureText = (text: string, width: number) => ({ width: 0, height: 0 });
+    /// const textStyle = new Style();
+    /// const textNode = tree.newLeafWithContext(textStyle, { text: "Hello, measured text" });
+    /// textStyle.free();
     ///
     /// tree.computeLayoutWithMeasure(
-    ///   rootId,
+    ///   textNode,
     ///   { width: 800, height: "max-content" },
     ///   (known, available, node, context, style) => {
-    ///     if (context?.text) {
-    ///       const measured = measureText(context.text, available.width as number);
-    ///       return { width: measured.width, height: measured.height };
-    ///     }
-    ///     return { width: 0, height: 0 };
+    ///     style.free(); // This example only needs the attached text.
+    ///     const text: string = context?.text ?? "";
+    ///     // Approximate monospaced measurement; real text uses font metrics.
+    ///     const naturalWidth = text.length * 8;
+    ///     const minimumWidth = Math.max(0, ...text.split(/\s+/).map(word => word.length * 8));
+    ///     const width = known.width ?? (
+    ///       available.width === "min-content" ? minimumWidth :
+    ///       available.width === "max-content" ? naturalWidth :
+    ///       Math.min(naturalWidth, Math.max(0, available.width))
+    ///     );
+    ///     const lines = text.length === 0 ? 0 : Math.ceil(naturalWidth / Math.max(8, width));
+    ///     return { width, height: known.height ?? lines * 16 };
     ///   }
     /// );
+    /// const layout = tree.getLayout(textNode);
+    /// console.log(layout.width, layout.height);
+    /// layout.free();
+    /// tree.free();
     /// ```
     #[wasm_bindgen(js_name = computeLayoutWithMeasure)]
     pub fn compute_layout_with_measure(
@@ -1023,36 +1146,48 @@ impl JsTaffyTree {
 
         let space: Size<AvailableSpace> = js_space.into();
         let func: js_sys::Function = measure_func.unchecked_into();
-        let measure = |known_dimensions: Size<Option<f32>>,
-                       available_space: Size<AvailableSpace>,
-                       _node: NodeId,
+        let explicit_grid_template_area_counts = &self.explicit_grid_template_area_counts;
+        let measure = |inputs: LayoutInput,
+                       node: NodeId,
                        context: Option<&mut JsValue>,
-                       _style: &TaffyStyle::Style|
-         -> Size<f32> {
-            let this = JsValue::NULL;
-            let known_val =
-                serde_wasm_bindgen::to_value(&known_dimensions).unwrap_or(JsValue::NULL);
-            let available_dto = AvailableSizeDto {
-                width: available_space.width.into(),
-                height: available_space.height.into(),
-            };
-            let available_val =
-                serde_wasm_bindgen::to_value(&available_dto).unwrap_or(JsValue::NULL);
-            let ctx = context.cloned().unwrap_or(JsValue::UNDEFINED);
-            let style = JsStyle {
-                inner: _style.clone(),
-            };
-            let style_val = JsValue::from(style);
-            let node_id: u64 = _node.into();
-            let node_val = JsValue::from(node_id);
-            let args = js_sys::Array::new();
-            args.push(&known_val);
-            args.push(&available_val);
-            args.push(&node_val);
-            args.push(&ctx);
-            args.push(&style_val);
-            let result_val = func.apply(&this, &args).unwrap_or(JsValue::UNDEFINED);
-            serde_wasm_bindgen::from_value(result_val).unwrap_or(Size::ZERO)
+                       native_style: &TaffyStyle::Style|
+         -> LayoutOutput {
+            // The public callback measures content. Keep upstream's leaf sizing
+            // around it so padding, borders, constraints and sizing modes apply.
+            taffy::compute_leaf_layout(
+                inputs,
+                native_style,
+                |_, _| 0.0,
+                |known_dimensions, available_space| {
+                    let this = JsValue::NULL;
+                    let known_val =
+                        serde_wasm_bindgen::to_value(&known_dimensions).unwrap_or(JsValue::NULL);
+                    let available_dto = AvailableSizeDto {
+                        width: available_space.width.into(),
+                        height: available_space.height.into(),
+                    };
+                    let available_val =
+                        serde_wasm_bindgen::to_value(&available_dto).unwrap_or(JsValue::NULL);
+                    let ctx = context.cloned().unwrap_or(JsValue::UNDEFINED);
+                    let style = JsStyle {
+                        inner: native_style.clone(),
+                        explicit_grid_template_area_counts: explicit_grid_template_area_counts
+                            .get(&u64::from(node))
+                            .copied()
+                            .unwrap_or_default(),
+                    };
+                    let style_val = JsValue::from(style);
+                    let node_val = JsValue::from(u64::from(node));
+                    let args = js_sys::Array::new();
+                    args.push(&known_val);
+                    args.push(&available_val);
+                    args.push(&node_val);
+                    args.push(&ctx);
+                    args.push(&style_val);
+                    let result_val = func.apply(&this, &args).unwrap_or(JsValue::UNDEFINED);
+                    serde_wasm_bindgen::from_value(result_val).unwrap_or(Size::ZERO)
+                },
+            )
         };
         map_void_result(
             self.tree
@@ -1083,7 +1218,8 @@ impl JsTaffyTree {
     /// tree.computeLayout(rootId, { width: "min-content", height: "min-content" });
     /// ```
     ///
-    /// @throws `TaffyError` if the node does not exist or available space is invalid
+    /// @throws `TaffyError` if available space cannot be parsed
+    /// @remarks The node ID must identify a live node in this tree.
     ///
     /// @example
     /// ```typescript
@@ -1113,10 +1249,10 @@ impl JsTaffyTree {
     // Utilities
     // =========================================================================
 
-    /// Prints the tree structure to the console (for debugging)
+    /// Returns a text representation of the tree structure for debugging
     ///
-    /// Outputs a text representation of the tree structure starting from
-    /// the given node. Useful for debugging layout issues.
+    /// Formats the subtree starting from the given node. Pass the returned
+    /// string to `console.log()` to print it.
     ///
     /// @param node - The root node ID to print from
     ///
@@ -1159,8 +1295,8 @@ impl JsTaffyTree {
                 y = layout.location.y,
                 w = layout.size.width,
                 h = layout.size.height,
-                cw = layout.content_size.width,
-                ch = layout.content_size.height,
+                cw = layout.scrollable_overflow_rect.right,
+                ch = layout.scrollable_overflow_rect.bottom,
                 bl = layout.border.left,
                 br = layout.border.right,
                 bt = layout.border.top,

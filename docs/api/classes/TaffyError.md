@@ -27,6 +27,9 @@ The underlying Taffy errors include:
 - `InvalidParentNode`: Specified parent node doesn't exist
 - `ChildIndexOutOfBounds`: Child index exceeds available children
 
+Node IDs must still identify live nodes in the same tree. Not every upstream
+operation validates IDs; an invalid ID can trap before an error is returned.
+
 ## Properties
 
 | Property                       | Modifier   | Type     | Description                                                                                                                                                              |

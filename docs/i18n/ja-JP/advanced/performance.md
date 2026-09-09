@@ -11,7 +11,7 @@ Taffy は効率的で高性能に設計されていますが、特定のパタ�
 
 ## 1. 容量の事前割り当て
 
-ノード数を把握している場合は、`withCapacity` を使用して再割り当てを防ぎます。
+ノード数を把握している場合は、`withCapacity` を使用して再割り当てを減らせます。指定した容量を超えると追加の割り当てが必要になります。
 
 ```tsx live
 const tree = TaffyTree.withCapacity(2000);
@@ -47,7 +47,7 @@ return (
         alignItems: "center",
       }}
     >
-      Capacity: {tree.totalNodeCount()}
+      Nodes: {tree.totalNodeCount()}
     </div>
   </div>
 );
@@ -55,7 +55,9 @@ return (
 
 ## 2. 増分レイアウト
 
-変更されたノードのみが再計算されます。Taffy は**遅延評価的に**動作し、変更の影響を受けたブランチのみを再計算します。
+Taffy は条件が一致するキャッシュを再利用します。スタイルや構造を変更すると対象ノードと祖先のキャッシュが無効になります。利用可能なスペースなどが変われば、直接変更していない兄弟や子孫も再計算されることがあります。
+
+関連付けた context オブジェクトを直接変更した場合や、測定関数・フォントなど外部の測定条件を変更した場合は、影響するリーフに `markDirty(node)` を呼んでから `computeLayoutWithMeasure()` を実行してください。`setNodeContext()` で値を置き換える場合は自動的にダーティになります。コールバックを渡し直すだけではキャッシュは無効になりません。
 
 ```tsx live
 const tree = new TaffyTree();

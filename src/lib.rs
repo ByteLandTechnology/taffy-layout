@@ -43,8 +43,9 @@
 //!
 //! ## Features
 //!
-//! - **Flexbox Layout**: Full CSS Flexbox implementation
-//! - **CSS Grid Layout**: Complete CSS Grid support
+//! - **Flexbox Layout**: Flex sizing, wrapping, and alignment
+//! - **CSS Grid Layout**: Explicit and implicit tracks, placement, and alignment
+//! - **Block Layout**: Block flow, floats, and clearance
 //! - **Custom Measure Functions**: Support for custom text measurement callbacks
 //! - **Tree-based API**: Efficient tree structure for complex layouts
 //! - **TypeScript Support**: Full TypeScript type definitions included

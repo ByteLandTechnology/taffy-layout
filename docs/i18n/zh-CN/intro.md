@@ -6,7 +6,7 @@ sidebar_position: 1
 
 **高性能、跨平台的 UI 布局引擎。**
 
-Taffy Layout 是一个用 Rust 编写并可编译为 WebAssembly (JS/TS) 的高性能布局引擎。它实现了浏览器级的 **Flexbox** 和 **Grid** 算法，且不依赖 DOM，非常适合终端 UI、Canvas 渲染器、游戏 UI 和自定义渲染引擎。
+Taffy Layout 将 Rust 布局引擎通过 WebAssembly 暴露给 JS/TS，提供 **Flexbox** 和 **Grid** 算法，且不依赖 DOM，适合终端 UI、Canvas 渲染器、游戏 UI 和自定义渲染引擎。支持的属性与取值以 API 参考为准；内容测量和绘制由应用负责。
 
 ## 你可以用它构建什么
 
@@ -24,7 +24,7 @@ Taffy Layout 是一个用 Rust 编写并可编译为 WebAssembly (JS/TS) 的高�
 | **[样式](./styling/index.md)**             | Flexbox、Grid、间距、尺寸和定位。 |
 | **[实例手册](./cookbook/index.md)**        | 常见 UI 的即用型布局模式。        |
 | **[高级主题](./advanced/index.md)**        | 调试、性能优化和错误处理。        |
-| **[API 参考](../api/index.md)**            | 详细的 API 文档（自动生成）。     |
+| **[API 参考](../../api/index.md)**         | 详细的 API 文档（自动生成）。     |
 
 ## 极简心智模型
 

@@ -22,6 +22,8 @@ sidebar_position: 18
 | **MinContent（最小コンテンツ）** | コンテンツに適合する最小のサイズ。             | `{ min: 'min-content', max: 'auto' }` |
 | **MaxContent（最大コンテンツ）** | コンテンツに適合する最大のサイズ。             | `{ min: 'auto', max: 'max-content' }` |
 
+`min` と `max` のパーセント値は `"50%"` のような文字列で指定し、対応するコンテナ寸法の半分を表します。数値は固定長で、`0.5` は `0.5` ピクセルです。`gridAutoRows`、`gridAutoColumns`、`repeat` の `tracks` 配列にも同じ規則が適用されます。
+
 ## 例
 
 ```tsx live
@@ -41,6 +43,7 @@ const rootStyle = new Style({
 });
 
 const childStyle = new Style({
+  size: { width: 30, height: 20 },
   alignSelf: AlignSelf.Center,
   justifySelf: AlignSelf.Center,
 });
@@ -72,7 +75,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## API リファレンス
 
-- [GridTemplateComponent](../../api/type-aliases/GridTemplateComponent.md)
+- [GridTemplateComponent](../../../api/type-aliases/GridTemplateComponent.md)
 
 ## 次のステップ
 

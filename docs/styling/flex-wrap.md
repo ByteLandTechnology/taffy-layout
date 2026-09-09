@@ -14,8 +14,10 @@ The `flexWrap` property controls what happens when items don't fit in a single l
 | Value             | Description                                                                                                          |
 | :---------------- | :------------------------------------------------------------------------------------------------------------------- |
 | **`NoWrap`**      | **Default**. All items are forced onto one line. They may shrink (if `flexShrink` is set) or overflow the container. |
-| **`Wrap`**        | Items wrap onto multiple lines if needed, from top to bottom.                                                        |
-| **`WrapReverse`** | Items wrap onto multiple lines, from bottom to top.                                                                  |
+| **`Wrap`**        | Items wrap onto multiple lines from cross-start toward cross-end.                                                    |
+| **`WrapReverse`** | Items wrap onto multiple lines with cross-start and cross-end reversed.                                              |
+
+For a row container this usually means top-to-bottom with `Wrap` and bottom-to-top with `WrapReverse`. For a column container the cross axis is horizontal and follows its writing direction.
 
 ## Example
 
@@ -24,7 +26,8 @@ const tree = new TaffyTree();
 
 const style = new Style({
   size: { width: 60, height: 40 },
-  margin: { bottom: 5, right: 5 },
+  marginBottom: 5,
+  marginRight: 5,
 });
 
 // Create many children to force wrapping

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -116,7 +129,7 @@ test("i18n_ja-JP_getting-started_computing-layouts example 2", async () => {
   tree.setStyle(childNode, newStyle);
 
   // 3. 再計算
-  //    Taffy は影響を受けないブランチの再計算をスキップします。
+  //    Taffy は条件が一致するキャッシュを再利用します。
   tree.computeLayout(root, { width: 800, height: 600 });
 });
 
@@ -126,8 +139,12 @@ test("i18n_ja-JP_getting-started_computing-layouts example 3", async () => {
   // サブピクセル精度を有効化
   tree.disableRounding();
 
-  // ... レイアウトを計算 ...
-  const node = tree.newLeaf(new Style());
+  const style = new Style({ width: 100 / 3, height: 20 });
+  const node = tree.newLeaf(style);
+  style.free();
+  tree.computeLayout(node, { width: 100, height: 100 });
   const layout = tree.getLayout(node);
-  console.log(layout.width); // 33 ではなく 33.33333... になる可能性があります
+  console.log(layout.width); // 約 33.333332（内部は32ビット浮動小数点数）
+  layout.free();
+  tree.free();
 });

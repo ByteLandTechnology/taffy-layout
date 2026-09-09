@@ -1,4 +1,4 @@
-# MeasureFunction()
+# MeasureFunction
 
 ```ts
 type MeasureFunction = (
@@ -22,14 +22,28 @@ custom sizing based on their content (e.g., text nodes that need text measuremen
 | `knownDimensions` | [`Size`](Size.md)\<`number` \| `undefined`\>               | Dimensions already determined by constraints. Each dimension is `number` if known, or `undefined` if needs to be measured. |
 | `availableSpace`  | [`Size`](Size.md)\<[`AvailableSpace`](AvailableSpace.md)\> | The available space constraints for the node. Can be definite pixels, "min-content", or "max-content".                     |
 | `node`            | `bigint`                                                   | The node ID (`bigint`) of the node being measured                                                                          |
-| `context`         | `any`                                                      | User-provided context attached to the node via `newLeafWithContext()`                                                      |
-| `style`           | [`Style`](../classes/Style.md)                             | The node's current Style configuration                                                                                     |
+| `context`         | `any`                                                      | Value attached via `newLeafWithContext()` or `setNodeContext()`, or `undefined` when the node has no attached context      |
+| `style`           | [`Style`](../classes/Style.md)                             | An owned copy of the node's current Style; call `free()` when finished                                                     |
 
 ## Returns
 
 [`Size`](Size.md)\<`number`\>
 
 - The measured size of the content in pixels
+
+## Remarks
+
+Padding, borders, size constraints, and aspect ratios are applied by the layout
+engine around this content measurement. Available space is adjusted for the
+content box. Measurements may be cached, so the callback need not run for every
+node on every layout pass. Call `markDirty()` after changing measured content
+without changing its style or context.
+A context is optional; nodes created with `newLeaf()` can also be measured.
+Mutating an attached context object or changing the measurement function does
+not invalidate cached measurements; mark the affected nodes dirty first.
+The callback must be synchronous. Thrown exceptions and invalid return values
+are currently converted to a zero content measurement by the binding. Record
+failures and handle them outside `computeLayoutWithMeasure()` if needed.
 
 ## Example
 
@@ -66,7 +80,13 @@ const measureText: MeasureFunction = (
   style,
 ): Size<number> => {
   const ctx = context as TextContext | undefined;
-  if (!ctx?.text) return { width: 0, height: 0 };
+  style.free(); // This measurement does not need to read the style copy.
+  if (!ctx?.text) {
+    return {
+      width: knownDimensions.width ?? 0,
+      height: knownDimensions.height ?? 0,
+    };
+  }
 
   const width =
     knownDimensions.width ?? measureTextWidth(ctx.text, ctx.fontSize);

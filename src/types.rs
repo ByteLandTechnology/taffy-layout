@@ -24,8 +24,8 @@
 //!
 //! ## TypeScript Declarations
 //!
-//! The `typescript_custom_section` in this module adds type definitions that appear
-//! in the generated `taffy_js.d.ts` file, providing accurate types for:
+//! The [`crate::typescript`] module supplies declarations for the generated
+//! `taffy_wasm.d.ts` file, including:
 //!
 //! - `AvailableSpace`, `Size<T>`, `Rect<T>`, `Point<T>`
 //! - `Dimension`, `LengthPercentage`, `LengthPercentageAuto`
@@ -37,7 +37,9 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use taffy::geometry::{Rect, Size};
 use taffy::style::{
-    AvailableSpace, CompactLength, Dimension, LengthPercentage, LengthPercentageAuto,
+    AvailableSpace, Dimension, ExpandedDimension, ExpandedLengthPercentage,
+    ExpandedLengthPercentageAuto, ExpandedMaxTrackSizingFunction, ExpandedMinTrackSizingFunction,
+    LengthPercentage, LengthPercentageAuto,
 };
 use wasm_bindgen::prelude::*;
 
@@ -53,7 +55,7 @@ extern "C" {
     ///
     /// @example
     /// ```typescript
-    /// type AvailableSpace = number | "minContent" | "maxContent";
+    /// type AvailableSpace = number | "min-content" | "max-content";
     /// interface Size<T> { width: T; height: T; }
     /// ```
     #[wasm_bindgen(typescript_type = "Size<AvailableSpace>")]
@@ -121,7 +123,7 @@ extern "C" {
     #[wasm_bindgen(typescript_type = "Line<GridPlacement>")]
     pub type JsLineGridPlacement;
 
-    /// Grid template columns/rows type (uses Taffy's native serde format)
+    /// Grid template columns/rows type (track definitions or repetitions)
     #[wasm_bindgen(typescript_type = "GridTemplateComponent[]")]
     pub type JsGridTemplateComponents;
 
@@ -132,6 +134,10 @@ extern "C" {
     /// Grid line names type
     #[wasm_bindgen(typescript_type = "string[][]")]
     pub type JsGridLineNames;
+
+    /// Computed grid details, or null when no grid details are available
+    #[wasm_bindgen(typescript_type = "DetailedLayoutInfo")]
+    pub type JsDetailedLayoutInfo;
 
     /// Non-repeated grid tracks (for auto-columns/rows)
     #[wasm_bindgen(typescript_type = "TrackSizingFunction[]")]
@@ -166,7 +172,7 @@ extern "C" {
 pub enum DimensionDto {
     /// Fixed length in pixels
     Length(f32),
-    /// Percentage of parent dimension (0-100)
+    /// Percentage units, where 100 represents the full reference size
     Percent(f32),
     /// Automatic sizing
     Auto,
@@ -220,9 +226,8 @@ impl<'de> Deserialize<'de> for DimensionDto {
             {
                 if value == "auto" {
                     Ok(DimensionDto::Auto)
-                } else if value.ends_with('%') {
+                } else if let Some(num_str) = value.strip_suffix('%') {
                     // Try parsing the number part
-                    let num_str = &value[..value.len() - 1];
                     match num_str.parse::<f32>() {
                         Ok(p) => Ok(DimensionDto::Percent(p)),
                         Err(_) => Err(E::custom("Invalid percentage value")),
@@ -249,15 +254,38 @@ impl From<DimensionDto> for Dimension {
 
 impl From<Dimension> for DimensionDto {
     fn from(d: Dimension) -> Self {
-        if d.is_auto() {
-            DimensionDto::Auto
-        } else {
-            match d.into_raw().tag() {
-                CompactLength::LENGTH_TAG => DimensionDto::Length(d.value()),
-                CompactLength::PERCENT_TAG => DimensionDto::Percent(d.value() * 100.0),
-                _ => DimensionDto::Auto,
-            }
+        match d.expand() {
+            ExpandedDimension::Length(value) => DimensionDto::Length(value),
+            ExpandedDimension::Percent(value) => DimensionDto::Percent(value * 100.0),
+            ExpandedDimension::Auto => DimensionDto::Auto,
+            // Intrinsic sizing keywords are not exposed by the JavaScript API.
+            // Keep its existing fallback for values outside the supported subset.
+            ExpandedDimension::MinContent
+            | ExpandedDimension::MaxContent
+            | ExpandedDimension::FitContentPx(_)
+            | ExpandedDimension::FitContentPercent(_)
+            | ExpandedDimension::FitContent
+            | ExpandedDimension::Stretch
+            | ExpandedDimension::Content => DimensionDto::Auto,
         }
+    }
+}
+
+// Minimum and maximum sizes use LengthPercentageAuto internally and share
+// the JavaScript Dimension contract: a length, percentage, or "auto".
+impl From<DimensionDto> for LengthPercentageAuto {
+    fn from(value: DimensionDto) -> Self {
+        match value {
+            DimensionDto::Length(value) => Self::length(value),
+            DimensionDto::Percent(value) => Self::percent(value / 100.0),
+            DimensionDto::Auto => Self::auto(),
+        }
+    }
+}
+
+impl From<LengthPercentageAuto> for DimensionDto {
+    fn from(value: LengthPercentageAuto) -> Self {
+        Dimension::from(value).into()
     }
 }
 
@@ -279,7 +307,7 @@ impl From<Dimension> for DimensionDto {
 pub enum LengthPercentageDto {
     /// Fixed length in pixels
     Length(f32),
-    /// Percentage of parent dimension (0-100)
+    /// Percentage units, where 100 represents the full reference size
     Percent(f32),
 }
 
@@ -328,9 +356,8 @@ impl<'de> Deserialize<'de> for LengthPercentageDto {
             where
                 E: de::Error,
             {
-                if value.ends_with('%') {
+                if let Some(num_str) = value.strip_suffix('%') {
                     // Try parsing the number part
-                    let num_str = &value[..value.len() - 1];
                     match num_str.parse::<f32>() {
                         Ok(p) => Ok(LengthPercentageDto::Percent(p)),
                         Err(_) => Err(E::custom("Invalid percentage value")),
@@ -356,11 +383,9 @@ impl From<LengthPercentageDto> for LengthPercentage {
 
 impl From<LengthPercentage> for LengthPercentageDto {
     fn from(val: LengthPercentage) -> Self {
-        let inner = val.into_raw();
-        match inner.tag() {
-            CompactLength::LENGTH_TAG => LengthPercentageDto::Length(inner.value()),
-            CompactLength::PERCENT_TAG => LengthPercentageDto::Percent(inner.value() * 100.0),
-            _ => LengthPercentageDto::Length(0.0),
+        match val.expand() {
+            ExpandedLengthPercentage::Length(value) => LengthPercentageDto::Length(value),
+            ExpandedLengthPercentage::Percent(value) => LengthPercentageDto::Percent(value * 100.0),
         }
     }
 }
@@ -383,7 +408,7 @@ impl From<LengthPercentage> for LengthPercentageDto {
 pub enum LengthPercentageAutoDto {
     /// Fixed length in pixels
     Length(f32),
-    /// Percentage of parent dimension (0-100)
+    /// Percentage units, where 100 represents the full reference size
     Percent(f32),
     /// Automatic value (e.g., auto margins for centering)
     Auto,
@@ -437,9 +462,8 @@ impl<'de> Deserialize<'de> for LengthPercentageAutoDto {
             {
                 if value == "auto" {
                     Ok(LengthPercentageAutoDto::Auto)
-                } else if value.ends_with('%') {
+                } else if let Some(num_str) = value.strip_suffix('%') {
                     // Try parsing the number part
-                    let num_str = &value[..value.len() - 1];
                     match num_str.parse::<f32>() {
                         Ok(p) => Ok(LengthPercentageAutoDto::Percent(p)),
                         Err(_) => Err(E::custom("Invalid percentage value")),
@@ -466,17 +490,12 @@ impl From<LengthPercentageAutoDto> for LengthPercentageAuto {
 
 impl From<LengthPercentageAuto> for LengthPercentageAutoDto {
     fn from(val: LengthPercentageAuto) -> Self {
-        let inner = val.into_raw();
-        if inner.is_auto() {
-            LengthPercentageAutoDto::Auto
-        } else {
-            match inner.tag() {
-                CompactLength::LENGTH_TAG => LengthPercentageAutoDto::Length(inner.value()),
-                CompactLength::PERCENT_TAG => {
-                    LengthPercentageAutoDto::Percent(inner.value() * 100.0)
-                }
-                _ => LengthPercentageAutoDto::Auto,
+        match val.expand() {
+            ExpandedLengthPercentageAuto::Length(value) => LengthPercentageAutoDto::Length(value),
+            ExpandedLengthPercentageAuto::Percent(value) => {
+                LengthPercentageAutoDto::Percent(value * 100.0)
             }
+            ExpandedLengthPercentageAuto::Auto => LengthPercentageAutoDto::Auto,
         }
     }
 }
@@ -664,7 +683,7 @@ pub struct PointDto<T> {
 /// @example
 /// ```json
 /// { "width": 800, "height": 600 }
-/// { "width": "maxContent", "height": 400 }
+/// { "width": "max-content", "height": 400 }
 /// ```
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AvailableSizeDto {
@@ -678,7 +697,7 @@ pub struct AvailableSizeDto {
 ///
 /// @example
 /// ```json
-/// "maxContent"
+/// "max-content"
 /// 800
 /// ```
 #[derive(Debug, Clone)]
@@ -796,6 +815,7 @@ pub struct DetailedGridTracksInfoDto {
     pub positive_implicit_tracks: u16,
     pub gutters: Vec<f32>,
     pub sizes: Vec<f32>,
+    pub positions: Vec<taffy::geometry::Line<f32>>,
 }
 
 /// DTO for grid item placement
@@ -975,8 +995,8 @@ impl From<GridPlacementDto> for GridPlacement {
             GridPlacementDto::Auto => GridPlacement::Auto,
             GridPlacementDto::Line(idx) => GridPlacement::from_line_index(idx),
             GridPlacementDto::Span(span) => GridPlacement::from_span(span),
-            GridPlacementDto::NamedLine(idx, s) => GridPlacement::NamedLine(s.into(), idx), // NamedLine variant
-            GridPlacementDto::NamedSpan(n, s) => GridPlacement::NamedSpan(s.into(), n),
+            GridPlacementDto::NamedLine(idx, s) => GridPlacement::NamedLine(s, idx), // NamedLine variant
+            GridPlacementDto::NamedSpan(n, s) => GridPlacement::NamedSpan(s, n),
         }
     }
 }
@@ -1308,14 +1328,16 @@ where
 // Min conversions
 impl From<MinTrackSizingFunction> for MinTrackSizingFunctionDto {
     fn from(val: MinTrackSizingFunction) -> Self {
-        let raw = val.into_raw();
-        match raw.tag() {
-            CompactLength::LENGTH_TAG => MinTrackSizingFunctionDto::Length(raw.value()),
-            CompactLength::PERCENT_TAG => MinTrackSizingFunctionDto::Percent(raw.value()),
-            CompactLength::AUTO_TAG => MinTrackSizingFunctionDto::Auto,
-            CompactLength::MIN_CONTENT_TAG => MinTrackSizingFunctionDto::MinContent,
-            CompactLength::MAX_CONTENT_TAG => MinTrackSizingFunctionDto::MaxContent,
-            _ => MinTrackSizingFunctionDto::Auto,
+        match val.expand() {
+            ExpandedMinTrackSizingFunction::Length(value) => {
+                MinTrackSizingFunctionDto::Length(value)
+            }
+            ExpandedMinTrackSizingFunction::Percent(value) => {
+                MinTrackSizingFunctionDto::Percent(value * 100.0)
+            }
+            ExpandedMinTrackSizingFunction::Auto => MinTrackSizingFunctionDto::Auto,
+            ExpandedMinTrackSizingFunction::MinContent => MinTrackSizingFunctionDto::MinContent,
+            ExpandedMinTrackSizingFunction::MaxContent => MinTrackSizingFunctionDto::MaxContent,
         }
     }
 }
@@ -1324,7 +1346,7 @@ impl From<MinTrackSizingFunctionDto> for MinTrackSizingFunction {
     fn from(val: MinTrackSizingFunctionDto) -> Self {
         match val {
             MinTrackSizingFunctionDto::Length(v) => MinTrackSizingFunction::length(v),
-            MinTrackSizingFunctionDto::Percent(v) => MinTrackSizingFunction::percent(v),
+            MinTrackSizingFunctionDto::Percent(v) => MinTrackSizingFunction::percent(v / 100.0),
             MinTrackSizingFunctionDto::Auto => MinTrackSizingFunction::auto(),
             MinTrackSizingFunctionDto::MinContent => MinTrackSizingFunction::min_content(),
             MinTrackSizingFunctionDto::MaxContent => MinTrackSizingFunction::max_content(),
@@ -1335,19 +1357,23 @@ impl From<MinTrackSizingFunctionDto> for MinTrackSizingFunction {
 // Max conversions
 impl From<MaxTrackSizingFunction> for MaxTrackSizingFunctionDto {
     fn from(val: MaxTrackSizingFunction) -> Self {
-        let raw = val.into_raw();
-        match raw.tag() {
-            CompactLength::LENGTH_TAG => MaxTrackSizingFunctionDto::Length(raw.value()),
-            CompactLength::PERCENT_TAG => MaxTrackSizingFunctionDto::Percent(raw.value()),
-            CompactLength::FR_TAG => MaxTrackSizingFunctionDto::Fraction(raw.value()),
-            CompactLength::FIT_CONTENT_PX_TAG => MaxTrackSizingFunctionDto::FitContent(raw.value()),
-            CompactLength::FIT_CONTENT_PERCENT_TAG => {
-                MaxTrackSizingFunctionDto::FitContentPercent(raw.value())
+        match val.expand() {
+            ExpandedMaxTrackSizingFunction::Length(value) => {
+                MaxTrackSizingFunctionDto::Length(value)
             }
-            CompactLength::AUTO_TAG => MaxTrackSizingFunctionDto::Auto,
-            CompactLength::MIN_CONTENT_TAG => MaxTrackSizingFunctionDto::MinContent,
-            CompactLength::MAX_CONTENT_TAG => MaxTrackSizingFunctionDto::MaxContent,
-            _ => MaxTrackSizingFunctionDto::Auto,
+            ExpandedMaxTrackSizingFunction::Percent(value) => {
+                MaxTrackSizingFunctionDto::Percent(value * 100.0)
+            }
+            ExpandedMaxTrackSizingFunction::Fr(value) => MaxTrackSizingFunctionDto::Fraction(value),
+            ExpandedMaxTrackSizingFunction::FitContentPx(value) => {
+                MaxTrackSizingFunctionDto::FitContent(value)
+            }
+            ExpandedMaxTrackSizingFunction::FitContentPercent(value) => {
+                MaxTrackSizingFunctionDto::FitContentPercent(value)
+            }
+            ExpandedMaxTrackSizingFunction::Auto => MaxTrackSizingFunctionDto::Auto,
+            ExpandedMaxTrackSizingFunction::MinContent => MaxTrackSizingFunctionDto::MinContent,
+            ExpandedMaxTrackSizingFunction::MaxContent => MaxTrackSizingFunctionDto::MaxContent,
         }
     }
 }
@@ -1356,7 +1382,7 @@ impl From<MaxTrackSizingFunctionDto> for MaxTrackSizingFunction {
     fn from(val: MaxTrackSizingFunctionDto) -> Self {
         match val {
             MaxTrackSizingFunctionDto::Length(v) => MaxTrackSizingFunction::length(v),
-            MaxTrackSizingFunctionDto::Percent(v) => MaxTrackSizingFunction::percent(v),
+            MaxTrackSizingFunctionDto::Percent(v) => MaxTrackSizingFunction::percent(v / 100.0),
             MaxTrackSizingFunctionDto::Fraction(v) => MaxTrackSizingFunction::fr(v),
             MaxTrackSizingFunctionDto::FitContent(v) => MaxTrackSizingFunction::fit_content_px(v),
             MaxTrackSizingFunctionDto::FitContentPercent(v) => {

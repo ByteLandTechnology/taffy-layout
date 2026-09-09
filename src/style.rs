@@ -5,7 +5,7 @@
 //!
 //! ## Overview
 //!
-//! The `Style` class exposes all CSS Flexbox and Grid layout properties through a
+//! The `Style` class exposes supported Flexbox, Grid, and block layout properties through a
 //! JavaScript-friendly API. Properties are accessed and modified using standard
 //! JavaScript getter/setter syntax.
 //!
@@ -93,9 +93,9 @@
 //!
 //! | Category | Properties |
 //! |----------|------------|
-//! | **Layout Mode** | `display`, `position` |
+//! | **Layout Mode** | `display`, `position`, `direction`, `float`, `clear` |
 //! | **Flexbox** | `flexDirection`, `flexWrap`, `flexGrow`, `flexShrink`, `flexBasis` |
-//! | **Alignment** | `alignItems`, `alignSelf`, `alignContent`, `justifyContent` |
+//! | **Alignment** | `alignItems`, `alignSelf`, `alignContent`, `justifyContent`, `justifyItems`, `justifySelf` |
 //! | **Sizing** | `size`, `minSize`, `maxSize`, `aspectRatio`, `boxSizing` |
 //! | **Spacing** | `margin`, `padding`, `border`, `gap`, `inset` |
 //! | **Overflow** | `overflow` |
@@ -116,31 +116,115 @@ use taffy::style::{self as TaffyStyle};
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 
+fn checked_js_enum<T>(value: &JsValue) -> Option<T>
+where
+    T: CheckedJsEnum,
+{
+    let number = value.as_f64()?;
+    if !number.is_finite()
+        || number.fract() != 0.0
+        || number < u8::MIN as f64
+        || number > u8::MAX as f64
+    {
+        return None;
+    }
+
+    T::from_repr(number as u8)
+}
+
+fn grid_template_area_dtos(style: &TaffyStyle::Style) -> Vec<GridTemplateAreaDto> {
+    style
+        .grid_template_areas
+        .as_ref()
+        .map(|template| template.areas.iter().cloned().map(Into::into).collect())
+        .unwrap_or_default()
+}
+
+fn grid_template_area_extent(ends: impl Iterator<Item = u16>) -> u16 {
+    ends.map(|end| end.max(1) - 1).max().unwrap_or(0)
+}
+
+/// User-specified minimum dimensions, before clamping to the current named areas.
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct GridTemplateAreaCounts {
+    rows: u16,
+    columns: u16,
+}
+
 // =============================================================================
 // Style Struct
 // =============================================================================
 
 /// CSS layout configuration for a node, including flexbox, sizing, spacing, and alignment properties.
 ///
-/// This class holds all CSS layout properties for a node. Create an instance with
+/// This class holds the supported layout properties for a node. Create an instance with
 /// `new Style()` and configure properties before passing to `TaffyTree.newLeaf()`.
 ///
 /// @defaultValue
-/// When created, all properties are set to their CSS default values:
-/// - `display`: `Display.Block`
+/// A new style uses these layout defaults:
+/// - `display`: `Display.Flex`
 /// - `position`: `Position.Relative`
+/// - `direction`: `Direction.Ltr`; `float`: `Float.None`; `clear`: `Clear.None`
+/// - `boxSizing`: `BoxSizing.BorderBox`; both overflow axes: `Overflow.Visible`
 /// - `flexDirection`: `FlexDirection.Row`
 /// - `flexWrap`: `FlexWrap.NoWrap`
 /// - `flexGrow`: `0`
 /// - `flexShrink`: `1`
-/// - All alignment properties: `undefined` (use default behavior)
-/// - All dimensions: `"auto"`
-/// - All spacing: `0`
+/// - `flexBasis`: `"auto"`; `aspectRatio`: `undefined`
+/// - `alignSelf` and `justifySelf`: `AlignSelf.Auto` (`get()` returns `undefined`)
+/// - Other alignment properties: `undefined` (use default behavior)
+/// - Preferred, minimum, and maximum dimensions: `"auto"`
+/// - Margin, padding, border, and gap: `0`; inset: `"auto"`
+/// - `scrollbarWidth`: `0`; `itemIsTable` and `itemIsReplaced`: `false`
+/// - `textAlign`: `TextAlign.Auto`; `gridAutoFlow`: `GridAutoFlow.Row`
+/// - Grid row/column placements: `"auto"`; track, area, and line-name arrays: `[]`
+/// - Grid template area row and column counts: `0`
 ///
 #[wasm_bindgen(js_name = Style)]
 pub struct JsStyle {
     /// Internal Taffy style object (crate-internal access for tree operations)
     pub(crate) inner: TaffyStyle::Style,
+    pub(crate) explicit_grid_template_area_counts: GridTemplateAreaCounts,
+}
+
+impl JsStyle {
+    fn set_grid_template_area_dtos(&mut self, areas: Vec<GridTemplateAreaDto>) {
+        self.inner.grid_template_areas = Some(TaffyStyle::GridTemplateAreas {
+            areas: areas.into_iter().map(Into::into).collect(),
+            row_count: 0,
+            column_count: 0,
+        });
+        self.update_grid_template_area_counts();
+    }
+
+    fn update_grid_template_area_counts(&mut self) {
+        let template =
+            self.inner
+                .grid_template_areas
+                .get_or_insert_with(|| TaffyStyle::GridTemplateAreas {
+                    areas: Default::default(),
+                    row_count: 0,
+                    column_count: 0,
+                });
+        // Only explicit counts survive area replacement. Previously inferred
+        // dimensions must be allowed to shrink with the current named areas.
+        template.row_count =
+            self.explicit_grid_template_area_counts
+                .rows
+                .max(grid_template_area_extent(
+                    template.areas.iter().map(|area| area.row_end),
+                ));
+        template.column_count =
+            self.explicit_grid_template_area_counts
+                .columns
+                .max(grid_template_area_extent(
+                    template.areas.iter().map(|area| area.column_end),
+                ));
+
+        if template.areas.is_empty() && template.row_count == 0 && template.column_count == 0 {
+            self.inner.grid_template_areas = None;
+        }
+    }
 }
 
 #[wasm_bindgen(js_class = "Style")]
@@ -152,13 +236,13 @@ impl JsStyle {
     /// Creates a new Style instance with default values
     ///
     /// @param props - Optional object with initial style properties
-    /// @returns - A new `Style` object with all properties set to CSS defaults
+    /// @returns - A new `Style` object using the layout defaults and supplied overrides
     ///
     /// @example
     /// ```typescript
     /// // Create with defaults
     /// const style = new Style();
-    /// console.log(style.display);  // Display.Block
+    /// console.log(style.display);  // Display.Flex
     ///
     /// // Create with initial properties
     /// const style2 = new Style({
@@ -172,6 +256,7 @@ impl JsStyle {
     pub fn new(props: Option<JsValue>) -> JsStyle {
         let mut style = JsStyle {
             inner: TaffyStyle::Style::default(),
+            explicit_grid_template_area_counts: GridTemplateAreaCounts::default(),
         };
 
         if let Some(props_value) = props {
@@ -193,7 +278,7 @@ impl JsStyle {
     ///
     /// @returns - The current [`Display`](JsDisplay) value
     ///
-    /// @defaultValue - `Display.Block`
+    /// @defaultValue - `Display.Flex`
     #[wasm_bindgen(getter)]
     pub fn display(&self) -> JsDisplay {
         self.inner.display.into()
@@ -240,6 +325,42 @@ impl JsStyle {
     #[wasm_bindgen(setter)]
     pub fn set_position(&mut self, val: JsPosition) {
         self.inner.position = val.into();
+    }
+
+    /// Gets the writing direction used for logical layout.
+    #[wasm_bindgen(getter)]
+    pub fn direction(&self) -> JsDirection {
+        self.inner.direction.into()
+    }
+
+    /// Sets the writing direction used for logical layout.
+    #[wasm_bindgen(setter)]
+    pub fn set_direction(&mut self, val: JsDirection) {
+        self.inner.direction = val.into();
+    }
+
+    /// Gets whether and where this box floats in block layout.
+    #[wasm_bindgen(getter, js_name = float)]
+    pub fn float(&self) -> JsFloat {
+        self.inner.float.into()
+    }
+
+    /// Sets whether and where this box floats in block layout.
+    #[wasm_bindgen(setter, js_name = float)]
+    pub fn set_float(&mut self, val: JsFloat) {
+        self.inner.float = val.into();
+    }
+
+    /// Gets which preceding floats this box must clear in block layout.
+    #[wasm_bindgen(getter)]
+    pub fn clear(&self) -> JsClear {
+        self.inner.clear.into()
+    }
+
+    /// Sets which preceding floats this box must clear in block layout.
+    #[wasm_bindgen(setter)]
+    pub fn set_clear(&mut self, val: JsClear) {
+        self.inner.clear = val.into();
     }
 
     // =========================================================================
@@ -378,10 +499,8 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         self.inner.align_items = if val.is_undefined() {
             None
-        } else if let Some(n) = val.as_f64() {
-            Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into())
         } else {
-            None
+            checked_js_enum::<JsAlignItems>(&val).map(Into::into)
         };
     }
 
@@ -390,6 +509,9 @@ impl JsStyle {
     /// Overrides the parent's align-items for this specific element.
     ///
     /// @returns - The current [`AlignSelf`](JsAlignSelf) value (returns `Auto` if not set)
+    ///
+    /// @remarks Unlike this accessor, `get("alignSelf")` returns `undefined` when unset
+    /// or assigned `AlignSelf.Auto`.
     #[wasm_bindgen(getter, js_name = alignSelf)]
     pub fn align_self(&self) -> Option<JsAlignSelf> {
         match self.inner.align_self {
@@ -412,8 +534,7 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         self.inner.align_self = if val.is_undefined() {
             None
-        } else if let Some(n) = val.as_f64() {
-            let js_val = unsafe { std::mem::transmute::<u8, JsAlignSelf>(n as u8) };
+        } else if let Some(js_val) = checked_js_enum::<JsAlignSelf>(&val) {
             match js_val {
                 JsAlignSelf::Auto => None,
                 _ => Some(js_val.into()),
@@ -425,7 +546,8 @@ impl JsStyle {
 
     /// Gets the align-content property
     ///
-    /// Controls distribution of space between lines in a multi-line flex container.
+    /// Distributes wrapped flex lines, aligns grid rows, or vertically aligns
+    /// block content, depending on the container's display mode.
     ///
     /// @returns - The current [`AlignContent`](JsAlignContent) value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = alignContent)]
@@ -447,10 +569,8 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         self.inner.align_content = if val.is_undefined() {
             None
-        } else if let Some(n) = val.as_f64() {
-            Some(unsafe { std::mem::transmute::<u8, JsAlignContent>(n as u8) }.into())
         } else {
-            None
+            checked_js_enum::<JsAlignContent>(&val).map(Into::into)
         };
     }
 
@@ -478,10 +598,8 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         self.inner.justify_content = if val.is_undefined() {
             None
-        } else if let Some(n) = val.as_f64() {
-            Some(unsafe { std::mem::transmute::<u8, JsJustifyContent>(n as u8) }.into())
         } else {
-            None
+            checked_js_enum::<JsJustifyContent>(&val).map(Into::into)
         };
     }
 
@@ -526,8 +644,8 @@ impl JsStyle {
     #[wasm_bindgen(getter)]
     pub fn overflow(&self) -> JsPointOverflow {
         let s = PointOverflowDto {
-            x: self.inner.overflow.x as u8,
-            y: self.inner.overflow.y as u8,
+            x: JsOverflow::from(self.inner.overflow.x) as u8,
+            y: JsOverflow::from(self.inner.overflow.y) as u8,
         };
         serialize(&s).unchecked_into()
     }
@@ -1704,10 +1822,8 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         self.inner.justify_items = if val.is_undefined() {
             None
-        } else if let Some(n) = val.as_f64() {
-            Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into())
         } else {
-            None
+            checked_js_enum::<JsAlignItems>(&val).map(Into::into)
         };
     }
 
@@ -1716,6 +1832,9 @@ impl JsStyle {
     /// Overrides the parent's justify-items for this specific element in the inline axis.
     ///
     /// @returns - The current [`AlignSelf`](JsAlignSelf) value (returns `Auto` if not set)
+    ///
+    /// @remarks Unlike this accessor, `get("justifySelf")` returns `undefined` when unset
+    /// or assigned `AlignSelf.Auto`.
     #[wasm_bindgen(getter, js_name = justifySelf)]
     pub fn justify_self(&self) -> Option<JsAlignSelf> {
         match self.inner.justify_self {
@@ -1738,8 +1857,7 @@ impl JsStyle {
         let val: JsValue = val.unchecked_into();
         self.inner.justify_self = if val.is_undefined() {
             None
-        } else if let Some(n) = val.as_f64() {
-            let js_val = unsafe { std::mem::transmute::<u8, JsAlignSelf>(n as u8) };
+        } else if let Some(js_val) = checked_js_enum::<JsAlignSelf>(&val) {
             match js_val {
                 JsAlignSelf::Auto => None,
                 _ => Some(js_val.into()),
@@ -1966,7 +2084,7 @@ impl JsStyle {
     ///
     /// Defines the track sizing functions (heights) of the grid rows.
     ///
-    /// @returns - An array of `GridTrack` values
+    /// @returns - An array of `GridTemplateComponent` track definitions or repetitions
     #[wasm_bindgen(getter, js_name = gridTemplateRows)]
     pub fn grid_template_rows(&self) -> JsGridTemplateComponents {
         let tracks: Vec<GridTemplateComponentDto> = self
@@ -1981,7 +2099,7 @@ impl JsStyle {
 
     /// Sets the grid-template-rows property
     ///
-    /// @param val - An array of GridTrack objects
+    /// @param val - An array of GridTemplateComponent objects
     #[wasm_bindgen(setter, js_name = gridTemplateRows)]
     pub fn set_grid_template_rows(&mut self, val: JsGridTemplateComponents) {
         let val: JsValue = val.unchecked_into();
@@ -1994,7 +2112,7 @@ impl JsStyle {
     ///
     /// Defines the track sizing functions (widths) of the grid columns.
     ///
-    /// @returns - An array of `GridTrack` values
+    /// @returns - An array of `GridTemplateComponent` track definitions or repetitions
     #[wasm_bindgen(getter, js_name = gridTemplateColumns)]
     pub fn grid_template_columns(&self) -> JsGridTemplateComponents {
         let tracks: Vec<GridTemplateComponentDto> = self
@@ -2009,7 +2127,7 @@ impl JsStyle {
 
     /// Sets the grid-template-columns property
     ///
-    /// @param val - An array of GridTrack objects
+    /// @param val - An array of GridTemplateComponent objects
     ///
     /// @example
     /// ```typescript
@@ -2096,16 +2214,10 @@ impl JsStyle {
     ///
     /// Defines named grid areas that can be referenced by grid items.
     ///
-    /// @returns - An array of `GridArea` values
+    /// @returns - An array of `GridTemplateArea` values
     #[wasm_bindgen(getter, js_name = gridTemplateAreas)]
     pub fn grid_template_areas(&self) -> JsGridTemplateAreas {
-        let areas: Vec<crate::types::GridTemplateAreaDto> = self
-            .inner
-            .grid_template_areas
-            .iter()
-            .cloned()
-            .map(|a| a.into())
-            .collect();
+        let areas = grid_template_area_dtos(&self.inner);
         serialize(&areas).unchecked_into()
     }
 
@@ -2128,8 +2240,54 @@ impl JsStyle {
         if let Ok(areas) =
             serde_wasm_bindgen::from_value::<Vec<crate::types::GridTemplateAreaDto>>(val)
         {
-            self.inner.grid_template_areas = areas.into_iter().map(|a| a.into()).collect();
+            self.set_grid_template_area_dtos(areas);
         }
+    }
+
+    /// Gets the effective row count of the grid-template-areas template.
+    ///
+    /// This may exceed the extent of the named areas when the template has
+    /// trailing or entirely unnamed (`.`) cells. It is never smaller than the
+    /// largest named area's ending row line minus one.
+    #[wasm_bindgen(getter, js_name = gridTemplateAreaRowCount)]
+    pub fn grid_template_area_row_count(&self) -> u16 {
+        self.inner
+            .grid_template_areas
+            .as_ref()
+            .map(|template| template.row_count)
+            .unwrap_or(0)
+    }
+
+    /// Sets the minimum row count retained when named areas are replaced or cleared.
+    /// The effective count cannot be smaller than the named area extent.
+    /// Setting zero removes the explicit minimum.
+    #[wasm_bindgen(setter, js_name = gridTemplateAreaRowCount)]
+    pub fn set_grid_template_area_row_count(&mut self, val: u16) {
+        self.explicit_grid_template_area_counts.rows = val;
+        self.update_grid_template_area_counts();
+    }
+
+    /// Gets the effective column count of the grid-template-areas template.
+    ///
+    /// This may exceed the extent of the named areas when the template has
+    /// trailing or entirely unnamed (`.`) cells. It is never smaller than the
+    /// largest named area's ending column line minus one.
+    #[wasm_bindgen(getter, js_name = gridTemplateAreaColumnCount)]
+    pub fn grid_template_area_column_count(&self) -> u16 {
+        self.inner
+            .grid_template_areas
+            .as_ref()
+            .map(|template| template.column_count)
+            .unwrap_or(0)
+    }
+
+    /// Sets the minimum column count retained when named areas are replaced or cleared.
+    /// The effective count cannot be smaller than the named area extent.
+    /// Setting zero removes the explicit minimum.
+    #[wasm_bindgen(setter, js_name = gridTemplateAreaColumnCount)]
+    pub fn set_grid_template_area_column_count(&mut self, val: u16) {
+        self.explicit_grid_template_area_counts.columns = val;
+        self.update_grid_template_area_counts();
     }
 
     /// Gets the grid-template-row-names property
@@ -2165,10 +2323,8 @@ impl JsStyle {
     pub fn set_grid_template_row_names(&mut self, val: JsGridLineNames) {
         let val: JsValue = val.unchecked_into();
         if let Ok(names) = serde_wasm_bindgen::from_value::<Vec<Vec<String>>>(val) {
-            self.inner.grid_template_row_names = names
-                .into_iter()
-                .map(|v| v.into_iter().map(|s| s.into()).collect())
-                .collect();
+            self.inner.grid_template_row_names =
+                names.into_iter().map(|v| v.into_iter().collect()).collect();
         }
     }
 
@@ -2205,10 +2361,8 @@ impl JsStyle {
     pub fn set_grid_template_column_names(&mut self, val: JsGridLineNames) {
         let val: JsValue = val.unchecked_into();
         if let Ok(names) = serde_wasm_bindgen::from_value::<Vec<Vec<String>>>(val) {
-            self.inner.grid_template_column_names = names
-                .into_iter()
-                .map(|v| v.into_iter().map(|s| s.into()).collect())
-                .collect();
+            self.inner.grid_template_column_names =
+                names.into_iter().map(|v| v.into_iter().collect()).collect();
         }
     }
 
@@ -2261,24 +2415,29 @@ impl JsStyle {
     fn get_property(&self, path: &str) -> JsValue {
         match path {
             // Layout Mode
-            "display" => JsValue::from(self.inner.display as u8),
-            "position" => JsValue::from(self.inner.position as u8),
-            "boxSizing" => JsValue::from(self.inner.box_sizing as u8),
+            "display" => JsValue::from(JsDisplay::from(self.inner.display) as u8),
+            "position" => JsValue::from(JsPosition::from(self.inner.position) as u8),
+            "direction" => JsValue::from(JsDirection::from(self.inner.direction) as u8),
+            "float" => JsValue::from(JsFloat::from(self.inner.float) as u8),
+            "clear" => JsValue::from(JsClear::from(self.inner.clear) as u8),
+            "boxSizing" => JsValue::from(JsBoxSizing::from(self.inner.box_sizing) as u8),
 
             // Overflow
             "overflow" => {
                 let s = PointOverflowDto {
-                    x: self.inner.overflow.x as u8,
-                    y: self.inner.overflow.y as u8,
+                    x: JsOverflow::from(self.inner.overflow.x) as u8,
+                    y: JsOverflow::from(self.inner.overflow.y) as u8,
                 };
                 serialize(&s)
             }
-            "overflowX" => JsValue::from(self.inner.overflow.x as u8),
-            "overflowY" => JsValue::from(self.inner.overflow.y as u8),
+            "overflowX" => JsValue::from(JsOverflow::from(self.inner.overflow.x) as u8),
+            "overflowY" => JsValue::from(JsOverflow::from(self.inner.overflow.y) as u8),
 
             // Flexbox
-            "flexDirection" => JsValue::from(self.inner.flex_direction as u8),
-            "flexWrap" => JsValue::from(self.inner.flex_wrap as u8),
+            "flexDirection" => {
+                JsValue::from(JsFlexDirection::from(self.inner.flex_direction) as u8)
+            }
+            "flexWrap" => JsValue::from(JsFlexWrap::from(self.inner.flex_wrap) as u8),
             "flexGrow" => JsValue::from(self.inner.flex_grow),
             "flexShrink" => JsValue::from(self.inner.flex_shrink),
             "flexBasis" => {
@@ -2288,27 +2447,27 @@ impl JsStyle {
 
             // Alignment
             "alignItems" => match self.inner.align_items {
-                Some(v) => JsValue::from(v as u8),
+                Some(v) => JsValue::from(JsAlignItems::from(v) as u8),
                 None => JsValue::UNDEFINED,
             },
             "alignSelf" => match self.inner.align_self {
-                Some(v) => JsValue::from(v as u8),
+                Some(v) => JsValue::from(JsAlignSelf::from(v) as u8),
                 None => JsValue::UNDEFINED,
             },
             "alignContent" => match self.inner.align_content {
-                Some(v) => JsValue::from(v as u8),
+                Some(v) => JsValue::from(JsAlignContent::from(v) as u8),
                 None => JsValue::UNDEFINED,
             },
             "justifyContent" => match self.inner.justify_content {
-                Some(v) => JsValue::from(v as u8),
+                Some(v) => JsValue::from(JsJustifyContent::from(v) as u8),
                 None => JsValue::UNDEFINED,
             },
             "justifyItems" => match self.inner.justify_items {
-                Some(v) => JsValue::from(v as u8),
+                Some(v) => JsValue::from(JsAlignItems::from(v) as u8),
                 None => JsValue::UNDEFINED,
             },
             "justifySelf" => match self.inner.justify_self {
-                Some(v) => JsValue::from(v as u8),
+                Some(v) => JsValue::from(JsAlignSelf::from(v) as u8),
                 None => JsValue::UNDEFINED,
             },
 
@@ -2498,10 +2657,10 @@ impl JsStyle {
             "itemIsTable" => JsValue::from(self.inner.item_is_table),
             "itemIsReplaced" => JsValue::from(self.inner.item_is_replaced),
             "scrollbarWidth" => JsValue::from(self.inner.scrollbar_width),
-            "textAlign" => JsValue::from(self.inner.text_align as u8),
+            "textAlign" => JsValue::from(JsTextAlign::from(self.inner.text_align) as u8),
 
             // Grid layout
-            "gridAutoFlow" => JsValue::from(self.inner.grid_auto_flow as u8),
+            "gridAutoFlow" => JsValue::from(JsGridAutoFlow::from(self.inner.grid_auto_flow) as u8),
 
             "gridRow" => {
                 let dto: LineGridPlacementDto = self.inner.grid_row.clone().into();
@@ -2574,15 +2733,11 @@ impl JsStyle {
             }
 
             "gridTemplateAreas" => {
-                let areas: Vec<crate::types::GridTemplateAreaDto> = self
-                    .inner
-                    .grid_template_areas
-                    .iter()
-                    .cloned()
-                    .map(|a| a.into())
-                    .collect();
+                let areas = grid_template_area_dtos(&self.inner);
                 serialize(&areas)
             }
+            "gridTemplateAreaRowCount" => JsValue::from(self.grid_template_area_row_count()),
+            "gridTemplateAreaColumnCount" => JsValue::from(self.grid_template_area_column_count()),
 
             "gridTemplateRowNames" => {
                 let names: Vec<Vec<String>> = self
@@ -2654,6 +2809,7 @@ impl JsStyle {
 
         let obj = js_sys::Object::from(props);
         let entries = js_sys::Object::entries(&obj);
+        let mut grid_template_area_counts = Vec::new();
 
         for i in 0..entries.length() {
             let entry = entries.get(i);
@@ -2662,9 +2818,23 @@ impl JsStyle {
                 let key = arr.get(0);
                 let value = arr.get(1);
                 if let Some(key_str) = key.as_string() {
-                    self.set_property(&key_str, value);
+                    if matches!(
+                        key_str.as_str(),
+                        "gridTemplateAreaRowCount" | "gridTemplateAreaColumnCount"
+                    ) {
+                        grid_template_area_counts.push((key_str, value));
+                    } else {
+                        self.set_property(&key_str, value);
+                    }
                 }
             }
+        }
+
+        // Applying the explicit dimensions last makes their meaning independent
+        // of JavaScript object key order. Setting gridTemplateAreas first infers
+        // its minimum extent; these values may then preserve trailing `.` cells.
+        for (key, value) in grid_template_area_counts {
+            self.set_property(&key, value);
         }
     }
 
@@ -2675,21 +2845,33 @@ impl JsStyle {
         match path {
             // Layout Mode
             "display" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.display =
-                        unsafe { std::mem::transmute::<u8, JsDisplay>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsDisplay>(&value) {
+                    self.inner.display = js_value.into();
                 }
             }
             "position" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.position =
-                        unsafe { std::mem::transmute::<u8, JsPosition>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsPosition>(&value) {
+                    self.inner.position = js_value.into();
+                }
+            }
+            "direction" => {
+                if let Some(js_value) = checked_js_enum::<JsDirection>(&value) {
+                    self.inner.direction = js_value.into();
+                }
+            }
+            "float" => {
+                if let Some(js_value) = checked_js_enum::<JsFloat>(&value) {
+                    self.inner.float = js_value.into();
+                }
+            }
+            "clear" => {
+                if let Some(js_value) = checked_js_enum::<JsClear>(&value) {
+                    self.inner.clear = js_value.into();
                 }
             }
             "boxSizing" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.box_sizing =
-                        unsafe { std::mem::transmute::<u8, JsBoxSizing>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsBoxSizing>(&value) {
+                    self.inner.box_sizing = js_value.into();
                 }
             }
 
@@ -2700,29 +2882,25 @@ impl JsStyle {
                 }
             }
             "overflowX" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.overflow.x =
-                        unsafe { std::mem::transmute::<u8, JsOverflow>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsOverflow>(&value) {
+                    self.inner.overflow.x = js_value.into();
                 }
             }
             "overflowY" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.overflow.y =
-                        unsafe { std::mem::transmute::<u8, JsOverflow>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsOverflow>(&value) {
+                    self.inner.overflow.y = js_value.into();
                 }
             }
 
             // Flexbox
             "flexDirection" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.flex_direction =
-                        unsafe { std::mem::transmute::<u8, JsFlexDirection>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsFlexDirection>(&value) {
+                    self.inner.flex_direction = js_value.into();
                 }
             }
             "flexWrap" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.flex_wrap =
-                        unsafe { std::mem::transmute::<u8, JsFlexWrap>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsFlexWrap>(&value) {
+                    self.inner.flex_wrap = js_value.into();
                 }
             }
             "flexGrow" => {
@@ -2745,55 +2923,48 @@ impl JsStyle {
             "alignItems" => {
                 if value.is_undefined() {
                     self.inner.align_items = None;
-                } else if let Some(n) = value.as_f64() {
-                    self.inner.align_items =
-                        Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into());
+                } else if let Some(js_value) = checked_js_enum::<JsAlignItems>(&value) {
+                    self.inner.align_items = Some(js_value.into());
                 }
             }
             "alignSelf" => {
                 if value.is_undefined() {
                     self.inner.align_self = None;
-                } else if let Some(n) = value.as_f64() {
-                    let js_val = unsafe { std::mem::transmute::<u8, JsAlignSelf>(n as u8) };
-                    self.inner.align_self = match js_val {
+                } else if let Some(js_value) = checked_js_enum::<JsAlignSelf>(&value) {
+                    self.inner.align_self = match js_value {
                         JsAlignSelf::Auto => None,
-                        _ => Some(js_val.into()),
+                        _ => Some(js_value.into()),
                     };
                 }
             }
             "alignContent" => {
                 if value.is_undefined() {
                     self.inner.align_content = None;
-                } else if let Some(n) = value.as_f64() {
-                    self.inner.align_content =
-                        Some(unsafe { std::mem::transmute::<u8, JsAlignContent>(n as u8) }.into());
+                } else if let Some(js_value) = checked_js_enum::<JsAlignContent>(&value) {
+                    self.inner.align_content = Some(js_value.into());
                 }
             }
             "justifyContent" => {
                 if value.is_undefined() {
                     self.inner.justify_content = None;
-                } else if let Some(n) = value.as_f64() {
-                    self.inner.justify_content = Some(
-                        unsafe { std::mem::transmute::<u8, JsJustifyContent>(n as u8) }.into(),
-                    );
+                } else if let Some(js_value) = checked_js_enum::<JsJustifyContent>(&value) {
+                    self.inner.justify_content = Some(js_value.into());
                 }
             }
             "justifyItems" => {
                 if value.is_undefined() {
                     self.inner.justify_items = None;
-                } else if let Some(n) = value.as_f64() {
-                    self.inner.justify_items =
-                        Some(unsafe { std::mem::transmute::<u8, JsAlignItems>(n as u8) }.into());
+                } else if let Some(js_value) = checked_js_enum::<JsAlignItems>(&value) {
+                    self.inner.justify_items = Some(js_value.into());
                 }
             }
             "justifySelf" => {
                 if value.is_undefined() {
                     self.inner.justify_self = None;
-                } else if let Some(n) = value.as_f64() {
-                    let js_val = unsafe { std::mem::transmute::<u8, JsAlignSelf>(n as u8) };
-                    self.inner.justify_self = match js_val {
+                } else if let Some(js_value) = checked_js_enum::<JsAlignSelf>(&value) {
+                    self.inner.justify_self = match js_value {
                         JsAlignSelf::Auto => None,
-                        _ => Some(js_val.into()),
+                        _ => Some(js_value.into()),
                     };
                 }
             }
@@ -3007,17 +3178,15 @@ impl JsStyle {
                 }
             }
             "textAlign" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.text_align =
-                        unsafe { std::mem::transmute::<u8, JsTextAlign>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsTextAlign>(&value) {
+                    self.inner.text_align = js_value.into();
                 }
             }
 
             // Grid layout
             "gridAutoFlow" => {
-                if let Some(n) = value.as_f64() {
-                    self.inner.grid_auto_flow =
-                        unsafe { std::mem::transmute::<u8, JsGridAutoFlow>(n as u8) }.into();
+                if let Some(js_value) = checked_js_enum::<JsGridAutoFlow>(&value) {
+                    self.inner.grid_auto_flow = js_value.into();
                 }
             }
 
@@ -3090,25 +3259,31 @@ impl JsStyle {
                 if let Ok(areas) =
                     serde_wasm_bindgen::from_value::<Vec<crate::types::GridTemplateAreaDto>>(value)
                 {
-                    self.inner.grid_template_areas = areas.into_iter().map(|a| a.into()).collect();
+                    self.set_grid_template_area_dtos(areas);
+                }
+            }
+            "gridTemplateAreaRowCount" => {
+                if let Some(n) = value.as_f64() {
+                    self.set_grid_template_area_row_count(n as u16);
+                }
+            }
+            "gridTemplateAreaColumnCount" => {
+                if let Some(n) = value.as_f64() {
+                    self.set_grid_template_area_column_count(n as u16);
                 }
             }
 
             "gridTemplateRowNames" => {
                 if let Ok(names) = serde_wasm_bindgen::from_value::<Vec<Vec<String>>>(value) {
-                    self.inner.grid_template_row_names = names
-                        .into_iter()
-                        .map(|v| v.into_iter().map(|s| s.into()).collect())
-                        .collect();
+                    self.inner.grid_template_row_names =
+                        names.into_iter().map(|v| v.into_iter().collect()).collect();
                 }
             }
 
             "gridTemplateColumnNames" => {
                 if let Ok(names) = serde_wasm_bindgen::from_value::<Vec<Vec<String>>>(value) {
-                    self.inner.grid_template_column_names = names
-                        .into_iter()
-                        .map(|v| v.into_iter().map(|s| s.into()).collect())
-                        .collect();
+                    self.inner.grid_template_column_names =
+                        names.into_iter().map(|v| v.into_iter().collect()).collect();
                 }
             }
 

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -43,6 +56,20 @@ const TaffyTreePreview = (_props: any) => null;
 test("error example 1", async () => {
   try {
     const tree = new TaffyTree();
+    const style = new Style();
+    const nodeId = tree.newLeaf(style);
+    console.log("Created node:", nodeId);
+  } catch (e) {
+    // e is a TaffyError instance
+    if (e instanceof TaffyError) {
+      console.error("Layout error:", e.message);
+    }
+  }
+});
+
+test("error example 2", async () => {
+  try {
+    const tree = new TaffyTree();
     const node = tree.newLeaf(new Style());
     tree.remove(node);
   } catch (e) {
@@ -52,13 +79,13 @@ test("error example 1", async () => {
   }
 });
 
-test("error example 2", async () => {
+test("error example 3", async () => {
   const tree = new TaffyTree();
   const style = new Style();
   const nodeId = tree.newLeaf(style); // Returns bigint or throws TaffyError
 });
 
-test("error example 3", async () => {
+test("error example 4", async () => {
   const tree = new TaffyTree();
   const nodeId = tree.newLeaf(new Style());
   const style = new Style();

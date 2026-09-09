@@ -6,7 +6,7 @@ sidebar_position: 1
 
 **ハイパフォーマンスでクロスプラットフォームな UI レイアウトエンジン。**
 
-Taffy Layout は Rust で書かれ、WebAssembly (JS/TS) にコンパイル可能な高性能レイアウトエンジンです。ブラウザレベルの **Flexbox** および **Grid** アルゴリズムを DOM に依存しないで実装しており、ターミナル UI、Canvas レンダラー、ゲーム UI、カスタムレンダリングエンジンに最適です。
+Taffy Layout は Rust で書かれ、WebAssembly (JS/TS) にコンパイル可能な高性能レイアウトエンジンです。CSS に基づく **Flexbox** および **Grid** アルゴリズムを DOM に依存しないで実装しており、ターミナル UI、Canvas レンダラー、ゲーム UI、カスタムレンダリングエンジンに利用できます。ブラウザのすべての CSS 機能を提供するものではなく、テキスト測定と描画はアプリケーションが担当します。
 
 ## 作成できるもの
 
@@ -24,7 +24,7 @@ Taffy Layout は Rust で書かれ、WebAssembly (JS/TS) にコンパイル可�
 | **[スタイリング](./styling/index.md)**           | Flexbox、Grid、スペーシング、サイズ、配置。    |
 | **[クックブック](./cookbook/index.md)**          | すぐに使える一般的な UI レイアウトパターン。   |
 | **[高度なトピック](./advanced/index.md)**        | デバッグ、パフォーマンス、エラーハンドリング。 |
-| **[API リファレンス](../api/index.md)**          | 詳細な API ドキュメント（自動生成）。          |
+| **[API リファレンス](../../api/index.md)**       | 詳細な API ドキュメント（自動生成）。          |
 
 ## シンプルなメンタルモデル
 

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -41,6 +54,12 @@ await init();
 const TaffyTreePreview = (_props: any) => null;
 
 test("styling_display example 1", async () => {
+  const containerStyle = new Style({ display: Display.FlowRoot, width: 300 });
+  const floatedStyle = new Style({ float: Float.Left, width: 80, height: 60 });
+  const clearedStyle = new Style({ clear: Clear.Both, height: 30 });
+});
+
+test("styling_display example 2", async () => {
   // Grid demo
   const gridTree = new TaffyTree();
   const gridStyle = new Style();

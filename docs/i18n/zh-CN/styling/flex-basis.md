@@ -45,7 +45,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 快速记事
 
-- `flexBasis` 影响 `auto` 尺寸的计算。
+- `flexBasis` 默认为 `"auto"`；可解析的非 `auto` 基准会优先于主轴上的 `width` / `height` 参与弹性尺寸计算。
 - 它类似于 `width`（或 `height`，取决于 `flexDirection`），但专门用于弹性子元素。
 
 ## 下一步

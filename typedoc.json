@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["./pkg/taffy_wasm.d.ts"],
+  "entryPoints": ["./src/index.ts"],
   "out": "./docs/api",
   "plugin": ["typedoc-plugin-markdown"],
   "name": "Taffy Layout API Documentation",
@@ -22,6 +22,9 @@
   "enumMembersFormat": "table",
   "typeDeclarationFormat": "table",
   "indexFormat": "table",
+  "tableColumnSettings": {
+    "hideDefaults": true
+  },
   "pageTitleTemplates": {
     "member": "{name}"
   },

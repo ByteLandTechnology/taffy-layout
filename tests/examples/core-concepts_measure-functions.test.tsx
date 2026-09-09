@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -61,8 +74,9 @@ test("core-concepts_measure-functions example 1", async () => {
   tree.computeLayoutWithMeasure(
     root,
     { width: 300, height: 100 },
-    (knownDims, availableSpace) => {
-      // 1. Check if we have known dimensions (style overrides)
+    (knownDims, availableSpace, node, context, measuredStyle) => {
+      measuredStyle.free();
+      // 1. Preserve dimensions already known for this measurement
       // 2. Otherwise, calculate based on available space or content intrinsic size
       const width =
         knownDims.width ??

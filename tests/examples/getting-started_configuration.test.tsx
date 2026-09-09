@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -43,7 +56,7 @@ const TaffyTreePreview = (_props: any) => null;
 test("getting-started_configuration example 1", async () => {
   // Initialize with capacity for 1,000 nodes
   const tree = TaffyTree.withCapacity(1000);
-  console.log(`Initial Node Capacity: ${tree.totalNodeCount()}`); // 0 actual nodes
+  console.log(`Initial Node Count: ${tree.totalNodeCount()}`); // 0 actual nodes
 
   const style = new Style({
     display: Display.Flex,
@@ -82,16 +95,18 @@ test("getting-started_configuration example 2", async () => {
 
   // 1. Default (Rounding Enabled)
   tree.computeLayout(root, { width: 150, height: 60 });
-  let layout1 = tree.getLayout(child1);
-  // layout1.width might be rounded to 51 or 50 depending on algorithm
+  const roundedLayout = tree.getLayout(child1);
+  console.log(`Rounded Width: ${roundedLayout.width}`); // 51
+  roundedLayout.free();
 
   // 2. Disable Rounding
   tree.disableRounding();
   tree.computeLayout(root, { width: 150, height: 60 });
-  layout1 = tree.getLayout(child1);
-  // layout1.width will be exactly 50.5
+  const preciseLayout = tree.getLayout(child1);
+  // preciseLayout.width is 50.5
 
-  console.log(`Precise Width: ${layout1.width}`);
+  console.log(`Precise Width: ${preciseLayout.width}`);
+  preciseLayout.free();
 
   return <TaffyTreePreview tree={tree} root={root} />;
 });
@@ -99,12 +114,18 @@ test("getting-started_configuration example 2", async () => {
 test("getting-started_configuration example 3", async () => {
   const tree = new TaffyTree();
 
-  // ... use tree ...
+  const style = new Style({ width: 100, height: 50 });
+  const node = tree.newLeaf(style);
+  style.free(); // The tree has its own style copy.
+  tree.computeLayout(node, { width: 100, height: 50 });
+  const layout = tree.getLayout(node);
+  console.log(layout.size);
+  layout.free();
 
-  // Option 1: Reuse the tree (Recommended)
+  // Reuse the tree if more nodes will be needed.
   // Clears all nodes but keeps memory allocated
   tree.clear();
 
-  // Option 2: Free completely
+  // Free the tree when completely finished.
   tree.free();
 });

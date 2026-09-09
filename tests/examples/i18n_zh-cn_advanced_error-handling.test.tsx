@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -42,11 +55,11 @@ const TaffyTreePreview = (_props: any) => null;
 
 test("i18n_zh-CN_advanced_error-handling example 1", async () => {
   const tree = new TaffyTree();
-  const someNodeId = tree.newLeaf(new Style());
+  const parentNode = tree.newLeaf(new Style());
 
   try {
-    // 示例：尝试访问可能无效的节点
-    const layout = tree.getLayout(someNodeId);
+    // 父节点有效，但没有子节点，因此索引 0 越界
+    tree.getChildAtIndex(parentNode, 0);
   } catch (e) {
     if (e instanceof TaffyError) {
       console.error(`Taffy Layout Error: ${e.message}`);
@@ -62,7 +75,7 @@ test("i18n_zh-CN_advanced_error-handling example 2", async () => {
   const index = 0;
 
   const count = tree.childCount(parentNode);
-  if (index < count) {
+  if (Number.isInteger(index) && index >= 0 && index < count) {
     const child = tree.getChildAtIndex(parentNode, index);
     // ... 安全使用子节点
   }

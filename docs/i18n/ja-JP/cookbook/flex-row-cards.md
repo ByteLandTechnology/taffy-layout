@@ -48,5 +48,5 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 関連ガイド
 
-- **[Flex Grow/Shrink](../styling/flex-basis-grow-shrink.md)**
+- **[Flex Grow/Shrink](../styling/flex-grow.md)**
 - **[スペーシング](../styling/gap.md)**

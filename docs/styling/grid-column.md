@@ -48,6 +48,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 - `start` and `end` define the grid lines.
 - You can use absolute indices (1-indexed) or relative spans (e.g., `{ span: 2 }`).
+- Column lines follow the Grid container's direction: line `1` is at the left of the explicit grid in LTR and at the right in RTL.
 
 ## Next Steps
 

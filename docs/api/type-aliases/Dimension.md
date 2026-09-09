@@ -11,7 +11,7 @@ Used for sizing properties like `width`, `height`, `flexBasis`, etc.
 ## Remarks
 
 - `number`: Fixed size in pixels
-- `"{number}%"`: Percentage of parent's size (0-100)
+- `"{number}%"`: Percentage resolved against the property's containing size; `"100%"` is the full reference size, and values above 100 are allowed
 - `"auto"`: Size determined by content or layout algorithm
 
 ## Example

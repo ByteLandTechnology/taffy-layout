@@ -9,6 +9,8 @@ sidebar_position: 8
 
 `flexDirection` プロパティは主軸を確立し、子要素を水平方向（行）または垂直方向（列）にレイアウトします。
 
+以下はデフォルトの `Direction.Ltr` を前提としています。`Direction.Rtl` では `Row` が右から左、`RowReverse` が左から右になります。列方向は垂直軸のままです。
+
 ## 値
 
 | 值                  | 説明                             |

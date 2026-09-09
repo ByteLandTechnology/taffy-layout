@@ -11,14 +11,18 @@ sidebar_position: 15
 
 ## 取值
 
-| 值              | 描述                                     |
-| :-------------- | :--------------------------------------- |
-| **`Auto`**      | **默认值**。继承父级的 `alignItems` 值。 |
-| **`Stretch`**   | 子元素拉伸以填充容器的交叉轴尺寸。       |
-| **`FlexStart`** | 子元素与交叉轴的起始边缘对齐。           |
-| **`FlexEnd`**   | 子元素与交叉轴的结束边缘对齐。           |
-| **`Center`**    | 子元素居中对齐。                         |
-| **`Baseline`**  | 子元素根据基线对齐。                     |
+| 值              | 描述                                                     |
+| :-------------- | :------------------------------------------------------- |
+| **`Auto`**      | **默认值**。继承父级的 `alignItems` 值。                 |
+| **`Stretch`**   | 交叉轴尺寸为 `auto` 时可拉伸，并遵守 min/max 约束。      |
+| **`FlexStart`** | 子元素与交叉轴的起始边缘对齐。                           |
+| **`FlexEnd`**   | 子元素与交叉轴的结束边缘对齐。                           |
+| **`Center`**    | 子元素居中对齐。                                         |
+| **`Baseline`**  | 子元素根据布局计算的基线对齐；测量回调不能提供文本基线。 |
+
+`Start` / `End` 按容器的逻辑方向对齐；`SelfStart` / `SelfEnd` 按子元素自身的 `direction` 对齐。安全对齐值包括 `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`、`SafeSelfStart` 和 `SafeSelfEnd`，在内容无法容纳时回退到起始对齐，避免起始边缘溢出。
+
+Grid 中的 `justifySelf` 使用相同的 `AlignSelf` 枚举，覆盖父级的 `justifyItems`。将 `alignSelf` 或 `justifySelf` 设为 `AlignSelf.Auto` 或 `undefined` 会移除覆盖。未设置或移除覆盖后，直接属性访问返回 `AlignSelf.Auto`，而 `get("alignSelf")` / `get("justifySelf")` 返回 `undefined`。
 
 ## 示例
 

@@ -17,6 +17,8 @@
 //! - [`map_void_result`]: For results with no return value
 //! - [`map_bool_result`]: For results containing boolean values
 //!
+//! @example
+//! ```typescript
 //! try {
 //!   const tree = new TaffyTree();
 //!   const style = new Style();
@@ -61,6 +63,9 @@ use wasm_bindgen::prelude::*;
 /// - `InvalidInputNode`: Node ID doesn't exist in the tree
 /// - `InvalidParentNode`: Specified parent node doesn't exist
 /// - `ChildIndexOutOfBounds`: Child index exceeds available children
+///
+/// Node IDs must still identify live nodes in the same tree. Not every upstream
+/// operation validates IDs; an invalid ID can trap before an error is returned.
 #[wasm_bindgen(js_name = TaffyError)]
 pub struct JsTaffyError {
     /// The wrapped native Taffy error

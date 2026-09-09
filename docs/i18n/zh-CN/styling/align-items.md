@@ -13,11 +13,17 @@ sidebar_position: 14
 
 | 值              | 描述                                                                    |
 | :-------------- | :---------------------------------------------------------------------- |
-| **`Stretch`**   | **默认值**。子元素被拉伸以填充容器的交叉轴尺寸（需遵守 min/max 约束）。 |
+| **`Stretch`**   | **默认值**。交叉轴尺寸为 `auto` 的子元素可被拉伸，并遵守 min/max 约束。 |
 | **`FlexStart`** | 子元素与交叉轴的起始边缘对齐。                                          |
 | **`FlexEnd`**   | 子元素与交叉轴的结束边缘对齐。                                          |
 | **`Center`**    | 子元素在交叉轴上居中对齐。                                              |
-| **`Baseline`**  | 子元素根据文本基线对齐。                                                |
+| **`Baseline`**  | 子元素根据布局计算的基线对齐。                                          |
+
+测量回调只返回尺寸，不能提供文本基线；Taffy 不会从文本或字体中测出基线。
+
+`Start` / `End` 按容器的逻辑方向对齐；`SelfStart` / `SelfEnd` 按子元素自身的 `direction` 对齐。安全对齐值包括 `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`、`SafeSelfStart` 和 `SafeSelfEnd`，在内容无法容纳时回退到起始对齐，避免起始边缘溢出。
+
+`alignItems` 也用于 Grid 的块轴对齐；Grid 的行内轴使用 `justifyItems`，同样接受 `AlignItems` 枚举。未设置的属性读回 `undefined`；表中的默认值描述布局行为。
 
 ## 示例
 

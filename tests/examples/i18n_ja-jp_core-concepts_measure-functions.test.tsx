@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -47,7 +60,10 @@ test("i18n_ja-JP_core-concepts_measure-functions example 1", async () => {
   // このノードは固定サイズを持たないため、Taffy は測定関数に問い合わせます
   style.size = { width: "auto", height: "auto" };
 
-  const measuredNode = tree.newLeaf(style);
+  const measuredNode = tree.newLeafWithContext(style, {
+    width: 150,
+    height: 50,
+  });
 
   const rootStyle = new Style();
   rootStyle.display = Display.Flex;
@@ -61,20 +77,29 @@ test("i18n_ja-JP_core-concepts_measure-functions example 1", async () => {
   tree.computeLayoutWithMeasure(
     root,
     { width: 300, height: 100 },
-    (knownDims, availableSpace) => {
-      // 1. 既知の寸法（スタイルオーバーライド）があるか確認
+    (knownDims, availableSpace, node, context, measuredStyle) => {
+      measuredStyle.free(); // この例ではスタイルを参照しないため、先に解放します
+      // 1. 今回の測定で既知の寸法があるか確認
       // 2. そうでない場合、利用可能なスペースまたはコンテンツの固有サイズに基づいて計算
+      const contentWidth = context?.width ?? 150;
+      const contentHeight = context?.height ?? 50;
       const width =
         knownDims.width ??
         (typeof availableSpace.width === "number"
-          ? Math.min(availableSpace.width, 150)
-          : 150);
+          ? Math.min(availableSpace.width, contentWidth)
+          : contentWidth);
 
-      const height = knownDims.height ?? 50;
+      const height = knownDims.height ?? contentHeight;
 
       return { width, height };
     },
   );
+
+  const measuredLayout = tree.getLayout(measuredNode);
+  const [measuredWidth, measuredHeight] = measuredLayout.get("width", "height");
+  measuredLayout.free();
+  style.free();
+  rootStyle.free();
 
   return (
     <div style={{ display: "flex", gap: 10 }}>
@@ -82,8 +107,7 @@ test("i18n_ja-JP_core-concepts_measure-functions example 1", async () => {
       <div style={{ padding: 10, background: "#f0f0f0", borderRadius: 4 }}>
         <strong>Measured Size:</strong>
         <br />
-        {tree.getLayout(measuredNode).width} x{" "}
-        {tree.getLayout(measuredNode).height}
+        {measuredWidth} x {measuredHeight}
       </div>
     </div>
   );

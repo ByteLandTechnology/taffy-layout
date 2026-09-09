@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -42,7 +55,7 @@ const TaffyTreePreview = (_props: any) => null;
 
 test("advanced_debugging example 1", async () => {
   const tree = new TaffyTree();
-  const root = tree.newLeaf(new Style());
+  const root = tree.newLeaf(new Style({ width: 100, height: 100 }));
   tree.computeLayout(root, { width: 100, height: 100 });
 
   console.log(tree.printTree(root));
@@ -58,12 +71,15 @@ test("advanced_debugging example 2", async () => {
   tree.computeLayout(root, { width: 100, height: 100 });
 
   // Visual debugger function
-  function debugDraw(node: any) {
+  function debugDraw(node: bigint, parentX = 0, parentY = 0) {
     const layout = tree.getLayout(node);
-    renderer.strokeRect(layout.x, layout.y, layout.width, layout.height, "red");
+    const x = parentX + layout.x;
+    const y = parentY + layout.y;
+    renderer.strokeRect(x, y, layout.width, layout.height, "red");
+    layout.free();
 
     for (const child of tree.children(node)) {
-      debugDraw(child);
+      debugDraw(child, x, y);
     }
   }
   debugDraw(root);

@@ -9,24 +9,30 @@ sidebar_position: 1
 
 ## ツリーを印刷
 
-最も強力なツールは `tree.printTree(node)` です。ツリー構造、スタイル設定、計算されたレイアウトのテキスト表現を生成します。
+`tree.printTree(node)` は、ツリー構造、レイアウトモード、計算された寸法と位置を文字列として返します。表示するには `console.log()` などに渡します。
 
 ```ts
 const tree = new TaffyTree();
-const root = tree.newLeaf(new Style());
+const childStyle = new Style({ width: 50, height: 50 });
+const child = tree.newLeaf(childStyle);
+childStyle.free();
+const rootStyle = new Style({ width: 100, height: 100 });
+const root = tree.newWithChildren(rootStyle, [child]);
+rootStyle.free();
 tree.computeLayout(root, { width: 100, height: 100 });
 
 console.log(tree.printTree(root));
+tree.free();
 ```
 
 **出力例：**
 
 ```text
-DIV [x: 0    y: 0    w: 100  h: 100  content_w: 100  content_h: 100  border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (1)
-└── LEAF [x: 0    y: 0    w: 50   h: 50   content_w: 50   content_h: 50   border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (2)
+└──  FLEX ROW [x: 0    y: 0    w: 100  h: 100  content_w: 50   content_h: 50   border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (4294967298)
+    └──  LEAF [x: 0    y: 0    w: 50   h: 50   content_w: 0    content_h: 0    border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (4294967297)
 ```
 
-> **注意**：実際の出力形式はバージョンによって多少異なる場合がありますが、常に階層と主要な制約を表示します。
+末尾の値はノード ID です。`content_w` / `content_h` は測定済みコンテンツや子の到達可能な範囲なので、空のリーフの幅・高さとは一致しません。
 
 ## 可視化デバッグ
 
@@ -41,19 +47,40 @@ const renderer = {
   strokeRect: (x: number, y: number, w: number, h: number, c: string) => {},
 };
 const tree = new TaffyTree();
-const root = tree.newLeaf(new Style());
+const childStyle = new Style({ width: 20, height: 20 });
+const child = tree.newLeaf(childStyle);
+childStyle.free();
+const parentStyle = new Style({
+  width: 60,
+  height: 60,
+  padding: { left: 10, right: 10, top: 10, bottom: 10 },
+});
+const parent = tree.newWithChildren(parentStyle, [child]);
+parentStyle.free();
+const rootStyle = new Style({
+  width: 100,
+  height: 100,
+  padding: { left: 10, right: 10, top: 10, bottom: 10 },
+});
+const root = tree.newWithChildren(rootStyle, [parent]);
+rootStyle.free();
 tree.computeLayout(root, { width: 100, height: 100 });
 
 // 可視化デバッガー関数
-function debugDraw(node: any) {
+function debugDraw(node: bigint, parentX = 0, parentY = 0) {
   const layout = tree.getLayout(node);
-  renderer.strokeRect(layout.x, layout.y, layout.width, layout.height, "red");
+  const x = parentX + layout.x;
+  const y = parentY + layout.y;
+  renderer.strokeRect(x, y, layout.width, layout.height, "red");
+  layout.free();
 
   for (const child of tree.children(node)) {
-    debugDraw(child);
+    debugDraw(child, x, y);
   }
 }
 debugDraw(root);
+// child の親相対位置 (10, 10) は描画時には (20, 20) になります
+tree.free();
 ```
 
 ## 分離

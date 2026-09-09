@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -42,14 +55,15 @@ const TaffyTreePreview = (_props: any) => null;
 
 test("advanced_error-handling example 1", async () => {
   const tree = new TaffyTree();
-  const someNodeId = tree.newLeaf(new Style());
+  const parentNode = tree.newLeaf(new Style());
 
   try {
-    // Example: Attempting to access a potentially invalid node
-    const layout = tree.getLayout(someNodeId);
+    // The parent is valid, but it has no child at index 0.
+    tree.getChildAtIndex(parentNode, 0);
   } catch (e) {
     if (e instanceof TaffyError) {
       console.error(`Taffy Layout Error: ${e.message}`);
+      e.free();
     } else {
       throw e;
     }
@@ -62,7 +76,7 @@ test("advanced_error-handling example 2", async () => {
   const index = 0;
 
   const count = tree.childCount(parentNode);
-  if (index < count) {
+  if (Number.isInteger(index) && index >= 0 && index < count) {
     const child = tree.getChildAtIndex(parentNode, index);
     // ... safely use child
   }

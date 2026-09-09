@@ -47,7 +47,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Quick Notes
 
-- Default value is `1`, meaning items will shrink to prevent overflow by default.
+- The default is `1`. Shrinkage is weighted by each item's shrink factor and initial main size, and respects minimum sizes; it may not eliminate all overflow.
 - Set to `0` to prevent an item from shrinking.
 
 ## Next Steps

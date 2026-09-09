@@ -7,7 +7,7 @@ sidebar_position: 4
 
 **Turn your styles and tree structure into concrete pixel coordinates.**
 
-Once your tree is built, you call `computeLayout` to calculate the final positions and sizes of every node.
+Once your tree is built, call `computeLayout` on a node to calculate positions and sizes for that node and its descendants.
 
 ## Standard Layout Computation
 
@@ -34,7 +34,7 @@ const root = tree.newWithChildren(rootStyle, [child]);
 tree.computeLayout(root, { width: 400, height: 100 });
 
 // 2. Read Results
-//    The engine has now populated the layout data for every node.
+//    The engine has now populated the layout data for this subtree.
 const rootLayout = tree.getLayout(root);
 const childLayout = tree.getLayout(child);
 
@@ -77,7 +77,7 @@ return (
 
 ## Incremental Layouts
 
-Taffy employs intelligent caching. If you modify a specific node's style or content, only the affected parts of the tree are recomputed in the next pass.
+Taffy reuses cached results when their inputs still match. Tree operations such as `setStyle()` invalidate affected caches, including ancestor caches. A change can also alter siblings' sizes or positions.
 
 ```ts
 const tree = new TaffyTree();
@@ -93,13 +93,15 @@ const newStyle = new Style({ width: 250 });
 tree.setStyle(childNode, newStyle);
 
 // 3. Re-compute
-//    Taffy skips recalculating unaffected branches.
+//    Taffy reuses cached results where the layout inputs still match.
 tree.computeLayout(root, { width: 800, height: 600 });
 ```
 
+Changing a `Style` copy does not update the tree until `setStyle()` is called. Mutating a context object in place, changing external content, or passing a different measure function does not invalidate measurement caches automatically. Call `markDirty(node)` for affected measured nodes, or use `setNodeContext(node, context)`, before the next computation. See [Measure Functions](../core-concepts/measure-functions.md#cache-invalidation).
+
 ## Rounding & Precision
 
-By default, Taffy rounds all output coordinates to the nearest pixel (integer) to align with standard display grids.
+By default, Taffy snaps computed layout boxes to integer coordinates. Widths and heights come from rounded edges; this can give adjacent equal-sized items different rounded sizes. Margins and detailed Grid track data can still contain fractions.
 
 ### Disabling Rounding
 
@@ -111,15 +113,16 @@ const tree = new TaffyTree();
 // Enable sub-pixel precision
 tree.disableRounding();
 
-// ... compute layout ...
-const node = tree.newLeaf(new Style());
+const node = tree.newLeaf(new Style({ width: 100 / 3, height: 20 }));
+tree.computeLayout(node, { width: 100, height: 100 });
 const layout = tree.getLayout(node);
-console.log(layout.width); // Might be 33.33333... instead of 33
+console.log(layout.width); // Approximately 33.33333 (32-bit float)
+layout.free();
 ```
 
 ## Debug Tips
 
-- 🖨️ **`printTree(root)`**: Prints a text representation of your entire tree depth, styles, and computed layout. Essential for debugging.
+- 🖨️ **`printTree(root)`**: Returns a string showing the tree hierarchy and computed layouts; pass it to `console.log()` to display it.
 - 🔒 **Isolate**: If a complex tree behaves oddly, create a small reproduction with just the problematic nodes to isolate the issue.
 
 ## Next Steps

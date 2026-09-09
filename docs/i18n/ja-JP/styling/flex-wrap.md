@@ -9,6 +9,8 @@ sidebar_position: 9
 
 `flexWrap` プロパティは、主軸に沿った 1 行にアイテムが収まらない場合の動作を制御します。
 
+以下の上下方向は `flexDirection: FlexDirection.Row` を前提とします。列方向では水平方向に折り返し、`direction` と `WrapReverse` によって交差軸の向きが変わります。
+
 ## 値
 
 | 値                | 説明                                                                                                         |
@@ -24,7 +26,8 @@ const tree = new TaffyTree();
 
 const style = new Style({
   size: { width: 60, height: 40 },
-  margin: { bottom: 5, right: 5 },
+  marginBottom: 5,
+  marginRight: 5,
 });
 
 // 折り返しを強制するために多くの子要素を作成

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -55,7 +68,7 @@ test("enums example 2", async () => {
 
 test("enums example 3", async () => {
   const style = new Style();
-  style.flexDirection = FlexDirection.Row; // Horizontal, left to right
+  style.flexDirection = FlexDirection.Row; // Horizontal, following direction (LTR by default)
   style.flexDirection = FlexDirection.Column; // Vertical, top to bottom
 });
 

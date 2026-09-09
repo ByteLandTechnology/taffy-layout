@@ -11,7 +11,7 @@ Used for properties that require explicit values, such as `padding`, `border`, a
 ## Remarks
 
 - `number`: Fixed size in pixels
-- `"{number}%"`: Percentage of parent's size (0-100)
+- `"{number}%"`: Percentage whose reference size depends on the property; `"100%"` is the full reference size, and values above 100 are allowed
 
 ## Example
 

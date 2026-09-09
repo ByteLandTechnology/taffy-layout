@@ -10,7 +10,8 @@ High-performance WebAssembly bindings for the [Taffy](https://github.com/DioxusL
 ## ✨ Features
 
 - **🚀 High Performance**: WebAssembly-powered layout calculations
-- **📦 Complete CSS Support**: Full Flexbox and CSS Grid implementation
+- **📦 CSS Layout Algorithms**: Flexbox, Grid, and Block layout with float support
+- **↔️ Direction and Alignment**: LTR/RTL layout, safe alignment, and self-relative alignment
 - **🔧 Custom Measurement**: Support for custom text/content measurement callbacks
 - **📝 TypeScript Ready**: Complete type definitions included
 - **🌳 Tree-Based API**: Efficient tree structure for complex layouts
@@ -88,13 +89,20 @@ console.log(
 console.log(
   `Child 2: ${child2Layout.width}x${child2Layout.height} at (${child2Layout.x}, ${child2Layout.y})`,
 );
+
+containerLayout.free();
+child1Layout.free();
+child2Layout.free();
+containerStyle.free();
+childStyle.free();
+tree.free();
 ```
 
 ## 📚 Documentation
 
 - [Introduction](docs/intro.md)
 - [Getting Started](docs/getting-started/installation.md)
-- [Core Concepts](docs/core-concepts/overview.md)
+- [Core Concepts](docs/core-concepts/index.md)
 - [Styling Guide](docs/styling/index.md)
 - [Advanced Usage](docs/advanced/index.md)
 - [Cookbook](docs/cookbook/index.md)
@@ -109,7 +117,7 @@ The main class for managing layout trees.
 
 ### Style
 
-Configuration object for node layout properties.
+Configuration object for node layout properties. New styles default to `Display.Flex` and `Direction.Ltr`; use `Display.Block` or `Display.FlowRoot` for block layout.
 
 [View Documentation](./docs/api/classes/Style.md)
 
@@ -129,63 +137,80 @@ Read-only computed layout result.
 
 ## 📐 Custom Text Measurement
 
+The following examples assume WebAssembly has been initialized with `loadTaffy()`.
 For text nodes or other content that needs dynamic measurement:
 
 ```typescript
+import { Style, TaffyTree } from "taffy-layout";
+
 const tree = new TaffyTree();
 const textStyle = new Style();
-const rootNode = tree.newLeaf(new Style());
 const measureTextWidth = (text: string) => text.length * 8;
 const measureTextHeight = (text: string, width: number) => 20;
 
 const textNode = tree.newLeafWithContext(textStyle, { text: "Hello, World!" });
+const rootNode = tree.newWithChildren(textStyle, [textNode]);
 
 tree.computeLayoutWithMeasure(
   rootNode,
   { width: 800, height: "max-content" },
   (known, available, node, context, style) => {
+    style.free(); // The callback receives an owned copy of the node's style
     if (context?.text) {
       // Your text measurement logic here
-      const width = measureTextWidth(context.text);
-      const height = measureTextHeight(context.text, available.width as number);
+      const width = known.width ?? measureTextWidth(context.text);
+      const wrappingWidth =
+        typeof available.width === "number" ? available.width : width;
+      const height =
+        known.height ?? measureTextHeight(context.text, wrappingWidth);
       return { width, height };
     }
     return { width: 0, height: 0 };
   },
 );
+
+textStyle.free();
+tree.free();
 ```
+
+The callback returns content dimensions; Taffy applies padding, borders, and size constraints. See [Measure Functions](docs/core-concepts/measure-functions.md) for the five callback arguments and intrinsic sizing constraints.
 
 ## 🔧 Error Handling
 
-Methods that can fail throw a `TaffyError` as a JavaScript exception. Use try-catch to handle errors:
+Recoverable errors, such as an out-of-bounds child index on a valid parent, throw `TaffyError`. Node IDs must refer to live nodes in the same tree; invalid IDs can cause a WebAssembly panic and are not guaranteed to throw `TaffyError`. See [Error Handling](docs/advanced/error-handling.md).
 
 ```typescript
+import { Style, TaffyError, TaffyTree } from "taffy-layout";
+
+const tree = new TaffyTree();
+const style = new Style();
+const parent = tree.newLeaf(style);
 try {
-  const tree = new TaffyTree();
-  const style = new Style();
-  const nodeId = tree.newLeaf(style);
-  console.log("Created node:", nodeId);
+  tree.getChildAtIndex(parent, 0); // Valid parent, but no children
 } catch (e) {
   if (e instanceof TaffyError) {
     console.error("Error:", e.message);
+    e.free();
+  } else {
+    throw e;
   }
+} finally {
+  style.free();
+  tree.free();
 }
 ```
 
 ## 🌐 Browser Support
 
-Taffy Layout works in all modern browsers that support WebAssembly:
-
-- Chrome 57+
-- Firefox 52+
-- Safari 11+
-- Edge 16+
+The browser must support the generated WebAssembly module and its ES-module JavaScript wrapper, including BigInt node IDs, JavaScript/WebAssembly BigInt integration, and WebAssembly reference types. WebAssembly support alone does not establish compatibility.
 
 ## 📚 Examples
 
 ### Flexbox Row Layout
 
 ```typescript
+import { Display, FlexDirection, JustifyContent, Style } from "taffy-layout";
+
 const rowStyle = new Style();
 rowStyle.display = Display.Flex;
 rowStyle.flexDirection = FlexDirection.Row;
@@ -212,6 +237,8 @@ itemStyle.gridColumn = { start: 1, end: { span: 2 } }; // Spans 2 columns
 ### Grid Template Areas
 
 ```typescript
+import { Display, Style } from "taffy-layout";
+
 const gridStyle = new Style();
 gridStyle.display = Display.Grid;
 gridStyle.gridTemplateAreas = [
@@ -225,14 +252,19 @@ gridStyle.gridTemplateAreas = [
 gridStyle.gridTemplateRowNames = [
   ["header-start"],
   ["header-end", "content-start"],
+  [], // Intermediate line within the two-row content area
   ["content-end", "footer-start"],
   ["footer-end"],
 ];
 ```
 
+Use `gridTemplateAreaRowCount` and `gridTemplateAreaColumnCount` to include trailing unnamed cells. The counts are at least the extent of the named areas; see [Grid Templates](docs/styling/grid-templates.md#named-areas-and-template-dimensions).
+
 ### Absolute Positioning
 
 ```typescript
+import { Position, Style } from "taffy-layout";
+
 const absoluteStyle = new Style();
 absoluteStyle.position = Position.Absolute;
 absoluteStyle.inset = { left: 10, top: 10, right: "auto", bottom: "auto" };
@@ -242,6 +274,8 @@ absoluteStyle.size = { width: 100, height: 50 };
 ### Percentage Sizing
 
 ```typescript
+import { Style } from "taffy-layout";
+
 const percentStyle = new Style();
 percentStyle.size = {
   width: "50%", // 50% of parent
@@ -251,7 +285,11 @@ percentStyle.size = {
 
 ### Block Layout with Replaced Elements
 
+Use this style for an image-like child in a block container. Content loading and drawing are handled by your application.
+
 ```typescript
+import { Style } from "taffy-layout";
+
 const imgStyle = new Style();
 imgStyle.itemIsReplaced = true;
 imgStyle.aspectRatio = 16 / 9; // 16:9 aspect ratio
@@ -260,6 +298,8 @@ imgStyle.size = { width: "100%", height: "auto" };
 
 ## 🏗️ Building from Source
 
+The repository's development tools require Node.js 22.14 or later on the 22.x line, or Node.js 24.10 or later. Install Rust 1.85 or later and its `wasm32-unknown-unknown` target before building.
+
 ```bash
 # Clone the repository
 git clone https://github.com/ByteLandTechnology/taffy-layout.git
@@ -267,6 +307,9 @@ cd taffy-layout
 
 # Install dependencies
 npm install
+
+# Install the Rust WebAssembly target
+rustup target add wasm32-unknown-unknown
 
 # Build the WebAssembly module
 npm run build

@@ -1,8 +1,7 @@
 ---
 title: サイズ、スペース、単位
----
-
 sidebar_position: 4
+---
 
 # サイズ、スペース、単位
 
@@ -71,11 +70,12 @@ return (
 - `number`: 絶対サイズ（通常はピクセル）
 - `"min-content"`: 最小コンテンツサイズ
 - `"max-content"`: 最大コンテンツサイズ
-- `"auto"`: レイアウトに任せる
+
+`"auto"` はスタイル寸法に使う値で、`AvailableSpace` では使えません。
 
 ## ボックスモデル
 
-Taffy は `box-sizing: border-box` のように動作します：
+`boxSizing` のデフォルトは `BoxSizing.BorderBox` で、スタイル寸法に padding と border が含まれます。`BoxSizing.ContentBox` ではスタイル寸法がコンテンツボックスを指定し、最終的な `Layout.size` は引き続きボーダーボックスのサイズになります：
 
 ```text
 ┌─────────────────────────┐
@@ -90,12 +90,12 @@ Taffy は `box-sizing: border-box` のように動作します：
 └─────────────────────────┘
 ```
 
-- `size` には padding + border が含まれる
+- 計算結果の `Layout.size` には padding + border が含まれる
 - margin は外部スペーシング
 
 ## パーセンテージ
 
-パーセントサイズは親コンテンツボックスに対する相対値です：
+パーセントサイズは、そのレイアウトで与えられる包含領域を基準に解決されます。通常フローでは親のコンテンツボックス、Grid アイテムでは配置先のグリッド領域、絶対配置では親の配置領域が基準になります。基準寸法が未確定の場合は、数値に解決できない段階もあります。次の例は通常の Flexbox の子です：
 
 ```tsx live
 const tree = new TaffyTree();
@@ -120,11 +120,13 @@ console.log(tree.printTree(root));
 return <TaffyTreePreview tree={tree} root={root} />;
 ```
 
+`margin`、`padding`、`border` のパーセント値は、上下の辺も含めて包含領域の幅を基準にします。`inset` の上下は高さ、左右は幅を基準にするため、同じパーセントでもプロパティにより基準が異なります。
+
 ## よくある落とし穴
 
-- サイズのないルートは子を 0 にすることが多い
-- Flex 内の `auto` はコンテンツサイズを意味する
-- `max-content` は測定コールバックをトリガーする
+- サイズ指定も測定コンテンツもない空のリーフは、利用可能なスペースを与えるだけではその大きさに広がらない
+- `"auto"` のサイズはレイアウトアルゴリズム、コンテンツ、他の制約で決まる
+- コンテンツ測定コールバックは `computeLayoutWithMeasure()` で渡す。ノードの context は任意で、`"max-content"` だけではコールバックは登録されない
 
 ## 次のステップ
 

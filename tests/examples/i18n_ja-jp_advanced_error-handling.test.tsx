@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -42,17 +55,20 @@ const TaffyTreePreview = (_props: any) => null;
 
 test("i18n_ja-JP_advanced_error-handling example 1", async () => {
   const tree = new TaffyTree();
-  const someNodeId = tree.newLeaf(new Style());
+  const parentNode = tree.newLeaf(new Style());
 
   try {
-    // 例：無効な可能性があるノードにアクセスしようとする
-    const layout = tree.getLayout(someNodeId);
+    // 親は有効ですが子がないため、インデックス 0 は範囲外です
+    tree.getChildAtIndex(parentNode, 0);
   } catch (e) {
     if (e instanceof TaffyError) {
       console.error(`Taffy Layout Error: ${e.message}`);
+      e.free();
     } else {
       throw e;
     }
+  } finally {
+    tree.free();
   }
 });
 
@@ -62,7 +78,7 @@ test("i18n_ja-JP_advanced_error-handling example 2", async () => {
   const index = 0;
 
   const count = tree.childCount(parentNode);
-  if (index < count) {
+  if (Number.isInteger(index) && index >= 0 && index < count) {
     const child = tree.getChildAtIndex(parentNode, index);
     // ... 子を安全に使用
   }

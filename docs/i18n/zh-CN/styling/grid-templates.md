@@ -22,6 +22,8 @@ sidebar_position: 18
 | **MinContent（最小内容）** | 适合内容的最小可能尺寸。     | `{ min: 'min-content', max: 'auto' }` |
 | **MaxContent（最大内容）** | 适合内容的最大可能尺寸。     | `{ min: 'auto', max: 'max-content' }` |
 
+`min` 和 `max` 的百分比均使用 `"50%"` 这样的字符串；它表示网格内容区域对应轴尺寸的一半，计算时会扣除 padding、border 和预留的滚动条。数字表示固定长度，例如 `0.5` 是 `0.5` 像素。此约定也适用于 `gridAutoRows`、`gridAutoColumns` 和 `repeat` 的 `tracks` 数组。若参照尺寸尚未确定，百分比会按布局阶段处理；固定百分比轨道加上 gap 也可能超出容器。
+
 ## 示例
 
 ```tsx live
@@ -72,7 +74,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## API 参考
 
-- [GridTemplateComponent](../../api/type-aliases/GridTemplateComponent.md)
+- [GridTemplateComponent](../../../api/type-aliases/GridTemplateComponent.md)
 
 ## 后续步骤
 

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -47,20 +60,30 @@ test("i18n_ja-JP_cookbook_sticky-footer example 1", async () => {
   const pageStyle = new Style({
     display: Display.Flex,
     flexDirection: FlexDirection.Column,
-    size: { width: 300, height: 300 }, // ビューポートをシミュレートするための固定高さ
+    size: { width: 300, height: "auto" },
+    minSize: { width: "auto", height: 300 }, // 少なくともビューポートの高さ
   });
 
   const header = tree.newLeaf(
-    new Style({ size: { width: "100%", height: 50 }, margin: { bottom: 10 } }),
+    new Style({
+      size: { width: "100%", height: 50 },
+      marginBottom: 10,
+      flexShrink: 0,
+    }),
   );
   const footer = tree.newLeaf(
-    new Style({ size: { width: "100%", height: 50 }, margin: { top: 10 } }),
+    new Style({
+      size: { width: "100%", height: 50 },
+      marginTop: 10,
+      flexShrink: 0,
+    }),
   );
 
   // コンテンツがスペースを埋めるために成長
   const content = tree.newLeaf(
     new Style({
       flexGrow: 1,
+      flexShrink: 0,
       size: { width: "100%", height: "auto" },
     }),
   );

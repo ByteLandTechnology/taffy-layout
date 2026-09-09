@@ -9,7 +9,7 @@ sidebar_position: 1
 
 ## 打印树
 
-您手头最有力的工具是 `tree.printTree(node)`。它生成树结构、样式配置和计算布局的文本表示。
+`tree.printTree(node)` 返回包含节点层次、布局类型、位置、尺寸及边缘尺寸的字符串。使用 `console.log()` 才会打印它；它不会列出完整的样式配置。
 
 ```ts
 const tree = new TaffyTree();
@@ -22,11 +22,10 @@ console.log(tree.printTree(root));
 **示例输出：**
 
 ```text
-DIV [x: 0    y: 0    w: 100  h: 100  content_w: 100  content_h: 100  border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (1)
-└── LEAF [x: 0    y: 0    w: 50   h: 50   content_w: 50   content_h: 50   border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (2)
+└──  LEAF [x: 0    y: 0    w: 0    h: 0    content_w: 0    content_h: 0    border: l:0 r:0 t:0 b:0, padding: l:0 r:0 t:0 b:0] (4294967297)
 ```
 
-> **注意**：实际输出格式可能因版本而略有不同，但始终显示层次结构和关键约束。
+这个空叶子没有固定尺寸或内容测量，因此尺寸为零；传入的可用空间不会强制它填满容器。括号中的节点 ID 应视为不透明值。
 
 ## 可视化调试
 
@@ -45,16 +44,21 @@ const root = tree.newLeaf(new Style());
 tree.computeLayout(root, { width: 100, height: 100 });
 
 // 可视化调试器函数
-function debugDraw(node: any) {
+function debugDraw(node: bigint, parentX = 0, parentY = 0) {
   const layout = tree.getLayout(node);
-  renderer.strokeRect(layout.x, layout.y, layout.width, layout.height, "red");
+  const x = parentX + layout.x;
+  const y = parentY + layout.y;
+  renderer.strokeRect(x, y, layout.width, layout.height, "red");
+  layout.free();
 
   for (const child of tree.children(node)) {
-    debugDraw(child);
+    debugDraw(child, x, y);
   }
 }
 debugDraw(root);
 ```
+
+布局坐标相对于直接父节点；绘制嵌套树时需要像上例一样累加祖先偏移。
 
 ## 隔离
 

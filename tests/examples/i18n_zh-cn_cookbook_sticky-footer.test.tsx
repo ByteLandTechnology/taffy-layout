@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -47,14 +60,15 @@ test("i18n_zh-CN_cookbook_sticky-footer example 1", async () => {
   const pageStyle = new Style({
     display: Display.Flex,
     flexDirection: FlexDirection.Column,
-    size: { width: 300, height: 300 }, // 固定高度以模拟视口
+    size: { width: 300, height: "auto" },
+    minHeight: 300, // 内容较少时至少填满视口，内容增多时允许页面增高
   });
 
   const header = tree.newLeaf(
-    new Style({ size: { width: "100%", height: 50 }, margin: { bottom: 10 } }),
+    new Style({ size: { width: "100%", height: 50 }, marginBottom: 10 }),
   );
   const footer = tree.newLeaf(
-    new Style({ size: { width: "100%", height: 50 }, margin: { top: 10 } }),
+    new Style({ size: { width: "100%", height: 50 }, marginTop: 10 }),
   );
 
   // 内容增长以填充空间

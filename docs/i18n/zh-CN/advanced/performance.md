@@ -47,7 +47,7 @@ return (
         alignItems: "center",
       }}
     >
-      Capacity: {tree.totalNodeCount()}
+      Nodes: {tree.totalNodeCount()}
     </div>
   </div>
 );
@@ -55,7 +55,9 @@ return (
 
 ## 2. 增量布局
 
-只有更改的节点会被重新计算。Taffy **懒惰地**行动，只重新计算受更改影响的分支。
+Taffy 在输入约束不变且缓存有效时复用结果。样式或子节点关系变化会使相关缓存失效；父级尺寸变化也可能要求重新计算未直接修改的子节点。
+
+原地修改 context 对象、字体等外部测量数据，或替换测量函数后，应对受影响的叶子调用 `markDirty()`。`setNodeContext()` 会自动标记该节点及祖先；`getNodeContextMut()` 本身不会。详见[测量函数](../core-concepts/measure-functions.md)。
 
 ```tsx live
 const tree = new TaffyTree();

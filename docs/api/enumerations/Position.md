@@ -17,7 +17,7 @@ style.position = Position.Absolute; // Removed from flow, uses inset values
 
 ## Enumeration Members
 
-| Enumeration Member               | Value | Description                                                       |
-| -------------------------------- | ----- | ----------------------------------------------------------------- |
-| <a id="absolute"></a> `Absolute` | `1`   | Element is positioned relative to its nearest positioned ancestor |
-| <a id="relative"></a> `Relative` | `0`   | Element participates in normal document flow                      |
+| Enumeration Member                                  | Value | Description                                                                    |
+| --------------------------------------------------- | ----- | ------------------------------------------------------------------------------ |
+| <a id="enumeration-member-absolute"></a> `Absolute` | `1`   | Element is removed from flow and positioned within its parent layout container |
+| <a id="enumeration-member-relative"></a> `Relative` | `0`   | Element participates in normal document flow                                   |

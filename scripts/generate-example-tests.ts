@@ -54,13 +54,13 @@ try {
     }
   };
 
-  // 1. Process src/*.rs files
+  // 1. Process source documentation in Rust and TypeScript files
   const files = readdirSync(srcDir).filter(
-    (f) => f.endsWith(".rs") && f !== "utils.rs",
+    (f) => (f.endsWith(".rs") || f.endsWith(".ts")) && f !== "utils.rs",
   );
   for (const file of files) {
     const content = readFileSync(join(srcDir, file), "utf-8");
-    extractSnippets(content, basename(file, ".rs"), true);
+    extractSnippets(content, basename(file, extname(file)), true);
   }
 
   // 2. Process README.md
@@ -70,17 +70,6 @@ try {
   }
 
   // 3. Process docs directory recursively
-  const getAllMdFiles = (dir: string): string[] => {
-    let results: string[] = [];
-    const list = readdirSync(dir);
-    list.forEach((file) => {
-      const filePath = join(dir, file);
-      const stat = readdirSync(filePath, { withFileTypes: true }); // Wait, readdirSync on file? No.
-      // Use lstatSync or similar
-    });
-    return results;
-  };
-  // Actually, let's use a simpler recursive function
   function processDocs(currentDir: string, relativePath: string = "") {
     if (basename(currentDir) === "api") return; // Skip generated API docs
 
@@ -130,12 +119,15 @@ import init, {
     TaffyTree, 
     Style,
     // Add all other exports that might be needed
-    Display, FlexDirection, AlignItems, AlignContent, JustifyContent, 
+    Display, Direction, Float, Clear, FlexDirection, AlignItems, AlignContent, JustifyContent,
     Position, FlexWrap, BoxSizing, GridAutoFlow, Overflow, AlignSelf, 
     TextAlign, Dimension, AvailableSpace, Size, GridPlacement, Rect, 
     LengthPercentage, LengthPercentageAuto,
     DetailedLayoutInfo, DetailedGridInfo, DetailedGridTracksInfo, DetailedGridItemsInfo,
-    TrackSizingFunction, Point, TaffyError, Layout, MeasureFunction
+    TrackSizingFunction, MinTrackSizingFunction, MaxTrackSizingFunction,
+    GridTemplateArea, GridTemplateComponent, GridTemplateRepetition, RepetitionCount,
+    StyleProperty, StylePropertyValues, LayoutProperty, Line,
+    Point, TaffyError, Layout, MeasureFunction
 } from 'taffy-layout';
 
 // Global init for the suite

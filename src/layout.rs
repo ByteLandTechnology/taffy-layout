@@ -34,7 +34,7 @@
 //! - `x` and `y` are relative to the node's parent
 //! - Positive `x` is to the right
 //! - Positive `y` is downward
-//! - For the root node, `x` and `y` are always 0
+//! - Root `y` is 0; root `x` is 0 for LTR and aligned to the available right edge for RTL
 
 use crate::types::*;
 use crate::utils::serialize;
@@ -98,8 +98,8 @@ impl JsLayout {
 
     /// Gets the X coordinate of the node's top-left corner
     ///
-    /// This value is relative to the node's parent. For the root node,
-    /// this is always 0.
+    /// This value is relative to the node's parent. An LTR root starts at 0;
+    /// an RTL root with definite available width is aligned to its right edge.
     ///
     /// @returns - The horizontal position in pixels
     #[wasm_bindgen(getter)]
@@ -148,26 +148,28 @@ impl JsLayout {
     // Content Size (for scrollable content)
     // =========================================================================
 
-    /// Gets the width of the scrollable content
+    /// Gets the horizontal content extent from the scroll origin
     ///
-    /// If the node has overflow content, this represents the total
-    /// width of all content (may exceed `width`).
+    /// Measures the reachable end of the content from the padding-box scroll
+    /// origin: the left edge for LTR and the right edge for RTL. Content before
+    /// that origin does not increase this extent, which may exceed `width`.
     ///
     /// @returns - The content width in pixels
     #[wasm_bindgen(getter, js_name = contentWidth)]
     pub fn content_width(&self) -> f32 {
-        self.inner.content_size.width
+        self.inner.scrollable_overflow_rect.right
     }
 
-    /// Gets the height of the scrollable content
+    /// Gets the vertical content extent from the scroll origin
     ///
-    /// If the node has overflow content, this represents the total
-    /// height of all content (may exceed `height`).
+    /// Measures the reachable bottom edge from the padding-box top edge.
+    /// Content above the scroll origin does not increase this extent,
+    /// which may exceed `height`.
     ///
     /// @returns - The content height in pixels
     #[wasm_bindgen(getter, js_name = contentHeight)]
     pub fn content_height(&self) -> f32 {
-        self.inner.content_size.height
+        self.inner.scrollable_overflow_rect.bottom
     }
 
     // =========================================================================
@@ -358,12 +360,13 @@ impl JsLayout {
         serialize(&s).unchecked_into()
     }
 
-    /// Gets the content size as a Size with contentWidth and contentHeight
+    /// Gets the reachable content extents as `{ width, height }`
     ///
-    /// If the node has overflow content, this represents the total size of all content
-    /// (may exceed the node's width/height).
+    /// Extents are measured from the padding-box scroll origin: top-left for LTR
+    /// and top-right for RTL. They may exceed the node's width and height.
     ///
-    /// @returns - A Size with contentWidth and contentHeight in pixels
+    /// @returns - A Size containing `contentWidth` and `contentHeight` in pixels,
+    /// measured from the scroll origin and excluding overflow before that origin
     ///
     /// @example
     /// ```typescript
@@ -380,8 +383,8 @@ impl JsLayout {
     #[wasm_bindgen(getter, js_name = contentSize)]
     pub fn content_size(&self) -> JsValue {
         let s: SizeDto<f32> = SizeDto {
-            width: self.inner.content_size.width,
-            height: self.inner.content_size.height,
+            width: self.content_width(),
+            height: self.content_height(),
         };
         serialize(&s).unchecked_into()
     }
@@ -573,15 +576,9 @@ impl JsLayout {
             "height" => JsValue::from(self.inner.size.height),
 
             // Content size
-            "contentSize" => {
-                let s: SizeDto<f32> = SizeDto {
-                    width: self.inner.content_size.width,
-                    height: self.inner.content_size.height,
-                };
-                serialize(&s)
-            }
-            "contentWidth" => JsValue::from(self.inner.content_size.width),
-            "contentHeight" => JsValue::from(self.inner.content_size.height),
+            "contentSize" => self.content_size(),
+            "contentWidth" => JsValue::from(self.content_width()),
+            "contentHeight" => JsValue::from(self.content_height()),
 
             // Scrollbar size
             "scrollbarSize" => {
@@ -653,9 +650,7 @@ impl JsLayout {
 
 impl From<&taffy::Layout> for JsLayout {
     fn from(layout: &taffy::Layout) -> Self {
-        JsLayout {
-            inner: layout.clone(),
-        }
+        JsLayout { inner: *layout }
     }
 }
 

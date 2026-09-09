@@ -4,6 +4,9 @@
 type StyleProperty =
   | "display"
   | "position"
+  | "direction"
+  | "float"
+  | "clear"
   | "boxSizing"
   | "overflow"
   | "overflowX"
@@ -68,6 +71,8 @@ type StyleProperty =
   | "gridAutoRows"
   | "gridAutoColumns"
   | "gridTemplateAreas"
+  | "gridTemplateAreaRowCount"
+  | "gridTemplateAreaColumnCount"
   | "gridTemplateRowNames"
   | "gridTemplateColumnNames";
 ```

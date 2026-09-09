@@ -7,17 +7,23 @@ sidebar_position: 14
 
 **Control alignment of items along the cross axis.**
 
-The `alignItems` property defines the default behavior for how flexible items are laid out along the **cross axis** on the current line. Think of it as the `justifyContent` for the cross axis (perpendicular to the main axis).
+The `alignItems` property controls Flexbox items along the **cross axis** and Grid items along the block axis. Grid's `justifyItems` uses the same `AlignItems` values for the inline axis. Both properties are initially `undefined`, allowing the layout algorithm to choose its default alignment, commonly stretching auto-sized items.
 
 ## Values
 
-| Value           | Description                                                                                     |
-| :-------------- | :---------------------------------------------------------------------------------------------- |
-| **`Stretch`**   | **Default**. Items stretch to fill the container's cross size (respecting min/max constraints). |
-| **`FlexStart`** | Items align to the start edge of the cross axis.                                                |
-| **`FlexEnd`**   | Items align to the end edge of the cross axis.                                                  |
-| **`Center`**    | Items align in the center of the cross axis.                                                    |
-| **`Baseline`**  | Items align based on their text baseline.                                                       |
+| Value                       | Description                                                                        |
+| :-------------------------- | :--------------------------------------------------------------------------------- |
+| **`Stretch`**               | Items stretch to fill the container's cross size (respecting min/max constraints). |
+| **`Start` / `End`**         | Align to the container's logical start/end edge.                                   |
+| **`SelfStart` / `SelfEnd`** | Align using the item's own direction rather than the container's direction.        |
+| **`FlexStart`**             | Items align to the start edge of the cross axis.                                   |
+| **`FlexEnd`**               | Items align to the end edge of the cross axis.                                     |
+| **`Center`**                | Items align in the center of the cross axis.                                       |
+| **`Baseline`**              | Items align using the baselines calculated by Taffy.                               |
+
+The measurement callback returns dimensions only; it does not accept a custom text baseline.
+
+`SafeStart`, `SafeEnd`, `SafeFlexStart`, `SafeFlexEnd`, `SafeCenter`, `SafeSelfStart`, and `SafeSelfEnd` provide safe alignment. When the requested alignment would place overflowing content before the start edge, safe alignment falls back to start alignment. The corresponding values without `Safe` retain their requested alignment even when content overflows.
 
 ## Example
 

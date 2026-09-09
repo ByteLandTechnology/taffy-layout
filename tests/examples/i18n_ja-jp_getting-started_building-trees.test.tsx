@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -80,7 +93,7 @@ test("i18n_ja-JP_getting-started_building-trees example 3", async () => {
   const newChild = tree.newLeaf(new Style());
   tree.replaceChildAtIndex(parent, 1, newChild);
 
-  // 子ノードを削除
+  // 親から子ノードを切り離す
   tree.removeChild(parent, firstChild);
 });
 

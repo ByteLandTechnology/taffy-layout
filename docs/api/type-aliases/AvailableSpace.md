@@ -11,9 +11,11 @@ This is passed to `computeLayout()` to define the container constraints.
 
 ## Remarks
 
-- Use `number` when you have a fixed container size
-- Use `"min-content"` to shrink-wrap to the minimum content size
-- Use `"max-content"` to expand to fit all content without wrapping
+- Use `number` to offer a definite amount of space
+- Use `"min-content"` for an intrinsic minimum-content constraint
+- Use `"max-content"` for an intrinsic maximum-content constraint
+  Available space does not override explicit sizes, min/max constraints, or
+  Flexbox wrapping rules. It is not a guaranteed final size.
 
 ## Example
 

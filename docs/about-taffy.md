@@ -13,9 +13,9 @@ Taffy is a high-performance, embeddable layout engine written in Rust and compil
 
 Taffy is written in Rust and compiled to WebAssembly, giving it performance characteristics much closer to native code than pure JavaScript implementations.
 
-### Complete CSS Support
+### CSS Layout Algorithms
 
-Taffy implements both CSS Flexbox and CSS Grid layout engines with full feature parity with web browsers.
+Taffy Layout exposes Flexbox, Grid, and Block layout, including floats, writing direction, and safe alignment. The [Styling Guide](./styling/index.md) and [API Reference](./api/index.md) describe the properties and values available through the JavaScript binding.
 
 ### Tree-Based API
 

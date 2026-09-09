@@ -38,13 +38,6 @@ use wasm_bindgen::prelude::*;
 /// // js_value is now { width: 100, height: 50 } in JavaScript
 /// ```
 ///
-/// @example
-/// ```typescript
-/// const size = { width: 100, height: 50 };
-/// const js_value = serialize(size);
-/// // js_value is now { width: 100, height: 50 } in JavaScript
-/// ```
-///
 /// @performance
 /// This function allocates a new JavaScript object on each call. For hot paths,
 /// consider caching the result or using more direct conversion methods.

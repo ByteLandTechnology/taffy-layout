@@ -77,7 +77,7 @@ return (
 
 ## 増分レイアウト
 
-Taffy はインテリジェントなキャッシュを採用しています。特定のノードのスタイルやコンテンツを変更すると、次の計算では影響を受けるツリーの部分のみが再計算されます。
+Taffy は制約が一致する計算結果をキャッシュから再利用します。スタイルやツリー構造の変更は対象ノードと祖先のキャッシュを無効化します。配置や利用可能なスペースが変わると、直接変更していない兄弟や子孫も再計算されることがあります。
 
 ```ts
 const tree = new TaffyTree();
@@ -93,7 +93,7 @@ const newStyle = new Style({ width: 250 });
 tree.setStyle(childNode, newStyle);
 
 // 3. 再計算
-//    Taffy は影響を受けないブランチの再計算をスキップします。
+//    Taffy は条件が一致するキャッシュを再利用します。
 tree.computeLayout(root, { width: 800, height: 600 });
 ```
 
@@ -111,15 +111,19 @@ const tree = new TaffyTree();
 // サブピクセル精度を有効化
 tree.disableRounding();
 
-// ... レイアウトを計算 ...
-const node = tree.newLeaf(new Style());
+const style = new Style({ width: 100 / 3, height: 20 });
+const node = tree.newLeaf(style);
+style.free();
+tree.computeLayout(node, { width: 100, height: 100 });
 const layout = tree.getLayout(node);
-console.log(layout.width); // 33 ではなく 33.33333... になる可能性があります
+console.log(layout.width); // 約 33.333332（内部は32ビット浮動小数点数）
+layout.free();
+tree.free();
 ```
 
 ## デバッグのヒント
 
-- **`printTree(root)`**: ツリー全体の深さ、スタイル、計算されたレイアウトのテキスト表現を出力します。デバッグに不可欠です。
+- **`printTree(root)`**: ツリー階層、レイアウトモード、計算結果を文字列として返します。`console.log(tree.printTree(root))` で表示できます。
 - **分離**: 複雑なツリーの動作がおかしい場合は、問題のあるノードのみを含む小さな再現を作成して問題を分離します。
 
 ## 次のステップ

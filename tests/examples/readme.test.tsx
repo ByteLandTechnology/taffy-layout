@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -94,47 +107,64 @@ test("readme example 1", async () => {
   console.log(
     `Child 2: ${child2Layout.width}x${child2Layout.height} at (${child2Layout.x}, ${child2Layout.y})`,
   );
+
+  containerLayout.free();
+  child1Layout.free();
+  child2Layout.free();
+  containerStyle.free();
+  childStyle.free();
+  tree.free();
 });
 
 test("readme example 2", async () => {
   const tree = new TaffyTree();
   const textStyle = new Style();
-  const rootNode = tree.newLeaf(new Style());
   const measureTextWidth = (text: string) => text.length * 8;
   const measureTextHeight = (text: string, width: number) => 20;
 
   const textNode = tree.newLeafWithContext(textStyle, {
     text: "Hello, World!",
   });
+  const rootNode = tree.newWithChildren(textStyle, [textNode]);
 
   tree.computeLayoutWithMeasure(
     rootNode,
     { width: 800, height: "max-content" },
     (known, available, node, context, style) => {
+      style.free(); // The callback receives an owned copy of the node's style
       if (context?.text) {
         // Your text measurement logic here
-        const width = measureTextWidth(context.text);
-        const height = measureTextHeight(
-          context.text,
-          available.width as number,
-        );
+        const width = known.width ?? measureTextWidth(context.text);
+        const wrappingWidth =
+          typeof available.width === "number" ? available.width : width;
+        const height =
+          known.height ?? measureTextHeight(context.text, wrappingWidth);
         return { width, height };
       }
       return { width: 0, height: 0 };
     },
   );
+
+  textStyle.free();
+  tree.free();
 });
 
 test("readme example 3", async () => {
+  const tree = new TaffyTree();
+  const style = new Style();
+  const parent = tree.newLeaf(style);
   try {
-    const tree = new TaffyTree();
-    const style = new Style();
-    const nodeId = tree.newLeaf(style);
-    console.log("Created node:", nodeId);
+    tree.getChildAtIndex(parent, 0); // Valid parent, but no children
   } catch (e) {
     if (e instanceof TaffyError) {
       console.error("Error:", e.message);
+      e.free();
+    } else {
+      throw e;
     }
+  } finally {
+    style.free();
+    tree.free();
   }
 });
 
@@ -172,6 +202,7 @@ test("readme example 6", async () => {
   gridStyle.gridTemplateRowNames = [
     ["header-start"],
     ["header-end", "content-start"],
+    [], // Intermediate line within the two-row content area
     ["content-end", "footer-start"],
     ["footer-end"],
   ];

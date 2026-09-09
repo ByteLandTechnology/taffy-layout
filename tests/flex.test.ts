@@ -10,6 +10,7 @@ import {
   AlignSelf,
   AlignContent,
   JustifyContent,
+  Direction,
 } from "../src/index";
 
 describe("Flex Style Properties", () => {
@@ -992,5 +993,72 @@ describe("Flex Layout Computation", () => {
       child1Style.free();
       child2Style.free();
     });
+  });
+});
+
+describe("Writing direction and safe alignment", () => {
+  beforeAll(setupTaffy);
+
+  it("applies right-to-left direction through the public layout API", () => {
+    const tree = new TaffyTree();
+    const childStyle = new Style({ width: 20, height: 10 });
+    const first = tree.newLeaf(childStyle);
+    const second = tree.newLeaf(childStyle);
+    const root = tree.newWithChildren(
+      new Style({
+        display: Display.Flex,
+        direction: Direction.Rtl,
+        width: 100,
+        height: 10,
+      }),
+      [first, second],
+    );
+
+    tree.computeLayout(root, { width: 100, height: 10 });
+
+    expect(tree.getLayout(first).x).toBe(80);
+    expect(tree.getLayout(second).x).toBe(60);
+  });
+
+  it("applies safe and self-relative alignment", () => {
+    const safeTree = new TaffyTree();
+    const oversized = safeTree.newLeaf(
+      new Style({ width: 150, height: 10, flexShrink: 0 }),
+    );
+    const safeRoot = safeTree.newWithChildren(
+      new Style({
+        display: Display.Flex,
+        width: 100,
+        height: 20,
+        justifyContent: JustifyContent.SafeCenter,
+      }),
+      [oversized],
+    );
+
+    safeTree.computeLayout(safeRoot, { width: 100, height: 20 });
+    expect(safeTree.getLayout(oversized).x).toBe(0);
+
+    const selfTree = new TaffyTree();
+    const selfAligned = selfTree.newLeaf(
+      new Style({
+        direction: Direction.Rtl,
+        alignSelf: AlignSelf.SelfStart,
+        width: 20,
+        height: 10,
+      }),
+    );
+    const selfRoot = selfTree.newWithChildren(
+      new Style({
+        display: Display.Flex,
+        direction: Direction.Ltr,
+        flexDirection: FlexDirection.Column,
+        width: 100,
+        height: 20,
+      }),
+      [selfAligned],
+    );
+
+    selfTree.computeLayout(selfRoot, { width: 100, height: 20 });
+    expect(selfTree.getLayout(selfAligned).x).toBe(80);
   });
 });

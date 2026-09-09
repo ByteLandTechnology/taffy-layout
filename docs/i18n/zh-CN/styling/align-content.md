@@ -20,6 +20,10 @@ sidebar_position: 16
 | **`SpaceBetween`** | 行均匀分布；第一行在起始位置，最后一行在结束位置。 |
 | **`SpaceAround`**  | 行均匀分布，行与行之间有相等的空间。               |
 
+此属性也用于 Grid 行的整体对齐，以及 `Display.Block` / `Display.FlowRoot` 容器内内容的块轴对齐。例如，高 `100` 的块容器设置 `AlignContent.Center`，其高 `20` 的单个子元素会位于 `y = 40`。
+
+还支持 `Start`、`End`、`SpaceEvenly`，以及 `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`。安全值在内容无法容纳时回退到起始对齐。未设置时读回 `undefined`；表中的默认行为针对 Flex 布局。
+
 ## 示例
 
 ```tsx live
@@ -27,7 +31,7 @@ const tree = new TaffyTree();
 
 const itemStyle = new Style({
   size: { width: 80, height: 30 },
-  margin: { bottom: 5 },
+  marginBottom: 5,
 });
 
 // 创建足够的子元素以强制换行

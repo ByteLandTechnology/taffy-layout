@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -67,7 +80,12 @@ test("i18n_ja-JP_styling_flex-shrink example 1", async () => {
     height: 60,
   });
 
-  console.log(`子 1 (収縮なし): 200px, 子 2 (収縮: 1): 200px (収縮します)`);
+  const firstLayout = tree.getLayout(child1);
+  const secondLayout = tree.getLayout(child2);
+  console.log(`子 1: ${firstLayout.width}px, 子 2: ${secondLayout.width}px`);
+  // 子 1: 200px, 子 2: 80px
+  firstLayout.free();
+  secondLayout.free();
 
   return <TaffyTreePreview tree={tree} root={root} />;
 });

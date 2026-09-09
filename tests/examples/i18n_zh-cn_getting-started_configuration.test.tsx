@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -43,7 +56,7 @@ const TaffyTreePreview = (_props: any) => null;
 test("i18n_zh-CN_getting-started_configuration example 1", async () => {
   // 初始化为可容纳 1,000 个节点
   const tree = TaffyTree.withCapacity(1000);
-  console.log(`Initial Node Capacity: ${tree.totalNodeCount()}`); // 0 个实际节点
+  console.log(`Initial Node Count: ${tree.totalNodeCount()}`); // 0 个实际节点
 
   const style = new Style({
     display: Display.Flex,
@@ -102,7 +115,7 @@ test("i18n_zh-CN_getting-started_configuration example 3", async () => {
   // ... 使用树 ...
 
   // 选项 1：重用树（推荐）
-  // 清除所有节点但保持已分配的内存
+  // 清除所有节点并保留节点存储容量
   tree.clear();
 
   // 选项 2：完全释放

@@ -18,9 +18,9 @@ style.gridAutoFlow = GridAutoFlow.RowDense; // Fill rows, pack densely
 
 ## Enumeration Members
 
-| Enumeration Member                     | Value | Description                                                                      |
-| -------------------------------------- | ----- | -------------------------------------------------------------------------------- |
-| <a id="column"></a> `Column`           | `1`   | Items are placed by filling each column in turn, adding new columns as necessary |
-| <a id="columndense"></a> `ColumnDense` | `3`   | Combines `Column` with the dense packing algorithm                               |
-| <a id="row"></a> `Row`                 | `0`   | Items are placed by filling each row in turn, adding new rows as necessary       |
-| <a id="rowdense"></a> `RowDense`       | `2`   | Combines `Row` with the dense packing algorithm                                  |
+| Enumeration Member                                        | Value | Description                                                                      |
+| --------------------------------------------------------- | ----- | -------------------------------------------------------------------------------- |
+| <a id="enumeration-member-column"></a> `Column`           | `1`   | Items are placed by filling each column in turn, adding new columns as necessary |
+| <a id="enumeration-member-columndense"></a> `ColumnDense` | `3`   | Combines `Column` with the dense packing algorithm                               |
+| <a id="enumeration-member-row"></a> `Row`                 | `0`   | Items are placed by filling each row in turn, adding new rows as necessary       |
+| <a id="enumeration-member-rowdense"></a> `RowDense`       | `2`   | Combines `Row` with the dense packing algorithm                                  |

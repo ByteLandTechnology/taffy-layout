@@ -37,7 +37,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 ## 快速记事
 
 - `margin` 是一个包含 `left`、`right`、`top`、`bottom` 的 `Rect`。
-- 它支持 `Auto` 值以使内容居中（类似于 `margin: auto`）。
+- 每条边接受数字、百分比字符串或 `"auto"`。例如，水平方向两侧的 `"auto"` 外边距可分配剩余空间以居中；效果取决于布局模式和可用空间。
 
 ## 下一步
 

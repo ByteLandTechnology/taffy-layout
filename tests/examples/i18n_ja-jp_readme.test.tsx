@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -94,47 +107,70 @@ test("i18n_ja-JP_README example 1", async () => {
   console.log(
     `Child 2: ${child2Layout.width}x${child2Layout.height} at (${child2Layout.x}, ${child2Layout.y})`,
   );
+
+  containerLayout.free();
+  child1Layout.free();
+  child2Layout.free();
+  containerStyle.free();
+  childStyle.free();
+  tree.free();
 });
 
 test("i18n_ja-JP_README example 2", async () => {
   const tree = new TaffyTree();
   const textStyle = new Style();
-  const rootNode = tree.newLeaf(new Style());
-  const measureTextWidth = (text: string) => text.length * 8;
-  const measureTextHeight = (text: string, width: number) => 20;
+  // 簡略化した等幅・文字単位折り返しの測定例（1文字8px、1行20px）
 
   const textNode = tree.newLeafWithContext(textStyle, {
     text: "Hello, World!",
   });
+  const rootStyle = new Style();
+  const rootNode = tree.newWithChildren(rootStyle, [textNode]);
+  textStyle.free();
+  rootStyle.free();
 
   tree.computeLayoutWithMeasure(
     rootNode,
     { width: 800, height: "max-content" },
     (known, available, node, context, style) => {
-      if (context?.text) {
-        // ここに独自のテキスト計測ロジックを実装
-        const width = measureTextWidth(context.text);
-        const height = measureTextHeight(
-          context.text,
-          available.width as number,
-        );
-        return { width, height };
-      }
-      return { width: 0, height: 0 };
+      style.free(); // 第5引数は所有コピー。この例では読み取る必要はありません
+      const text = typeof context?.text === "string" ? context.text : "";
+      const naturalWidth = text.length * 8;
+      const limit =
+        typeof available.width === "number"
+          ? Math.max(0, available.width)
+          : available.width === "min-content"
+            ? Math.min(8, naturalWidth)
+            : naturalWidth;
+      const width = known.width ?? Math.min(naturalWidth, limit);
+      const columns = Math.max(1, Math.floor(width / 8));
+      const height = known.height ?? Math.ceil(text.length / columns) * 20;
+      return { width, height };
     },
   );
+
+  const textLayout = tree.getLayout(textNode);
+  console.log(`Text: ${textLayout.width}x${textLayout.height}`); // Text: 104x20
+  textLayout.free();
+  tree.free();
 });
 
 test("i18n_ja-JP_README example 3", async () => {
+  const tree = new TaffyTree();
+  const style = new Style();
+  const nodeId = tree.newLeaf(style);
+  style.free();
   try {
-    const tree = new TaffyTree();
-    const style = new Style();
-    const nodeId = tree.newLeaf(style);
-    console.log("Created node:", nodeId);
+    tree.getChildAtIndex(nodeId, 0); // 有効な親ですが子がないため範囲外
   } catch (e) {
     if (e instanceof TaffyError) {
       console.error("Error:", e.message);
+      e.free();
+    } else {
+      throw e;
     }
+  } finally {
+    tree.free();
   }
 });
 
@@ -172,6 +208,7 @@ test("i18n_ja-JP_README example 6", async () => {
   gridStyle.gridTemplateRowNames = [
     ["header-start"],
     ["header-end", "content-start"],
+    [],
     ["content-end", "footer-start"],
     ["footer-end"],
   ];

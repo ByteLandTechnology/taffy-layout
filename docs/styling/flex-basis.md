@@ -7,7 +7,7 @@ sidebar_position: 10
 
 Define the default size of an element before the remaining space is distributed.
 
-The **`flexBasis`** property specifies the initial main size of a flex item. This property determines the size of the content-box unless otherwise specified with `box-sizing`.
+The **`flexBasis`** property specifies the initial main size of a flex item before growth or shrinkage. It follows `boxSizing`: the default `BoxSizing.BorderBox` includes padding and border, while `BoxSizing.ContentBox` adds those edges to the basis.
 
 ## Example
 
@@ -45,7 +45,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## Quick Notes
 
-- `flexBasis` influences `auto` sizing.
+- `flexBasis` defaults to `"auto"`, which uses the item's main-axis size or its content measurement.
 - It is similar to `width` (or `height` depending on `flexDirection`) but specific to flex items.
 
 ## Next Steps

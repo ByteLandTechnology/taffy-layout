@@ -7,18 +7,20 @@ sidebar_position: 4
 
 **Taffy 样式属性综合指南。**
 
-Taffy 的样式 API 模仿 CSS 设计。以下是所有支持属性的分类列表。
+Taffy 的样式 API 模仿 CSS 设计。以下按类别介绍常用属性。
 
 ## 布局模式
 
 定义节点行为的核心属性。
 
-| 属性                            | 描述                                        |
-| :------------------------------ | :------------------------------------------ |
-| **[`display`](./display.md)**   | `Flex`（默认）、`Grid` 或 `None`。          |
-| **[`position`](./position.md)** | `Relative`（流式）或 `Absolute`（覆盖）。   |
-| **[`overflow`](./overflow.md)** | `Visible`、`Hidden` 或 `Scroll`。           |
-| **[`inset`](./inset.md)**       | 定位用的 `top`、`bottom`、`left`、`right`。 |
+| 属性                                  | 描述                                                    |
+| :------------------------------------ | :------------------------------------------------------ |
+| **[`display`](./display.md)**         | `Flex`（默认）、`Grid`、`Block`、`FlowRoot` 或 `None`。 |
+| **[`direction`](./display.md)**       | `Direction.Ltr` / `Direction.Rtl`。                     |
+| **[`float` / `clear`](./display.md)** | 块布局中的浮动与清除。                                  |
+| **[`position`](./position.md)**       | `Relative`（流式）或 `Absolute`（覆盖）。               |
+| **[`overflow`](./overflow.md)**       | `Visible`、`Clip`、`Hidden` 或 `Scroll`。               |
+| **[`inset`](./inset.md)**             | 定位用的 `top`、`bottom`、`left`、`right`。             |
 
 ## 尺寸与间距
 
@@ -53,9 +55,10 @@ Taffy 的样式 API 模仿 CSS 设计。以下是所有支持属性的分类列�
 
 二维布局的属性。
 
-| 属性                                      | 描述             |
-| :---------------------------------------- | :--------------- |
-| **[`gridTemplate`](./grid-templates.md)** | 定义列和行。     |
-| **[`gridColumn`](./grid-column.md)**      | 在网格中放置列。 |
-| **[`gridRow`](./grid-row.md)**            | 在网格中放置行。 |
-| **[`gridAutoFlow`](./grid-auto-flow.md)** | 自动放置算法。   |
+| 属性                                                                                              | 描述                   |
+| :------------------------------------------------------------------------------------------------ | :--------------------- |
+| **[`gridTemplateRows` / `gridTemplateColumns`](./grid-templates.md)**                             | 定义列和行。           |
+| **[`gridColumn`](./grid-column.md)**                                                              | 在网格中放置列。       |
+| **[`gridRow`](./grid-row.md)**                                                                    | 在网格中放置行。       |
+| **[`gridAutoFlow`](./grid-auto-flow.md)**                                                         | 自动放置算法。         |
+| **[`gridTemplateAreas` / `gridTemplateAreaRowCount` / `gridTemplateAreaColumnCount`](./grid.md)** | 命名区域与模板行列数。 |

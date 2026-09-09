@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -61,7 +74,7 @@ test("getting-started_computing-layouts example 1", async () => {
   tree.computeLayout(root, { width: 400, height: 100 });
 
   // 2. Read Results
-  //    The engine has now populated the layout data for every node.
+  //    The engine has now populated the layout data for this subtree.
   const rootLayout = tree.getLayout(root);
   const childLayout = tree.getLayout(child);
 
@@ -116,7 +129,7 @@ test("getting-started_computing-layouts example 2", async () => {
   tree.setStyle(childNode, newStyle);
 
   // 3. Re-compute
-  //    Taffy skips recalculating unaffected branches.
+  //    Taffy reuses cached results where the layout inputs still match.
   tree.computeLayout(root, { width: 800, height: 600 });
 });
 
@@ -126,8 +139,9 @@ test("getting-started_computing-layouts example 3", async () => {
   // Enable sub-pixel precision
   tree.disableRounding();
 
-  // ... compute layout ...
-  const node = tree.newLeaf(new Style());
+  const node = tree.newLeaf(new Style({ width: 100 / 3, height: 20 }));
+  tree.computeLayout(node, { width: 100, height: 100 });
   const layout = tree.getLayout(node);
-  console.log(layout.width); // Might be 33.33333... instead of 33
+  console.log(layout.width); // Approximately 33.33333 (32-bit float)
+  layout.free();
 });

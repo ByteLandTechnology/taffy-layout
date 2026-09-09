@@ -11,7 +11,7 @@ Used for properties that support auto values, such as `margin` and `inset`.
 ## Remarks
 
 - `number`: Fixed size in pixels
-- `"{number}%"`: Percentage of parent's size (0-100)
+- `"{number}%"`: Percentage whose reference size depends on the property; margin percentages use the containing width, while inset percentages use the corresponding axis
 - `"auto"`: Automatic value (behavior depends on property)
 
 ## Example

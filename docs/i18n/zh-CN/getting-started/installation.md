@@ -11,12 +11,8 @@ npm install taffy-layout
 
 ## 环境要求
 
-- **Node.js**: 版本 12 或更高。
-- **浏览器**: 支持 **WebAssembly** 的现代浏览器：
-  - Chrome 57+
-  - Firefox 52+
-  - Safari 11+
-  - Edge 16+
+- **Node.js**: 版本 18 或更高。
+- **浏览器**: 需要 ES Modules、BigInt、JavaScript/WebAssembly BigInt 互操作以及 WebAssembly reference types 支持。
 
 ## 浏览器使用
 
@@ -58,4 +54,4 @@ Taffy Layout 开箱即用，包含**完整的 TypeScript 类型定义**。无需
 ## 下一步
 
 - **[快速开始指南](./quick-start.md)** - 创建您的第一个 Taffy 布局。
-- **[API 参考](../../api/index.md)** - 查看完整的 API 文档。
+- **[API 参考](../../../api/index.md)** - 查看完整的 API 文档。

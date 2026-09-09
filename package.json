@@ -73,10 +73,10 @@
     "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "^5.7.0",
     "vitest": "^4.0.16",
-    "wasm-pack": "^0.14.0"
+    "wasm-pack": "^0.15.0"
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=18"
   },
   "overrides": {
     "axios": "^1.7.9"

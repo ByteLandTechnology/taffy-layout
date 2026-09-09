@@ -9,15 +9,15 @@ Taffy のレイアウトはノードツリーとして表現されます。各�
 
 ## 主要な操作
 
-| 操作                 | メソッド                                        | 説明                                                         |
-| :------------------- | :---------------------------------------------- | :----------------------------------------------------------- |
-| **リーフノード作成** | `tree.newLeaf(style)`                           | 子ノードを持たないノードを作成します（テキスト、画像など）。 |
-| **親ノード作成**     | `tree.newWithChildren(style, children[])`       | 初期子ノードを持つノードを作成します。                       |
-| **子ノード追加**     | `tree.addChild(parent, child)`                  | 親ノードに子ノードを追加します。                             |
-| **子ノード挿入**     | `tree.insertChildAtIndex(parent, index, child)` | 特定の位置に子ノードを挿入します。                           |
-| **子ノード削除**     | `tree.removeChild(parent, child)`               | 特定の子ノードを削除します。                                 |
-| **スタイル取得**     | `tree.getStyle(node)`                           | ノードのスタイルオブジェクトを取得します。                   |
-| **スタイル設定**     | `tree.setStyle(node, style)`                    | ノードのスタイルを更新します。                               |
+| 操作                   | メソッド                                        | 説明                                                         |
+| :--------------------- | :---------------------------------------------- | :----------------------------------------------------------- |
+| **リーフノード作成**   | `tree.newLeaf(style)`                           | 子ノードを持たないノードを作成します（テキスト、画像など）。 |
+| **親ノード作成**       | `tree.newWithChildren(style, children[])`       | 初期子ノードを持つノードを作成します。                       |
+| **子ノード追加**       | `tree.addChild(parent, child)`                  | 親ノードに子ノードを追加します。                             |
+| **子ノード挿入**       | `tree.insertChildAtIndex(parent, index, child)` | 特定の位置に子ノードを挿入します。                           |
+| **子ノードの切り離し** | `tree.removeChild(parent, child)`               | 親から子ノードを切り離します。子ノード自体は有効なままです。 |
+| **スタイル取得**       | `tree.getStyle(node)`                           | ノードのスタイルオブジェクトを取得します。                   |
+| **スタイル設定**       | `tree.setStyle(node, style)`                    | ノードのスタイルを更新します。                               |
 
 ## ノードの作成
 
@@ -73,9 +73,11 @@ tree.insertChildAtIndex(parent, 0, firstChild); // インデックス: 0、以�
 const newChild = tree.newLeaf(new Style());
 tree.replaceChildAtIndex(parent, 1, newChild);
 
-// 子ノードを削除
+// 親から子ノードを切り離す
 tree.removeChild(parent, firstChild);
 ```
+
+`removeChild()` と `setChildren()` は親子関係だけを変更し、ノードは削除しません。`remove(node)` は指定ノードだけを削除し、その直接の子の親参照を解除します。子孫ノードは有効なままです。ツリー全体を空にするには `clear()` を使います。
 
 ## スタイルの更新
 

@@ -7,7 +7,7 @@ sidebar_position: 8
 
 **Define the main axis direction.**
 
-The `flexDirection` property establishes the main-axis, causing items to layout either horizontally (rows) or vertically (columns).
+The `flexDirection` property establishes the main axis, causing items to lay out either horizontally (rows) or vertically (columns). The horizontal directions below assume `Direction.Ltr`, the default. With `Direction.Rtl`, `Row` flows right to left and `RowReverse` flows left to right. See [Writing Direction](./display.md#writing-direction).
 
 ## Values
 

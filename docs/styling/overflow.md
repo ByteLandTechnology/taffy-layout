@@ -7,19 +7,22 @@ sidebar_position: 24
 
 **Control behavior when content exceeds the container size.**
 
-The `overflow` property specifies what happens if content is larger than the container's box.
+The `overflow` property configures layout behavior when content is larger than the container's box. Set both axes with `{ x, y }`, or use `overflowX` and `overflowY`. Your renderer is responsible for clipping, scrolling, and drawing scrollbars.
 
 ## Values
 
-| Value         | Description                                                                          |
-| :------------ | :----------------------------------------------------------------------------------- |
-| **`Visible`** | **Default**. Content flows outside the container.                                    |
-| **`Hidden`**  | Content is clipped at the container edge.                                            |
-| **`Scroll`**  | Taffy reserves space for scrollbars (if configured), though it does not render them. |
+| Value         | Description                                                                                                      |
+| :------------ | :--------------------------------------------------------------------------------------------------------------- |
+| **`Visible`** | **Default**. Uses content-based automatic minimum sizing; overflow can contribute to the parent's scroll region. |
+| **`Clip`**    | Uses content-based automatic minimum sizing; overflowing content does not enlarge the parent's scroll region.    |
+| **`Hidden`**  | Uses a zero automatic minimum for Flex/Grid items; reserves no scrollbar space.                                  |
+| **`Scroll`**  | Uses a zero automatic minimum for Flex/Grid items and reserves configured scrollbar space.                       |
 
 ## Scrollbar Sizing
 
-In Taffy, `Overflow.Scroll` is often used to signal that a node _can_ scroll. Taffy computes `scrollbarSize` which you can read from the layout output.
+`Overflow.Scroll` reserves `scrollbarWidth` space even when content fits; the default width is `0`. Taffy computes `scrollbarSize`, which you can read from the layout output. Horizontal overflow reserves height, and vertical overflow reserves width.
+
+`contentSize`, `contentWidth`, and `contentHeight` expose reachable content extents measured from the scroll origin. See [The Layout Object](../core-concepts/objects-layout.md) for their coordinate semantics, including RTL.
 
 ```ts
 const tree = new TaffyTree();

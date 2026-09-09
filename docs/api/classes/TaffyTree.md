@@ -3,7 +3,11 @@
 The main layout tree class for creating nodes, computing layouts, and managing a tree of styled elements.
 
 TaffyTree is the entry point for the Taffy layout engine. It manages
-a tree of nodes and computes their layouts using CSS Flexbox and Grid algorithms.
+a tree of nodes and computes their layouts using Flexbox, Grid, and block algorithms.
+
+Node IDs passed to this instance must identify live nodes created by the same
+tree. Removed IDs and IDs invalidated by `clear()` must not be reused.
+Invalid IDs may cause a WebAssembly trap instead of a `TaffyError`.
 
 ## Constructors
 
@@ -63,9 +67,9 @@ The child is added as the last child of the parent.
 
 `void`
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the parent or child node does not exist
+Both node IDs must identify live nodes in this tree.
 
 #### Example
 
@@ -98,9 +102,9 @@ Gets the number of children of a node
 
 - The number of direct children
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the node does not exist
+The node ID must identify a live node in this tree.
 
 #### Example
 
@@ -132,9 +136,9 @@ Gets all children of a node
 
 - Array of child node IDs
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the parent node does not exist
+The parent ID must identify a live node in this tree.
 
 #### Example
 
@@ -217,7 +221,11 @@ tree.computeLayout(rootId, { width: 800, height: 600 });
 
 #### Throws
 
-`TaffyError` if the node does not exist or available space is invalid
+`TaffyError` if available space cannot be parsed
+
+#### Remarks
+
+The node ID must identify a live node in this tree.
 
 ---
 
@@ -235,6 +243,12 @@ Updates the stored layout of the provided node and its children
 The measure function is called for leaf nodes (nodes without children) that
 require measurement according to the layout algorithm (Flexbox/Grid).
 For example, this is used for text nodes or other content that has intrinsic size.
+The callback returns content dimensions; the layout engine applies padding,
+borders, constraints, and aspect ratios. Cached measurements may skip calls.
+Mutating context fields or replacing the callback requires `markDirty()`
+on affected nodes. Callback exceptions or invalid return values currently
+produce a zero content measurement instead of propagating an exception.
+A context is optional; callbacks for nodes without one receive `undefined`.
 
 #### Parameters
 
@@ -250,27 +264,50 @@ For example, this is used for text nodes or other content that has intrinsic siz
 
 #### Throws
 
-`TaffyError` if the node does not exist or available space is invalid
+`TaffyError` if available space cannot be parsed
+
+#### Remarks
+
+The node ID must identify a live node in this tree.
 
 #### Example
 
 ```typescript
 const tree = new TaffyTree();
-const rootId = tree.newLeaf(new Style());
-
-const measureText = (text: string, width: number) => ({ width: 0, height: 0 });
+const textStyle = new Style();
+const textNode = tree.newLeafWithContext(textStyle, {
+  text: "Hello, measured text",
+});
+textStyle.free();
 
 tree.computeLayoutWithMeasure(
-  rootId,
+  textNode,
   { width: 800, height: "max-content" },
   (known, available, node, context, style) => {
-    if (context?.text) {
-      const measured = measureText(context.text, available.width as number);
-      return { width: measured.width, height: measured.height };
-    }
-    return { width: 0, height: 0 };
+    style.free(); // This example only needs the attached text.
+    const text: string = context?.text ?? "";
+    // Approximate monospaced measurement; real text uses font metrics.
+    const naturalWidth = text.length * 8;
+    const minimumWidth = Math.max(
+      0,
+      ...text.split(/\s+/).map((word) => word.length * 8),
+    );
+    const width =
+      known.width ??
+      (available.width === "min-content"
+        ? minimumWidth
+        : available.width === "max-content"
+          ? naturalWidth
+          : Math.min(naturalWidth, Math.max(0, available.width)));
+    const lines =
+      text.length === 0 ? 0 : Math.ceil(naturalWidth / Math.max(8, width));
+    return { width, height: known.height ?? lines * 16 };
   },
 );
+const layout = tree.getLayout(textNode);
+console.log(layout.width, layout.height);
+layout.free();
+tree.free();
 ```
 
 ---
@@ -278,7 +315,7 @@ tree.computeLayoutWithMeasure(
 ### detailedLayoutInfo()
 
 ```ts
-detailedLayoutInfo(node): any;
+detailedLayoutInfo(node): DetailedLayoutInfo;
 ```
 
 Gets detailed layout information for grid layouts
@@ -291,18 +328,22 @@ Gets detailed layout information for grid layouts
 
 #### Returns
 
-`any`
+[`DetailedLayoutInfo`](../type-aliases/DetailedLayoutInfo.md)
 
-- Detailed grid info or "None" for non-grid nodes
+- An object containing the last stored rows, columns, and items,
+  or `null` if no grid details have been stored. A childless grid uses leaf
+  layout and does not produce grid details. Previously stored details can
+  remain after changing display mode or removing children, so read this
+  after computing a current grid container with children.
 
 #### Note
 
 This method is only available when the `detailed_layout_info`
 feature is enabled.
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the node does not exist
+The node ID must identify a live node in this tree.
 
 ---
 
@@ -329,9 +370,9 @@ layout computation.
 
 - true if dirty, false otherwise
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the node does not exist
+The node ID must identify a live node in this tree.
 
 #### Example
 
@@ -384,9 +425,10 @@ enableRounding(): void;
 
 Enables rounding of layout values to whole pixels
 
-When enabled (default), computed layout values like position and size
-are rounded to the nearest integer. This prevents sub-pixel rendering
-issues in most rendering contexts.
+When enabled (default), cumulative box edges are rounded to whole pixels.
+Widths and heights are differences between those rounded edges, so equal
+fractional sizes can round differently. Margins and detailed grid track
+measurements can still contain fractions.
 
 #### Returns
 
@@ -436,7 +478,11 @@ Gets the child at a specific index
 
 #### Throws
 
-`TaffyError` if the parent node does not exist or index is out of bounds
+`TaffyError` if the index is out of bounds
+
+#### Remarks
+
+Node IDs must identify live nodes in this tree.
 
 #### Example
 
@@ -506,11 +552,13 @@ and size for a node.
 
 [`Layout`](Layout.md)
 
-- The computed `Layout`
+- An owned snapshot of the computed `Layout`; call `free()` when finished
 
-#### Throws
+Recomputing the tree does not update an existing Layout snapshot.
 
-`TaffyError` if the node does not exist
+#### Remarks
+
+The node ID must identify a live node in this tree.
 
 #### Example
 
@@ -550,6 +598,9 @@ Gets the context value for a node
 
 - The attached context value, or `undefined` if none is set
 
+Object contexts retain their JavaScript identity. Mutating their fields
+does not mark the node dirty; call `markDirty()` before recomputing.
+
 #### Example
 
 ```typescript
@@ -576,6 +627,7 @@ Gets a mutable reference to the context value for a node
 
 In JavaScript, this behaves the same as `getNodeContext()` since
 JavaScript objects are always passed by reference.
+Field mutations require an explicit `markDirty()` before recomputing.
 
 #### Parameters
 
@@ -609,11 +661,13 @@ Gets the style for a node
 
 [`Style`](Style.md)
 
-- The node's `Style`
+- An owned copy of the node's `Style`; call `free()` when finished
 
-#### Throws
+Changes to this copy affect the tree only after calling `setStyle()`.
 
-`TaffyError` if the node does not exist
+#### Remarks
+
+The node ID must identify a live node in this tree.
 
 #### Example
 
@@ -651,7 +705,11 @@ Inserts a child at a specific index
 
 #### Throws
 
-`TaffyError` if the parent or child node does not exist, or index is out of bounds
+`TaffyError` if the index is out of bounds
+
+#### Remarks
+
+Both node IDs must identify live nodes in this tree.
 
 #### Example
 
@@ -685,22 +743,40 @@ For example, when text content changes and needs remeasuring.
 
 `void`
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the node does not exist
+The node ID must identify a live node in this tree.
 
 #### Example
 
 ```typescript
 const tree = new TaffyTree();
-const rootId = tree.newLeaf(new Style());
-const nodeId = rootId;
+const content = { text: "Original text" };
+const style = new Style();
+const nodeId = tree.newLeafWithContext(style, content);
+style.free();
 const availableSpace = { width: 100, height: 100 };
+const measureText: MeasureFunction = (
+  known,
+  _available,
+  _node,
+  context,
+  measuredStyle,
+) => {
+  measuredStyle.free();
+  // Approximate single-line text using an 8-pixel character width.
+  return {
+    width: known.width ?? (context?.text?.length ?? 0) * 8,
+    height: known.height ?? 16,
+  };
+};
+tree.computeLayoutWithMeasure(nodeId, availableSpace, measureText);
 
-// After updating text content
-tree.setNodeContext(nodeId, { text: "Updated text" });
+// Mutating the attached object does not automatically invalidate measurement.
+content.text = "Updated, longer text";
 tree.markDirty(nodeId);
-tree.computeLayout(rootId, availableSpace);
+tree.computeLayoutWithMeasure(nodeId, availableSpace, measureText);
+tree.free();
 ```
 
 ---
@@ -872,10 +948,10 @@ const parent: bigint | undefined = tree.parent(childId);
 printTree(node): string;
 ```
 
-Prints the tree structure to the console (for debugging)
+Returns a text representation of the tree structure for debugging
 
-Outputs a text representation of the tree structure starting from
-the given node. Useful for debugging layout issues.
+Formats the subtree starting from the given node. Pass the returned
+string to `console.log()` to print it.
 
 #### Parameters
 
@@ -908,8 +984,8 @@ remove(node): bigint;
 
 Removes a node from the tree
 
-The node and all its descendants are removed. If the node has a parent,
-it is automatically removed from the parent's children.
+Only the specified node is deleted. It is detached from its parent, and
+its direct children become parentless. Descendant nodes remain in the tree.
 
 #### Parameters
 
@@ -923,20 +999,17 @@ it is automatically removed from the parent's children.
 
 - The removed node ID (`bigint`)
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the node does not exist
+The node ID must identify a live node in this tree.
 
 #### Example
 
 ```typescript
 const tree = new TaffyTree();
 const nodeId = tree.newLeaf(new Style());
-try {
-  const removedId: bigint = tree.remove(nodeId);
-} catch (e) {
-  console.error("Node doesn't exist");
-}
+const removedId: bigint = tree.remove(nodeId);
+// nodeId is no longer valid and must not be passed to this tree again.
 ```
 
 ---
@@ -948,6 +1021,9 @@ removeChild(parent, child): bigint;
 ```
 
 Removes a specific child from a parent
+
+The child must currently belong to this parent. It remains in the tree
+after its parent relationship is removed.
 
 #### Parameters
 
@@ -962,9 +1038,9 @@ Removes a specific child from a parent
 
 - The removed child ID (`bigint`)
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the parent or child node does not exist
+Both node IDs must identify live nodes in this tree.
 
 #### Example
 
@@ -1001,7 +1077,11 @@ Removes a child at a specific index
 
 #### Throws
 
-`TaffyError` if the parent node does not exist or index is out of bounds
+`TaffyError` if the index is out of bounds
+
+#### Remarks
+
+Node IDs must identify live nodes in this tree.
 
 #### Example
 
@@ -1026,7 +1106,8 @@ removeChildrenRange(
 
 Removes a range of children
 
-Removes children from `start_index` (inclusive) to `end_index` (exclusive).
+Detaches children from `startIndex` (inclusive) to `endIndex` (exclusive).
+The detached nodes remain in the tree.
 
 #### Parameters
 
@@ -1040,9 +1121,11 @@ Removes children from `start_index` (inclusive) to `end_index` (exclusive).
 
 `void`
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the parent node does not exist or range is invalid
+The parent ID must identify a live node in this tree. Range
+endpoints must be integers satisfying `0 <= startIndex <= endIndex <= childCount(parent)`.
+An invalid range may cause a WebAssembly trap instead of a `TaffyError`.
 
 #### Example
 
@@ -1087,7 +1170,11 @@ Replaces a child at a specific index
 
 #### Throws
 
-`TaffyError` if the parent node does not exist or index is out of bounds
+`TaffyError` if the index is out of bounds
+
+#### Remarks
+
+Node IDs must identify live nodes in this tree.
 
 #### Example
 
@@ -1113,7 +1200,8 @@ setChildren(parent, children): void;
 
 Replaces all children of a node
 
-Any existing children are removed and replaced with the new array.
+Existing child relationships are replaced with the new array. Detached
+child nodes remain in the tree.
 
 #### Parameters
 
@@ -1126,9 +1214,9 @@ Any existing children are removed and replaced with the new array.
 
 `void`
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the parent node does not exist
+The parent ID must identify a live node in this tree.
 
 #### Example
 
@@ -1166,9 +1254,9 @@ function during layout computation.
 
 `void`
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the node does not exist
+The node ID must identify a live node in this tree.
 
 #### Example
 
@@ -1205,9 +1293,9 @@ The node will be marked as dirty and require re-layout.
 
 `void`
 
-#### Throws
+#### Remarks
 
-`TaffyError` if the node does not exist
+The node ID must identify a live node in this tree.
 
 #### Example
 
@@ -1265,7 +1353,7 @@ Useful when you need sub-pixel precision.
 
 [`Layout`](Layout.md)
 
-- The unrounded `Layout`
+- An owned snapshot of the unrounded `Layout`; call `free()` when finished
 
 #### Example
 

@@ -17,4 +17,4 @@ Welcome to Taffy Layout! This guide will help you get up and running with the hi
 
 ## Why Taffy?
 
-Taffy is designed to be the fastest most reliable layout engine available for cross-platform developers. Whether you are building a game UI, a custom mobile framework, or a high-performance web component, Taffy provides the standards-compliant Flexbox and Grid tools you need.
+Taffy provides CSS-style Flexbox and Grid layout for game UIs, custom mobile frameworks, and web components. See the [Styling Guide](../styling/index.md) for the properties and values exposed by this binding.

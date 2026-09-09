@@ -14,6 +14,8 @@ sidebar_position: 2
 - **计算**：通过 `computeLayout` 或 `computeLayoutWithMeasure` 调用布局算法。
 - **结果检索**：存储并提供对每个节点计算结果的访问。
 
+节点 ID 是 `bigint`，只能用于创建它的树，且必须仍指向活动节点。删除节点或调用 `clear()` 后应丢弃相应 ID；不要通过访问旧 ID 来探测节点是否存在。
+
 ## 用法
 
 ```typescript

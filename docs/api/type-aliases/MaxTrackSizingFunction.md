@@ -14,3 +14,5 @@ type MaxTrackSizingFunction =
 Maximum track sizing function.
 
 Defines the maximum size of a grid track.
+The supported `"fit-content"` token uses a zero-pixel fit-content limit.
+Parameterized strings such as `"fit-content(100px)"` are not supported.

@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -116,7 +129,7 @@ test("i18n_zh-CN_getting-started_computing-layouts example 2", async () => {
   tree.setStyle(childNode, newStyle);
 
   // 3. 重新计算
-  //    Taffy 会跳过不受影响的分支。
+  //    Taffy 可复用输入约束未变且缓存仍有效的结果。
   tree.computeLayout(root, { width: 800, height: 600 });
 });
 
@@ -126,8 +139,12 @@ test("i18n_zh-CN_getting-started_computing-layouts example 3", async () => {
   // 启用亚像素精度
   tree.disableRounding();
 
-  // ... 计算布局 ...
-  const node = tree.newLeaf(new Style());
+  const style = new Style({ width: 100 / 3, height: 20 });
+  const node = tree.newLeaf(style);
+  style.free();
+  tree.computeLayout(node, { width: 100, height: 100 });
   const layout = tree.getLayout(node);
-  console.log(layout.width); // 可能是 33.33333... 而不是 33
+  console.log(layout.width); // 约为 33.33333，而不是 33
+  layout.free();
+  tree.free();
 });

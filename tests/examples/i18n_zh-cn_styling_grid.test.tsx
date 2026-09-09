@@ -5,6 +5,9 @@ import init, {
   Style,
   // Add all other exports that might be needed
   Display,
+  Direction,
+  Float,
+  Clear,
   FlexDirection,
   AlignItems,
   AlignContent,
@@ -28,6 +31,16 @@ import init, {
   DetailedGridTracksInfo,
   DetailedGridItemsInfo,
   TrackSizingFunction,
+  MinTrackSizingFunction,
+  MaxTrackSizingFunction,
+  GridTemplateArea,
+  GridTemplateComponent,
+  GridTemplateRepetition,
+  RepetitionCount,
+  StyleProperty,
+  StylePropertyValues,
+  LayoutProperty,
+  Line,
   Point,
   TaffyError,
   Layout,
@@ -79,4 +92,15 @@ test("i18n_zh-CN_styling_grid example 1", async () => {
   tree.computeLayout(root, { width: 200, height: 200 });
 
   return <TaffyTreePreview tree={tree} root={root} />;
+});
+
+test("i18n_zh-CN_styling_grid example 2", async () => {
+  const style = new Style({
+    display: Display.Grid,
+    gridTemplateAreas: [
+      { name: "main", rowStart: 1, rowEnd: 2, columnStart: 1, columnEnd: 2 },
+    ],
+    gridTemplateAreaRowCount: 2,
+    gridTemplateAreaColumnCount: 3,
+  });
 });
