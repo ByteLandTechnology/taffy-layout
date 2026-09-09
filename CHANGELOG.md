@@ -1,3 +1,13 @@
+## [3.0.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v2.0.3...v3.0.0) (2026-09-09)
+
+### ⚠ BREAKING CHANGES
+
+- update Taffy to 0.14.0
+
+### ✨ Features
+
+- update Taffy to 0.14.0 ([59f2703](https://github.com/ByteLandTechnology/taffy-layout/commit/59f2703f209148e7b41de5bf905b5fe7720d9a5d))
+
 ## [2.0.3](https://github.com/ByteLandTechnology/taffy-layout/compare/v2.0.2...v2.0.3) (2026-01-30)
 
 ### 🐛 Bug Fixes
