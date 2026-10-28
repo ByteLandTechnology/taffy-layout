@@ -13,14 +13,14 @@ Taffy のスタイリング API は CSS をモデルにしています。以下�
 
 ノードの動作を定義するコアプロパティ。
 
-| プロパティ                            | 説明                                                        |
-| :------------------------------------ | :---------------------------------------------------------- |
-| **[`display`](./display.md)**         | `Flex`（デフォルト）、`Grid`、`Block`、`FlowRoot`、`None`。 |
-| **[`direction`](./display.md)**       | `Direction.Ltr` / `Direction.Rtl`。                         |
-| **[`float` / `clear`](./display.md)** | ブロックレイアウトの浮動と回り込みの解除。                  |
-| **[`position`](./position.md)**       | `Relative`（フロー）または `Absolute`（オーバーレイ）。     |
-| **[`overflow`](./overflow.md)**       | `Visible`、`Clip`、`Hidden`、`Scroll`。                     |
-| **[`inset`](./inset.md)**             | ポジショニング用の `top`、`bottom`、`left`、`right`。       |
+| プロパティ                            | 説明                                                                |
+| :------------------------------------ | :------------------------------------------------------------------ |
+| **[`display`](./display.md)**         | `Flex`（デフォルト）、`Grid`、`Block`、`FlowRoot`、`None`。         |
+| **[`direction`](./display.md)**       | `Direction.Ltr` / `Direction.Rtl`。                                 |
+| **[`float` / `clear`](./display.md)** | ブロックレイアウトの浮動と回り込みの解除。                          |
+| **[`position`](./position.md)**       | `Static`（デフォルト）、`Relative`、`Absolute`、`Fixed`、`Sticky`。 |
+| **[`overflow`](./overflow.md)**       | `Visible`、`Clip`、`Hidden`、`Scroll`。                             |
+| **[`inset`](./inset.md)**             | ポジショニング用の `top`、`bottom`、`left`、`right`。               |
 
 ## サイズと間隔
 

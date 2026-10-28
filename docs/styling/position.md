@@ -11,10 +11,15 @@ The `position` property determines if an element participates in the normal layo
 
 ## Values
 
-| Value          | Description                                                                                                                                    |
-| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`Relative`** | **Default**. The element remains in the document flow. `inset` offsets move it visually, but it still takes up space in its original location. |
-| **`Absolute`** | The element is **removed from the flow** and positioned in its parent's containing block.                                                      |
+| Value          | Description                                                                                                                                                  |
+| :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`Static`**   | **Default**. The element remains in the document flow and ignores `inset`. It is not a containing block for absolutely positioned descendants.               |
+| **`Relative`** | The element remains in the document flow. `inset` offsets move it visually, but it still takes up space in its original location.                            |
+| **`Absolute`** | The element is **removed from the flow** and positioned in its containing block: the nearest ancestor that is not `Static`, or the root.                     |
+| **`Fixed`**    | The element is **removed from the flow** and positioned relative to the root.                                                                                |
+| **`Sticky`**   | Laid out like `Static`, but acts as a containing block for absolutely positioned descendants. Sticky offsets depend on scrolling and are left to the caller. |
+
+`Relative`, `Absolute`, `Fixed` and `Sticky` elements are containing blocks for absolutely positioned descendants. The `Layout.x` / `Layout.y` of an `Absolute` or `Fixed` element are relative to the border box of its containing block, which is not necessarily its parent.
 
 ## Example
 
@@ -23,6 +28,7 @@ const tree = new TaffyTree();
 
 const rootStyle = new Style({
   display: Display.Flex,
+  position: Position.Relative, // containing block of the absolute child
   size: { width: 300, height: 120 },
   padding: { left: 10, right: 10, top: 10, bottom: 10 },
   gap: { width: 10, height: 0 },

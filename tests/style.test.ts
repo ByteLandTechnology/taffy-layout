@@ -29,7 +29,7 @@ describe("Style Class Properties", () => {
     it("creates Style with defaults when no arguments", () => {
       const style = new Style();
       expect(style.display).toBe(Display.Flex);
-      expect(style.position).toBe(Position.Relative);
+      expect(style.position).toBe(Position.Static);
     });
 
     it("creates Style with initial properties", () => {
@@ -79,15 +79,21 @@ describe("Style Class Properties", () => {
       expect(style.display).toBe(Display.Block);
     });
 
-    it("position: defaults to Relative, sets and gets correctly", () => {
+    it("position: defaults to Static, sets and gets correctly", () => {
       const style = new Style();
-      expect(style.position).toBe(Position.Relative);
+      expect(style.position).toBe(Position.Static);
 
-      style.position = Position.Absolute;
-      expect(style.position).toBe(Position.Absolute);
-
-      style.position = Position.Relative;
-      expect(style.position).toBe(Position.Relative);
+      for (const position of [
+        Position.Relative,
+        Position.Absolute,
+        Position.Fixed,
+        Position.Sticky,
+        Position.Static,
+      ]) {
+        style.position = position;
+        expect(style.position).toBe(position);
+        expect(style.get("position")).toBe(position);
+      }
     });
 
     it("boxSizing: defaults to BorderBox, sets and gets correctly", () => {

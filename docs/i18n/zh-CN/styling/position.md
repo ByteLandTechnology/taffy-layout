@@ -11,12 +11,15 @@ sidebar_position: 22
 
 ## 取值
 
-| 值             | 描述                                                                                   |
-| :------------- | :------------------------------------------------------------------------------------- |
-| **`Relative`** | **默认值**。元素保持在文档流中。`inset` 偏移量在视觉上移动它，但它仍在原位置占据空间。 |
-| **`Absolute`** | 元素**从流中移除**。由直接父布局容器定位；在 Grid 中还可通过网格线限定定位区域。       |
+| 值             | 描述                                                                                     |
+| :------------- | :--------------------------------------------------------------------------------------- |
+| **`Static`**   | **默认值**。元素保持在文档流中，忽略 `inset`。它不会成为绝对定位后代的包含块。           |
+| **`Relative`** | 元素保持在文档流中。`inset` 偏移量在视觉上移动它，但它仍在原位置占据空间。               |
+| **`Absolute`** | 元素**从流中移除**，相对于其包含块定位：最近的非 `Static` 祖先，或根节点。               |
+| **`Fixed`**    | 元素**从流中移除**，相对于根节点定位。                                                   |
+| **`Sticky`**   | 与 `Static` 一样布局，但会成为绝对定位后代的包含块。依赖滚动的 sticky 偏移由调用方应用。 |
 
-绑定没有 CSS 的 `position: static`：默认的 `Relative` 父节点也能作为绝对定位子节点的参照。普通绝对定位使用父 padding box，不会跳过默认定位的父节点去寻找更高层祖先。
+`Relative`、`Absolute`、`Fixed` 和 `Sticky` 元素都是绝对定位后代的包含块。`Absolute` / `Fixed` 元素的 `Layout.x` / `Layout.y` 相对于其包含块的 border box，而包含块不一定是直接父节点。
 
 ## 示例
 
@@ -25,6 +28,7 @@ const tree = new TaffyTree();
 
 const rootStyle = new Style({
   display: Display.Flex,
+  position: Position.Relative, // 绝对定位子节点的包含块
   size: { width: 300, height: 120 },
   padding: { left: 10, right: 10, top: 10, bottom: 10 },
   gap: { width: 10, height: 0 },

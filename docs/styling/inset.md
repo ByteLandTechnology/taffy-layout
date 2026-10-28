@@ -22,8 +22,10 @@ The `inset` property (historically `top`, `right`, `bottom`, `left`) defines the
 
 ## Behavior
 
-- **For `Position.Absolute`**: Offsets use the containing block established by the direct parent. Grid placement can define a containing area within a Grid parent.
+- **For `Position.Absolute`**: Offsets use the containing block established by the nearest ancestor that is not `Static`. Grid placement can define a containing area within a Grid containing block.
+- **For `Position.Fixed`**: Offsets use the root as the containing block.
 - **For `Position.Relative`**: Offsets move the item relative to its _normal position_ in the flow.
+- **For `Position.Static` and `Position.Sticky`**: Offsets are ignored.
 
 The edge names remain physical in both LTR and RTL. The `inset` object requires all four fields; use `"auto"` for unspecified edges, or set individual properties such as `right`.
 
@@ -35,6 +37,7 @@ const tree = new TaffyTree();
 const containerStyle = new Style({
   size: { width: 200, height: 100 },
   display: Display.Flex,
+  position: Position.Relative, // containing block of the absolute item
 });
 
 // Absolute item anchored to bottom-right

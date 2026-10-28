@@ -10,7 +10,7 @@ This class holds the supported layout properties for a node. Create an instance 
 A new style uses these layout defaults:
 
 - `display`: `Display.Flex`
-- `position`: `Position.Relative`
+- `position`: `Position.Static`
 - `direction`: `Direction.Ltr`; `float`: `Float.None`; `clear`: `Clear.None`
 - `boxSizing`: `BoxSizing.BorderBox`; both overflow axes: `Overflow.Visible`
 - `flexDirection`: `FlexDirection.Row`

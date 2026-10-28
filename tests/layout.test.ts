@@ -868,7 +868,7 @@ describe("Content size extents", () => {
     },
     {
       name: "overflow before the scroll origin",
-      root: {},
+      root: { position: Position.Relative },
       child: {
         position: Position.Absolute,
         left: -30,
@@ -909,4 +909,71 @@ describe("Content size extents", () => {
       ).toEqual([expected.width, expected.height, expected]);
     },
   );
+});
+
+describe("Containing blocks", () => {
+  beforeAll(setupTaffy);
+
+  const layoutAbsoluteIn = (parentPosition: Position) => {
+    const tree = new TaffyTree();
+    const absolute = tree.newLeaf(
+      new Style({
+        position: Position.Absolute,
+        size: { width: 10, height: 10 },
+        inset: { left: 0, top: 0, right: "auto", bottom: "auto" },
+      }),
+    );
+    const parent = tree.newWithChildren(
+      new Style({
+        position: parentPosition,
+        size: { width: 50, height: 50 },
+        margin: { left: 20, top: 30, right: 0, bottom: 0 },
+      }),
+      [absolute],
+    );
+    const root = tree.newWithChildren(
+      new Style({
+        position: Position.Relative,
+        size: { width: 100, height: 100 },
+        border: { left: 5, top: 5, right: 5, bottom: 5 },
+      }),
+      [parent],
+    );
+    tree.computeLayout(root, { width: 100, height: 100 });
+    const layout = tree.getLayout(absolute);
+    const result = { x: layout.x, y: layout.y };
+    tree.free();
+    return result;
+  };
+
+  it("places absolute children of a positioned parent in that parent", () => {
+    expect(layoutAbsoluteIn(Position.Relative)).toEqual({ x: 0, y: 0 });
+    expect(layoutAbsoluteIn(Position.Sticky)).toEqual({ x: 0, y: 0 });
+  });
+
+  it("places absolute children of a static parent in the nearest positioned ancestor", () => {
+    // Positioned in the root's padding box, reported relative to its border box
+    expect(layoutAbsoluteIn(Position.Static)).toEqual({ x: 5, y: 5 });
+  });
+
+  it("ignores insets on static and sticky nodes", () => {
+    for (const position of [Position.Static, Position.Sticky]) {
+      const tree = new TaffyTree();
+      const child = tree.newLeaf(
+        new Style({
+          position,
+          size: { width: 10, height: 10 },
+          inset: { left: 15, top: 15, right: "auto", bottom: "auto" },
+        }),
+      );
+      const root = tree.newWithChildren(
+        new Style({ size: { width: 100, height: 100 } }),
+        [child],
+      );
+      tree.computeLayout(root, { width: 100, height: 100 });
+      const layout = tree.getLayout(child);
+      expect({ x: layout.x, y: layout.y }).toEqual({ x: 0, y: 0 });
+      tree.free();
+    }
+  });
 });

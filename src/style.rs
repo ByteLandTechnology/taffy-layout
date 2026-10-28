@@ -163,7 +163,7 @@ pub(crate) struct GridTemplateAreaCounts {
 /// @defaultValue
 /// A new style uses these layout defaults:
 /// - `display`: `Display.Flex`
-/// - `position`: `Position.Relative`
+/// - `position`: `Position.Static`
 /// - `direction`: `Direction.Ltr`; `float`: `Float.None`; `clear`: `Clear.None`
 /// - `boxSizing`: `BoxSizing.BorderBox`; both overflow axes: `Overflow.Visible`
 /// - `flexDirection`: `FlexDirection.Row`
@@ -305,7 +305,7 @@ impl JsStyle {
     ///
     /// @returns - The current [`Position`](JsPosition) value
     ///
-    /// @defaultValue - `Position.Relative`
+    /// @defaultValue - `Position.Static`
     #[wasm_bindgen(getter)]
     pub fn position(&self) -> JsPosition {
         self.inner.position.into()
@@ -482,7 +482,7 @@ impl JsStyle {
     /// @returns - The current [`AlignItems`](JsAlignItems) value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = alignItems)]
     pub fn align_items(&self) -> Option<JsAlignItems> {
-        self.inner.align_items.map(JsAlignItems::from)
+        JsAlignItems::try_from(self.inner.align_items).ok()
     }
 
     /// Sets the align-items property
@@ -498,9 +498,10 @@ impl JsStyle {
     pub fn set_align_items(&mut self, val: JsOptionAlignItems) {
         let val: JsValue = val.unchecked_into();
         self.inner.align_items = if val.is_undefined() {
-            None
+            taffy::style::AlignItems::NORMAL
         } else {
-            checked_js_enum::<JsAlignItems>(&val).map(Into::into)
+            checked_js_enum::<JsAlignItems>(&val)
+                .map_or(taffy::style::AlignItems::NORMAL, Into::into)
         };
     }
 
@@ -515,7 +516,7 @@ impl JsStyle {
     #[wasm_bindgen(getter, js_name = alignSelf)]
     pub fn align_self(&self) -> Option<JsAlignSelf> {
         match self.inner.align_self {
-            Some(v) => Some(JsAlignSelf::from(v)),
+            Some(v) => JsAlignSelf::try_from(v).ok(),
             None => Some(JsAlignSelf::Auto),
         }
     }
@@ -552,7 +553,7 @@ impl JsStyle {
     /// @returns - The current [`AlignContent`](JsAlignContent) value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = alignContent)]
     pub fn align_content(&self) -> Option<JsAlignContent> {
-        self.inner.align_content.map(JsAlignContent::from)
+        JsAlignContent::try_from(self.inner.align_content).ok()
     }
 
     /// Sets the align-content property
@@ -568,9 +569,10 @@ impl JsStyle {
     pub fn set_align_content(&mut self, val: JsOptionAlignContent) {
         let val: JsValue = val.unchecked_into();
         self.inner.align_content = if val.is_undefined() {
-            None
+            taffy::style::AlignContent::NORMAL
         } else {
-            checked_js_enum::<JsAlignContent>(&val).map(Into::into)
+            checked_js_enum::<JsAlignContent>(&val)
+                .map_or(taffy::style::AlignContent::NORMAL, Into::into)
         };
     }
 
@@ -581,7 +583,7 @@ impl JsStyle {
     /// @returns - The current [`JustifyContent`](JsJustifyContent) value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = justifyContent)]
     pub fn justify_content(&self) -> Option<JsJustifyContent> {
-        self.inner.justify_content.map(JsJustifyContent::from)
+        JsJustifyContent::try_from(self.inner.justify_content).ok()
     }
 
     /// Sets the justify-content property
@@ -597,9 +599,10 @@ impl JsStyle {
     pub fn set_justify_content(&mut self, val: JsOptionJustifyContent) {
         let val: JsValue = val.unchecked_into();
         self.inner.justify_content = if val.is_undefined() {
-            None
+            taffy::style::JustifyContent::NORMAL
         } else {
-            checked_js_enum::<JsJustifyContent>(&val).map(Into::into)
+            checked_js_enum::<JsJustifyContent>(&val)
+                .map_or(taffy::style::JustifyContent::NORMAL, Into::into)
         };
     }
 
@@ -1804,7 +1807,7 @@ impl JsStyle {
     /// @returns - The current [`AlignItems`](JsAlignItems) value, or `undefined` if not set
     #[wasm_bindgen(getter, js_name = justifyItems)]
     pub fn justify_items(&self) -> Option<JsAlignItems> {
-        self.inner.justify_items.map(JsAlignItems::from)
+        JsAlignItems::try_from(self.inner.justify_items).ok()
     }
 
     /// Sets the justify-items property
@@ -1821,9 +1824,10 @@ impl JsStyle {
     pub fn set_justify_items(&mut self, val: JsOptionAlignItems) {
         let val: JsValue = val.unchecked_into();
         self.inner.justify_items = if val.is_undefined() {
-            None
+            taffy::style::AlignItems::NORMAL
         } else {
-            checked_js_enum::<JsAlignItems>(&val).map(Into::into)
+            checked_js_enum::<JsAlignItems>(&val)
+                .map_or(taffy::style::AlignItems::NORMAL, Into::into)
         };
     }
 
@@ -1838,7 +1842,7 @@ impl JsStyle {
     #[wasm_bindgen(getter, js_name = justifySelf)]
     pub fn justify_self(&self) -> Option<JsAlignSelf> {
         match self.inner.justify_self {
-            Some(v) => Some(JsAlignSelf::from(v)),
+            Some(v) => JsAlignSelf::try_from(v).ok(),
             None => Some(JsAlignSelf::Auto),
         }
     }
@@ -2446,29 +2450,29 @@ impl JsStyle {
             }
 
             // Alignment
-            "alignItems" => match self.inner.align_items {
-                Some(v) => JsValue::from(JsAlignItems::from(v) as u8),
-                None => JsValue::UNDEFINED,
+            "alignItems" => match JsAlignItems::try_from(self.inner.align_items) {
+                Ok(v) => JsValue::from(v as u8),
+                Err(()) => JsValue::UNDEFINED,
             },
-            "alignSelf" => match self.inner.align_self {
-                Some(v) => JsValue::from(JsAlignSelf::from(v) as u8),
-                None => JsValue::UNDEFINED,
+            "alignSelf" => match self.inner.align_self.map(JsAlignSelf::try_from) {
+                Some(Ok(v)) => JsValue::from(v as u8),
+                _ => JsValue::UNDEFINED,
             },
-            "alignContent" => match self.inner.align_content {
-                Some(v) => JsValue::from(JsAlignContent::from(v) as u8),
-                None => JsValue::UNDEFINED,
+            "alignContent" => match JsAlignContent::try_from(self.inner.align_content) {
+                Ok(v) => JsValue::from(v as u8),
+                Err(()) => JsValue::UNDEFINED,
             },
-            "justifyContent" => match self.inner.justify_content {
-                Some(v) => JsValue::from(JsJustifyContent::from(v) as u8),
-                None => JsValue::UNDEFINED,
+            "justifyContent" => match JsJustifyContent::try_from(self.inner.justify_content) {
+                Ok(v) => JsValue::from(v as u8),
+                Err(()) => JsValue::UNDEFINED,
             },
-            "justifyItems" => match self.inner.justify_items {
-                Some(v) => JsValue::from(JsAlignItems::from(v) as u8),
-                None => JsValue::UNDEFINED,
+            "justifyItems" => match JsAlignItems::try_from(self.inner.justify_items) {
+                Ok(v) => JsValue::from(v as u8),
+                Err(()) => JsValue::UNDEFINED,
             },
-            "justifySelf" => match self.inner.justify_self {
-                Some(v) => JsValue::from(JsAlignSelf::from(v) as u8),
-                None => JsValue::UNDEFINED,
+            "justifySelf" => match self.inner.justify_self.map(JsAlignSelf::try_from) {
+                Some(Ok(v)) => JsValue::from(v as u8),
+                _ => JsValue::UNDEFINED,
             },
 
             // Sizing - aspectRatio
@@ -2922,9 +2926,9 @@ impl JsStyle {
             // Alignment
             "alignItems" => {
                 if value.is_undefined() {
-                    self.inner.align_items = None;
+                    self.inner.align_items = taffy::style::AlignItems::NORMAL;
                 } else if let Some(js_value) = checked_js_enum::<JsAlignItems>(&value) {
-                    self.inner.align_items = Some(js_value.into());
+                    self.inner.align_items = js_value.into();
                 }
             }
             "alignSelf" => {
@@ -2939,23 +2943,23 @@ impl JsStyle {
             }
             "alignContent" => {
                 if value.is_undefined() {
-                    self.inner.align_content = None;
+                    self.inner.align_content = taffy::style::AlignContent::NORMAL;
                 } else if let Some(js_value) = checked_js_enum::<JsAlignContent>(&value) {
-                    self.inner.align_content = Some(js_value.into());
+                    self.inner.align_content = js_value.into();
                 }
             }
             "justifyContent" => {
                 if value.is_undefined() {
-                    self.inner.justify_content = None;
+                    self.inner.justify_content = taffy::style::JustifyContent::NORMAL;
                 } else if let Some(js_value) = checked_js_enum::<JsJustifyContent>(&value) {
-                    self.inner.justify_content = Some(js_value.into());
+                    self.inner.justify_content = js_value.into();
                 }
             }
             "justifyItems" => {
                 if value.is_undefined() {
-                    self.inner.justify_items = None;
+                    self.inner.justify_items = taffy::style::AlignItems::NORMAL;
                 } else if let Some(js_value) = checked_js_enum::<JsAlignItems>(&value) {
-                    self.inner.justify_items = Some(js_value.into());
+                    self.inner.justify_items = js_value.into();
                 }
             }
             "justifySelf" => {
