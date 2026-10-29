@@ -11,9 +11,9 @@ sidebar_position: 16
 
 ## 値
 
-| 值                 | 説明                                                               |
+| 値                 | 説明                                                               |
 | :----------------- | :----------------------------------------------------------------- |
-| **`Stretch`**      | **デフォルト**。行は残りのスペースを埋めるように引き伸ばされます。 |
+| **`Stretch`**      | 行は残りのスペースを埋めるように引き伸ばされます。                 |
 | **`FlexStart`**    | 行はコンテナの始端に詰めて配置されます。                           |
 | **`FlexEnd`**      | 行はコンテナの終端に詰めて配置されます。                           |
 | **`Center`**       | 行はコンテナの中央に詰めて配置されます。                           |
@@ -22,7 +22,7 @@ sidebar_position: 16
 
 このプロパティは Grid の行全体の配置と、`Display.Block` / `Display.FlowRoot` 内のコンテンツのブロック軸配置にも使われます。例えば高さ `100` のブロックコンテナに `AlignContent.Center` を指定すると、高さ `20` の単一の子要素は `y = 40` に配置されます。
 
-`Start`、`End`、`SpaceEvenly`、および `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter` も使えます。安全な値は内容が収まらない場合に始端配置へ戻ります。未設定時の読み取り値は `undefined` で、表のデフォルト動作は Flex レイアウトを対象としています。
+`Start`、`End`、`SpaceEvenly`、および `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter` も使えます。安全な値は内容が収まらない場合に始端配置へ戻ります。初期値の `undefined` は Taffy の `normal` を表し、`undefined` を代入するとこの値に戻ります。実際の動作はレイアウトアルゴリズムによって決まり、Flex レイアウトのデフォルトでは折り返された行を引き伸ばします。
 
 ## 例
 

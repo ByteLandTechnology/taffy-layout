@@ -35,6 +35,8 @@ If you are rendering to a canvas or screen:
 2.  **Color Code**: Use different colors for different `display` types (e.g., Blue for Flex, Red for Grid).
 
 ```ts
+import { Position, Style, TaffyTree } from "taffy-layout";
+
 // Mock renderer
 const renderer = {
   strokeRect: (x: number, y: number, w: number, h: number, c: string) => {},
@@ -44,21 +46,38 @@ const root = tree.newLeaf(new Style());
 tree.computeLayout(root, { width: 100, height: 100 });
 
 // Visual debugger function
-function debugDraw(node: bigint, parentX = 0, parentY = 0) {
+function debugDraw(
+  node: bigint,
+  parentOrigin = { x: 0, y: 0 },
+  absoluteOrigin = parentOrigin,
+  rootOrigin = parentOrigin,
+) {
+  const style = tree.getStyle(node);
+  const position = style.position;
+  style.free();
+
+  const origin =
+    position === Position.Fixed
+      ? rootOrigin
+      : position === Position.Absolute
+        ? absoluteOrigin
+        : parentOrigin;
   const layout = tree.getLayout(node);
-  const x = parentX + layout.x;
-  const y = parentY + layout.y;
-  renderer.strokeRect(x, y, layout.width, layout.height, "red");
+  const point = { x: origin.x + layout.x, y: origin.y + layout.y };
+  renderer.strokeRect(point.x, point.y, layout.width, layout.height, "red");
   layout.free();
 
+  const childRootOrigin = node === root ? point : rootOrigin;
+  const childAbsoluteOrigin =
+    node === root || position !== Position.Static ? point : absoluteOrigin;
   for (const child of tree.children(node)) {
-    debugDraw(child, x, y);
+    debugDraw(child, point, childAbsoluteOrigin, childRootOrigin);
   }
 }
 debugDraw(root);
 ```
 
-Layout positions are relative to each node's parent. Accumulate ancestor offsets when drawing into a shared canvas coordinate system, including for absolutely positioned nodes.
+Call `debugDraw(root)` with the same root passed to `computeLayout`. The traversal tracks the canvas positions of the direct parent, the nearest non-static ancestor, and the root separately. In-flow nodes use the parent; absolute nodes use the positioned ancestor, falling back to the root; fixed nodes always use the root. The root fallback is required because Taffy reports initial-containing-block descendants relative to the root's border box, even though their layout area comes from `availableSpace`. See [Position](../styling/position.md). This example draws layout rectangles; clipping, scrolling and sticky offsets belong to the renderer.
 
 ## Isolation
 

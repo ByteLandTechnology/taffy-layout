@@ -13,7 +13,7 @@ sidebar_position: 16
 
 | 值                 | 描述                                               |
 | :----------------- | :------------------------------------------------- |
-| **`Stretch`**      | **默认值**。行被拉伸以占据剩余空间。               |
+| **`Stretch`**      | 行被拉伸以占据剩余空间。                           |
 | **`FlexStart`**    | 行紧凑排列在容器起始位置。                         |
 | **`FlexEnd`**      | 行紧凑排列在容器结束位置。                         |
 | **`Center`**       | 行紧凑排列在容器中间。                             |
@@ -22,7 +22,7 @@ sidebar_position: 16
 
 此属性也用于 Grid 行的整体对齐，以及 `Display.Block` / `Display.FlowRoot` 容器内内容的块轴对齐。例如，高 `100` 的块容器设置 `AlignContent.Center`，其高 `20` 的单个子元素会位于 `y = 40`。
 
-还支持 `Start`、`End`、`SpaceEvenly`，以及 `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`。安全值在内容无法容纳时回退到起始对齐。未设置时读回 `undefined`；表中的默认行为针对 Flex 布局。
+还支持 `Start`、`End`、`SpaceEvenly`，以及 `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`。安全值在内容无法容纳时回退到起始对齐。初始值 `undefined` 表示 Taffy 的 `normal` 对齐，赋值 `undefined` 可恢复该值；具体行为取决于布局算法，Flex 布局默认会拉伸换行后的行。
 
 ## 示例
 

@@ -31,10 +31,14 @@
 //!
 //! ## Coordinate System
 //!
-//! - `x` and `y` are relative to the node's parent
+//! - In-flow nodes have `x` and `y` relative to their parent's border box
+//! - Absolute nodes use their nearest non-static ancestor's border box
+//! - Fixed nodes and absolute nodes with no positioned ancestor use the initial
+//!   containing block for layout, but report coordinates relative to the root's border box
 //! - Positive `x` is to the right
 //! - Positive `y` is downward
-//! - Root `y` is 0; root `x` is 0 for LTR and aligned to the available right edge for RTL
+//! - Root coordinates are in the canvas coordinate system and account for its margins,
+//!   direction and applicable insets; neither coordinate is necessarily zero
 
 use crate::types::*;
 use crate::utils::serialize;
@@ -49,6 +53,14 @@ use wasm_bindgen::prelude::*;
 ///
 /// This class wraps the native [`taffy::Layout`] and provides read-only access
 /// to all computed layout values. All dimensions are in pixels.
+///
+/// In-flow positions are relative to the parent's border box. Absolute positions
+/// are relative to the nearest non-static ancestor's border box. Fixed positions
+/// and absolute positions without a positioned ancestor are reported relative to
+/// the root's border box, although their layout area is the initial containing block
+/// defined by the available space. Root positions use canvas coordinates, including
+/// margins and applicable insets. Add the corresponding ancestor's canvas position
+/// when rendering; do not always add the direct parent's position.
 ///
 /// @example
 /// ```typescript
@@ -98,8 +110,11 @@ impl JsLayout {
 
     /// Gets the X coordinate of the node's top-left corner
     ///
-    /// This value is relative to the node's parent. An LTR root starts at 0;
-    /// an RTL root with definite available width is aligned to its right edge.
+    /// Relative to the parent's border box for in-flow nodes, or the nearest
+    /// non-static ancestor's border box for absolute nodes. Fixed nodes and absolute
+    /// nodes without a positioned ancestor report coordinates relative to the root's
+    /// border box. The root itself uses canvas coordinates, accounting for direction,
+    /// margins and applicable insets.
     ///
     /// @returns - The horizontal position in pixels
     #[wasm_bindgen(getter)]
@@ -109,8 +124,10 @@ impl JsLayout {
 
     /// Gets the Y coordinate of the node's top-left corner
     ///
-    /// This value is relative to the node's parent. For the root node,
-    /// this is always 0.
+    /// Uses the same reference box as `x`: the parent for in-flow nodes, the nearest
+    /// non-static ancestor for absolute nodes, or the root for fixed nodes and absolute
+    /// nodes without a positioned ancestor. The root itself uses canvas coordinates,
+    /// accounting for margins and applicable insets.
     ///
     /// @returns - The vertical position in pixels
     #[wasm_bindgen(getter)]
@@ -311,6 +328,9 @@ impl JsLayout {
     // =========================================================================
 
     /// Gets the position as a Point with x and y coordinates
+    ///
+    /// Uses the same coordinate system as the `x` and `y` getters. For out-of-flow
+    /// nodes, the reference box may be an ancestor other than the direct parent.
     ///
     /// @returns - A Point with x and y coordinates in pixels
     ///

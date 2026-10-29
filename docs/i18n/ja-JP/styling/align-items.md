@@ -11,9 +11,9 @@ sidebar_position: 14
 
 ## 値
 
-| 值              | 説明                                                                                                                      |
+| 値              | 説明                                                                                                                      |
 | :-------------- | :------------------------------------------------------------------------------------------------------------------------ |
-| **`Stretch`**   | **デフォルト**。交差軸サイズが `auto` のアイテムを、その行のサイズまで引き伸ばします（min/max 制約に従います）。          |
+| **`Stretch`**   | 交差軸サイズが `auto` のアイテムを、その行のサイズまで引き伸ばします（min/max 制約に従います）。                          |
 | **`FlexStart`** | アイテムを交差軸の始端に配置します。                                                                                      |
 | **`FlexEnd`**   | アイテムを交差軸の終端に配置します。                                                                                      |
 | **`Center`**    | アイテムを交差軸の中央に配置します。                                                                                      |
@@ -21,7 +21,7 @@ sidebar_position: 14
 
 `Start` / `End` はコンテナの論理方向、`SelfStart` / `SelfEnd` はアイテム自身の `direction` に従って配置します。安全な配置には `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`、`SafeSelfStart`、`SafeSelfEnd` があり、内容が収まらない場合は始端配置に戻して始端側のはみ出しを防ぎます。
 
-`alignItems` は Grid のブロック軸にも適用されます。Grid のインライン軸には同じ `AlignItems` 列挙型を取る `justifyItems` を使います。未設定のプロパティは `undefined` を返し、表のデフォルト値はレイアウト時の動作を示します。
+`alignItems` は Grid のブロック軸にも適用されます。Grid のインライン軸には同じ `AlignItems` 列挙型を取る `justifyItems` を使います。どちらも初期値は `undefined` で、Taffy の `normal` を表します。`undefined` を代入するとこの値に戻ります。実際の動作はレイアウトアルゴリズムによって決まり、通常はサイズが `auto` のアイテムを引き伸ばしますが、Grid の置換要素などでは明示的な `Stretch` と同じ動作にはなりません。
 
 ## 例
 

@@ -67,7 +67,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## 布局包含的内容
 
-- `x`, `y`: 相对于父节点的位置
+- `x`, `y`: 相对于布局基准节点的位置；流内节点使用父节点，绝对或固定定位节点可能使用更远的祖先或根节点，详见 [Layout 对象](./objects-layout.md)。
 - `width`, `height`: 计算后的尺寸
 - `margin`, `padding`, `border`: 边缘尺寸
 

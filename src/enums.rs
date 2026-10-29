@@ -103,12 +103,14 @@ pub enum JsPosition {
     /// It is a containing block for absolutely positioned descendants.
     Relative = 0,
     /// Element is removed from flow and positioned relative to its containing block:
-    /// the nearest ancestor that is not statically positioned, or the root
+    /// the nearest ancestor that is not statically positioned, or the initial
+    /// containing block defined by the available space when there is no such ancestor
     Absolute = 1,
     /// Element participates in normal document flow and ignores its insets (CSS default).
     /// It is not a containing block for absolutely positioned descendants.
     Static = 2,
-    /// Element is removed from flow and positioned relative to the root
+    /// Element is removed from flow and positioned in the initial containing block,
+    /// whose definite dimensions come from the available space, not the root's size
     Fixed = 3,
     /// Laid out like `Static`, but is a containing block for absolutely positioned
     /// descendants. Applying sticky offsets is left to the caller.

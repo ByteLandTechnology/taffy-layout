@@ -96,7 +96,7 @@ Styles default to `BoxSizing.BorderBox`. Set `boxSizing` to `BoxSizing.ContentBo
 
 ## Percentages
 
-Percent sizes resolve against the containing block when that dimension is definite. For ordinary in-flow Flexbox or Block children this is the parent's content box; Grid items use their grid area, and absolute positioning can establish a different containing rectangle.
+Percent sizes resolve against the containing block when that dimension is definite. Ordinary in-flow Flexbox or Block children use the parent's content box, and Grid items use their grid area. Absolute descendants normally use the nearest non-static ancestor's padding box, possibly restricted by Grid placement; without such an ancestor they use the initial containing block. Fixed nodes also use the initial containing block; see [Position](../styling/position.md). Root percentages use the definite available dimensions. Percentages may remain unresolved during a layout phase if the reference dimension is indefinite.
 
 ```tsx live
 const tree = new TaffyTree();

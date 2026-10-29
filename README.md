@@ -271,7 +271,7 @@ absoluteStyle.inset = { left: 10, top: 10, right: "auto", bottom: "auto" };
 absoluteStyle.size = { width: 100, height: 50 };
 ```
 
-Absolutely positioned nodes are placed in their containing block: the nearest ancestor whose `position` is not `Position.Static` (the default), or the root. Set `position: Position.Relative` on the ancestor that should anchor them. See [Position](docs/styling/position.md).
+Absolutely positioned nodes are placed in their containing block: the nearest ancestor whose `position` is not `Position.Static` (the default), or the initial containing block defined by the available space. Fixed nodes also use the initial containing block, whose size can differ from the root's size. Set `position: Position.Relative` on the ancestor that should anchor absolute descendants. See [Position](docs/styling/position.md) for sizing and returned coordinates.
 
 ### Percentage Sizing
 

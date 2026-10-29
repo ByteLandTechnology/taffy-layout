@@ -32,9 +32,9 @@ style.gridRow = { start: "auto", end: "auto" };
 
 ## Type Parameters
 
-| Type Parameter | Description                      |
-| -------------- | -------------------------------- |
-| `T`            | The type of start and end values |
+| Type Parameter                    | Description                      |
+| --------------------------------- | -------------------------------- |
+| <a id="type-parameter-t"></a> `T` | The type of start and end values |
 
 ## Properties
 

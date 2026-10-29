@@ -89,6 +89,8 @@ To prevent memory spikes or leaks in the WASM heap, you should explicitly manage
 - **Reuse:** Use `.clear()` to remove all nodes while retaining allocated node capacity. Existing node IDs become invalid.
 - **Dispose:** Use `.free()` if you are completely done with a tree and want to release its memory immediately.
 
+`clear()` releases the tree's references to all node contexts. `remove(node)` releases only the removed node's context; its descendants remain live, detached from that node. Context objects still referenced by your application remain reachable. Use `.free()` when you no longer need the tree itself.
+
 Node creation and `setStyle()` copy styles into the tree. `getStyle()`, `getLayout()`, and the fifth measure-callback argument return independent owned objects: free those copies when finished. Freeing the tree does not free copies you already obtained. Ordinary DTOs such as `layout.size` and `detailedLayoutInfo()` are JavaScript data and have no `.free()` method.
 
 ```ts

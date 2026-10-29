@@ -5,6 +5,14 @@ Computed layout result containing position, size, and spacing values for a node.
 This class wraps the native [`taffy::Layout`] and provides read-only access
 to all computed layout values. All dimensions are in pixels.
 
+In-flow positions are relative to the parent's border box. Absolute positions
+are relative to the nearest non-static ancestor's border box. Fixed positions
+and absolute positions without a positioned ancestor are reported relative to
+the root's border box, although their layout area is the initial containing block
+defined by the available space. Root positions use canvas coordinates, including
+margins and applicable insets. Add the corresponding ancestor's canvas position
+when rendering; do not always add the direct parent's position.
+
 ## Example
 
 ```typescript
@@ -67,21 +75,21 @@ console.log("Order:", layout.order);
 | <a id="paddingleft"></a> `paddingLeft`         | `readonly` | `number` | Gets the left padding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | <a id="paddingright"></a> `paddingRight`       | `readonly` | `number` | Gets the right padding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | <a id="paddingtop"></a> `paddingTop`           | `readonly` | `number` | Gets the top padding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| <a id="position"></a> `position`               | `readonly` | `any`    | Gets the position as a Point with x and y coordinates **Example** `import { TaffyTree, Style } from "taffy-layout"; const tree = new TaffyTree(); const root = tree.newLeaf(new Style()); tree.computeLayout(root, { width: 100, height: 100 }); const layout = tree.getLayout(root); const pos = layout.position; console.log(`Position: (${pos.x}, ${pos.y})`); tree.free();`                                                                                                                                                                                     |
+| <a id="position"></a> `position`               | `readonly` | `any`    | Gets the position as a Point with x and y coordinates Uses the same coordinate system as the `x` and `y` getters. For out-of-flow nodes, the reference box may be an ancestor other than the direct parent. **Example** `import { TaffyTree, Style } from "taffy-layout"; const tree = new TaffyTree(); const root = tree.newLeaf(new Style()); tree.computeLayout(root, { width: 100, height: 100 }); const layout = tree.getLayout(root); const pos = layout.position; console.log(`Position: (${pos.x}, ${pos.y})`); tree.free();`                               |
 | <a id="scrollbarheight"></a> `scrollbarHeight` | `readonly` | `number` | Gets the height of the horizontal scrollbar When overflow is set to scroll, this indicates the space reserved for the horizontal scrollbar.                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | <a id="scrollbarsize"></a> `scrollbarSize`     | `readonly` | `any`    | Gets the scrollbar size as a Size with scrollbarWidth and scrollbarHeight When overflow is set to scroll, this indicates the space reserved for scrollbars. **Example** `import { TaffyTree, Style } from "taffy-layout"; const tree = new TaffyTree(); const root = tree.newLeaf(new Style()); tree.computeLayout(root, { width: 100, height: 100 }); const layout = tree.getLayout(root); const scrollbarSize = layout.scrollbarSize; console.log(`Scrollbar: ${scrollbarSize.width} x ${scrollbarSize.height}`); tree.free();`                                   |
 | <a id="scrollbarwidth"></a> `scrollbarWidth`   | `readonly` | `number` | Gets the width of the vertical scrollbar When overflow is set to scroll, this indicates the space reserved for the vertical scrollbar.                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | <a id="size"></a> `size`                       | `readonly` | `any`    | Gets the size as a Size with width and height **Example** `import { TaffyTree, Style } from "taffy-layout"; const tree = new TaffyTree(); const root = tree.newLeaf(new Style()); tree.computeLayout(root, { width: 100, height: 100 }); const layout = tree.getLayout(root); const size = layout.size; console.log(`Size: ${size.width} x ${size.height}`); tree.free();`                                                                                                                                                                                          |
 | <a id="width"></a> `width`                     | `readonly` | `number` | Gets the computed width of the node This is the final width after layout computation, including any constraints from min/max size or flex properties.                                                                                                                                                                                                                                                                                                                                                                                                               |
-| <a id="x"></a> `x`                             | `readonly` | `number` | Gets the X coordinate of the node's top-left corner This value is relative to the node's parent. An LTR root starts at 0; an RTL root with definite available width is aligned to its right edge.                                                                                                                                                                                                                                                                                                                                                                   |
-| <a id="y"></a> `y`                             | `readonly` | `number` | Gets the Y coordinate of the node's top-left corner This value is relative to the node's parent. For the root node, this is always 0.                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| <a id="x"></a> `x`                             | `readonly` | `number` | Gets the X coordinate of the node's top-left corner Relative to the parent's border box for in-flow nodes, or the nearest non-static ancestor's border box for absolute nodes. Fixed nodes and absolute nodes without a positioned ancestor report coordinates relative to the root's border box. The root itself uses canvas coordinates, accounting for direction, margins and applicable insets.                                                                                                                                                                 |
+| <a id="y"></a> `y`                             | `readonly` | `number` | Gets the Y coordinate of the node's top-left corner Uses the same reference box as `x`: the parent for in-flow nodes, the nearest non-static ancestor for absolute nodes, or the root for fixed nodes and absolute nodes without a positioned ancestor. The root itself uses canvas coordinates, accounting for margins and applicable insets.                                                                                                                                                                                                                      |
 
 ## Methods
 
 ### \[dispose\]()
 
 ```ts
-dispose: void;
+[dispose](): void;
 ```
 
 #### Returns
@@ -165,9 +173,9 @@ get<K>(...keys): LayoutPropertyValues[K];
 
 ##### Type Parameters
 
-| Type Parameter                                                      |
-| ------------------------------------------------------------------- |
-| `K` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
+| Type Parameter                                                                                    |
+| ------------------------------------------------------------------------------------------------- |
+| <a id="type-parameter-k"></a> `K` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
 
 ##### Parameters
 
@@ -187,10 +195,10 @@ get<K1, K2>(...keys): [LayoutPropertyValues[K1], LayoutPropertyValues[K2]];
 
 ##### Type Parameters
 
-| Type Parameter                                                       |
-| -------------------------------------------------------------------- |
-| `K1` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
-| `K2` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
+| Type Parameter                                                                                      |
+| --------------------------------------------------------------------------------------------------- |
+| <a id="type-parameter-k1"></a> `K1` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
+| <a id="type-parameter-k2"></a> `K2` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
 
 ##### Parameters
 
@@ -210,11 +218,11 @@ get<K1, K2, K3>(...keys): [LayoutPropertyValues[K1], LayoutPropertyValues[K2], L
 
 ##### Type Parameters
 
-| Type Parameter                                                       |
-| -------------------------------------------------------------------- |
-| `K1` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
-| `K2` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
-| `K3` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
+| Type Parameter                                                                                        |
+| ----------------------------------------------------------------------------------------------------- |
+| <a id="type-parameter-k1-1"></a> `K1` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
+| <a id="type-parameter-k2-1"></a> `K2` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md) |
+| <a id="type-parameter-k3"></a> `K3` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md)   |
 
 ##### Parameters
 
@@ -234,9 +242,9 @@ get<Keys>(...keys): LayoutPropertyArrayValues<Keys>;
 
 ##### Type Parameters
 
-| Type Parameter                                                           |
-| ------------------------------------------------------------------------ |
-| `Keys` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md)[] |
+| Type Parameter                                                                                            |
+| --------------------------------------------------------------------------------------------------------- |
+| <a id="type-parameter-keys"></a> `Keys` _extends_ [`LayoutProperty`](../type-aliases/LayoutProperty.md)[] |
 
 ##### Parameters
 

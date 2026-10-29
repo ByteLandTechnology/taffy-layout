@@ -42,6 +42,8 @@ tree.free();
 2. **色分け**：異なる `display` タイプに異なる色を使用します（例：Flex は青、Grid は赤）。
 
 ```ts
+import { Position, Style, TaffyTree } from "taffy-layout";
+
 // モックレンダラー
 const renderer = {
   strokeRect: (x: number, y: number, w: number, h: number, c: string) => {},
@@ -67,21 +69,40 @@ rootStyle.free();
 tree.computeLayout(root, { width: 100, height: 100 });
 
 // 可視化デバッガー関数
-function debugDraw(node: bigint, parentX = 0, parentY = 0) {
+function debugDraw(
+  node: bigint,
+  parentOrigin = { x: 0, y: 0 },
+  absoluteOrigin = parentOrigin,
+  rootOrigin = parentOrigin,
+) {
+  const style = tree.getStyle(node);
+  const position = style.position;
+  style.free();
+
+  const origin =
+    position === Position.Fixed
+      ? rootOrigin
+      : position === Position.Absolute
+        ? absoluteOrigin
+        : parentOrigin;
   const layout = tree.getLayout(node);
-  const x = parentX + layout.x;
-  const y = parentY + layout.y;
-  renderer.strokeRect(x, y, layout.width, layout.height, "red");
+  const point = { x: origin.x + layout.x, y: origin.y + layout.y };
+  renderer.strokeRect(point.x, point.y, layout.width, layout.height, "red");
   layout.free();
 
+  const childRootOrigin = node === root ? point : rootOrigin;
+  const childAbsoluteOrigin =
+    node === root || position !== Position.Static ? point : absoluteOrigin;
   for (const child of tree.children(node)) {
-    debugDraw(child, x, y);
+    debugDraw(child, point, childAbsoluteOrigin, childRootOrigin);
   }
 }
 debugDraw(root);
 // child の親相対位置 (10, 10) は描画時には (20, 20) になります
 tree.free();
 ```
+
+`debugDraw(root)` には `computeLayout` と同じルートを渡してください。この走査では、直接の親、最も近い非静的な祖先、ルートのキャンバス座標を別々に保持します。通常フローのノードは親、絶対配置のノードは配置された祖先（なければルート）、固定配置のノードは常にルートを使います。初期包含ブロック内の子孫は `availableSpace` に基づいて配置されますが、Taffy が返す座標はルートの border box を基準としているためです。[配置](../styling/position.md)を参照してください。この例はレイアウト矩形を描画します。クリッピング、スクロール、sticky オフセットはレンダラーが処理します。
 
 ## 分離
 

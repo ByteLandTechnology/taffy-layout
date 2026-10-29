@@ -22,8 +22,8 @@ The `inset` property (historically `top`, `right`, `bottom`, `left`) defines the
 
 ## Behavior
 
-- **For `Position.Absolute`**: Offsets use the containing block established by the nearest ancestor that is not `Static`. Grid placement can define a containing area within a Grid containing block.
-- **For `Position.Fixed`**: Offsets use the root as the containing block.
+- **For `Position.Absolute`**: Offsets use the containing block established by the nearest ancestor that is not `Static`, or the initial containing block if there is no such ancestor. Grid placement can define a containing area within a Grid containing block.
+- **For `Position.Fixed`**: Offsets use the initial containing block. Its definite dimensions come from `availableSpace`, not the root's size; see [Position](./position.md) for indefinite dimensions and returned coordinates.
 - **For `Position.Relative`**: Offsets move the item relative to its _normal position_ in the flow.
 - **For `Position.Static` and `Position.Sticky`**: Offsets are ignored.
 

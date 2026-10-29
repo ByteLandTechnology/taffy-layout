@@ -7,13 +7,13 @@ sidebar_position: 13
 
 **Align items along the main axis.**
 
-The `justifyContent` property aligns Flexbox items along the **main axis** (horizontal if `flexDirection` is `Row`; vertical if `Column`). In Grid, it aligns the column tracks along the inline axis. The property is initially `undefined`; Flexbox uses flex-start alignment by default.
+The `justifyContent` property aligns Flexbox items along the **main axis** (horizontal if `flexDirection` is `Row`; vertical if `Column`). In Grid, it aligns the column tracks along the inline axis. The property is initially `undefined`, representing Taffy's `normal` alignment; assign `undefined` to restore it. Flexbox uses flex-start alignment by default.
 
 ## Values
 
 | Value               | Description                                                                      |
 | :------------------ | :------------------------------------------------------------------------------- |
-| **`FlexStart`**     | **Default**. Items pack toward the start of the line.                            |
+| **`FlexStart`**     | Items pack toward the start of the line (the default Flexbox behavior).          |
 | **`Start` / `End`** | Align to the logical start/end edge, independent of a reversed flex direction.   |
 | **`Stretch`**       | Stretch auto-sized Grid tracks; in Flexbox this behaves as flex-start.           |
 | **`FlexEnd`**       | Items pack toward the end of the line.                                           |

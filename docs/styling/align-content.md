@@ -9,7 +9,7 @@ sidebar_position: 16
 
 The `alignContent` property aligns a flex container's lines when there is extra space on the cross axis. It has no effect on a single-line flex container (`flexWrap: FlexWrap.NoWrap`). It also aligns Grid rows and content within Block and FlowRoot containers along the block axis.
 
-The property is initially `undefined`, which leaves alignment to the layout algorithm. In Flexbox, the default behavior stretches wrapping lines.
+The property is initially `undefined`, representing Taffy's `normal` alignment; assign `undefined` to restore it. The layout algorithm determines the resulting alignment. In Flexbox, the default behavior stretches wrapping lines.
 
 ## Values
 

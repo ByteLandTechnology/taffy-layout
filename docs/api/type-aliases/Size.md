@@ -33,9 +33,9 @@ const availableSize: Size<AvailableSpace> = {
 
 ## Type Parameters
 
-| Type Parameter | Description                                                                |
-| -------------- | -------------------------------------------------------------------------- |
-| `T`            | The type of each dimension (e.g., `number`, `Dimension`, `AvailableSpace`) |
+| Type Parameter                    | Description                                                                |
+| --------------------------------- | -------------------------------------------------------------------------- |
+| <a id="type-parameter-t"></a> `T` | The type of each dimension (e.g., `number`, `Dimension`, `AvailableSpace`) |
 
 ## Properties
 

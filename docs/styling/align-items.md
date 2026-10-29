@@ -7,7 +7,7 @@ sidebar_position: 14
 
 **Control alignment of items along the cross axis.**
 
-The `alignItems` property controls Flexbox items along the **cross axis** and Grid items along the block axis. Grid's `justifyItems` uses the same `AlignItems` values for the inline axis. Both properties are initially `undefined`, allowing the layout algorithm to choose its default alignment, commonly stretching auto-sized items.
+The `alignItems` property controls Flexbox items along the **cross axis** and Grid items along the block axis. Grid's `justifyItems` uses the same `AlignItems` values for the inline axis. Both properties are initially `undefined`, representing Taffy's `normal` alignment. Assign `undefined` to restore it. The layout algorithm determines the resulting alignment, commonly stretching auto-sized items; `normal` is not always equivalent to an explicit `Stretch`, for example for replaced Grid items.
 
 ## Values
 

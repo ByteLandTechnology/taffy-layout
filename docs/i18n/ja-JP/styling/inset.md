@@ -22,8 +22,8 @@ sidebar_position: 23
 
 ## 動作
 
-- **`Position.Absolute` の場合**：`Static` ではない最も近い祖先が作る包含ブロックを基準にします。通常はその padding box で、Grid の配置指定によってはグリッド領域を使います。
-- **`Position.Fixed` の場合**：ルートを包含ブロックとして使います。
+- **`Position.Absolute` の場合**：`Static` ではない最も近い祖先が作る包含ブロックを基準にします。通常はその padding box で、Grid の配置指定によってはグリッド領域を使います。そのような祖先がなければ初期包含ブロックを使います。
+- **`Position.Fixed` の場合**：初期包含ブロックを使います。確定サイズはルートのサイズではなく `availableSpace` から取得します。未確定サイズと返される座標については[配置](./position.md)を参照してください。
 - **`Position.Relative` の場合**：オフセットはフロー内のアイテムの*通常の位置*に対する相対値になります。
 - **`Position.Static` と `Position.Sticky` の場合**：オフセットは無視されます。
 
