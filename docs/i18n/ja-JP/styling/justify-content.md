@@ -13,14 +13,14 @@ sidebar_position: 13
 
 | 値                 | 説明                                                                                  |
 | :----------------- | :------------------------------------------------------------------------------------ |
-| **`FlexStart`**    | **デフォルト**。アイテムを行の開始側に詰めて配置。                                    |
+| **`FlexStart`**    | アイテムを行の開始側に詰めて配置します。Flex レイアウトのデフォルト動作です。         |
 | **`FlexEnd`**      | アイテムを行の末尾側に詰めて配置。                                                    |
 | **`Center`**       | アイテムを行の中央に配置。                                                            |
 | **`SpaceBetween`** | アイテムを均等に分布。最初のアイテムは開始側、最後は末尾に配置。                      |
 | **`SpaceAround`**  | アイテムを均等に分布し、各アイテムの周りのスペースを等しくする。                      |
 | **`SpaceEvenly`**  | 任意の 2 つのアイテム間（および端）のスペースが等しくなるようにアイテムを均等に分布。 |
 
-Grid では列トラック全体の配置を制御します。`Start`、`End`、`Stretch`、および `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter` も使えます。安全な値は内容が収まらない場合に始端配置へ戻ります。未設定時の読み取り値は `undefined` で、表のデフォルト値は Flex レイアウトの動作を示します。
+Grid では列トラック全体の配置を制御します。`Start`、`End`、`Stretch`、および `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter` も使えます。安全な値は内容が収まらない場合に始端配置へ戻ります。初期値の `undefined` は Taffy の `normal` を表し、`undefined` を代入するとこの値に戻ります。Flex レイアウトのデフォルトは flex-start 配置です。
 
 ## 例
 

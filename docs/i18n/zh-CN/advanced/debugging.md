@@ -35,6 +35,8 @@ console.log(tree.printTree(root));
 2. **颜色编码**：为不同的 `display` 类型使用不同的颜色（例如，Flex 用蓝色，Grid 用红色）。
 
 ```ts
+import { Position, Style, TaffyTree } from "taffy-layout";
+
 // 模拟渲染器
 const renderer = {
   strokeRect: (x: number, y: number, w: number, h: number, c: string) => {},
@@ -44,21 +46,38 @@ const root = tree.newLeaf(new Style());
 tree.computeLayout(root, { width: 100, height: 100 });
 
 // 可视化调试器函数
-function debugDraw(node: bigint, parentX = 0, parentY = 0) {
+function debugDraw(
+  node: bigint,
+  parentOrigin = { x: 0, y: 0 },
+  absoluteOrigin = parentOrigin,
+  rootOrigin = parentOrigin,
+) {
+  const style = tree.getStyle(node);
+  const position = style.position;
+  style.free();
+
+  const origin =
+    position === Position.Fixed
+      ? rootOrigin
+      : position === Position.Absolute
+        ? absoluteOrigin
+        : parentOrigin;
   const layout = tree.getLayout(node);
-  const x = parentX + layout.x;
-  const y = parentY + layout.y;
-  renderer.strokeRect(x, y, layout.width, layout.height, "red");
+  const point = { x: origin.x + layout.x, y: origin.y + layout.y };
+  renderer.strokeRect(point.x, point.y, layout.width, layout.height, "red");
   layout.free();
 
+  const childRootOrigin = node === root ? point : rootOrigin;
+  const childAbsoluteOrigin =
+    node === root || position !== Position.Static ? point : absoluteOrigin;
   for (const child of tree.children(node)) {
-    debugDraw(child, x, y);
+    debugDraw(child, point, childAbsoluteOrigin, childRootOrigin);
   }
 }
 debugDraw(root);
 ```
 
-布局坐标相对于直接父节点；绘制嵌套树时需要像上例一样累加祖先偏移。
+调用 `debugDraw(root)` 时，使用传给 `computeLayout` 的同一个根节点。遍历分别记录直接父节点、最近的非静态祖先及根节点的画布坐标。流内节点使用父节点；绝对定位节点使用定位祖先，没有此类祖先时回退到根节点；固定定位节点始终使用根节点。这是因为 Taffy 将初始包含块中后代的坐标转换为相对于根节点 border box 的坐标，尽管其定位区域由 `availableSpace` 决定。详见[定位](../styling/position.md)。此例只绘制布局矩形；裁剪、滚动和 sticky 偏移由渲染器处理。
 
 ## 隔离
 

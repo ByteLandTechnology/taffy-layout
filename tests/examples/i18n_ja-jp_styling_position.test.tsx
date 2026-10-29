@@ -58,6 +58,7 @@ test("i18n_ja-JP_styling_position example 1", async () => {
 
   const rootStyle = new Style({
     display: Display.Flex,
+    position: Position.Relative, // 絶対配置の子の包含ブロック
     size: { width: 300, height: 120 },
     padding: { left: 10, right: 10, top: 10, bottom: 10 },
     gap: { width: 10, height: 0 },

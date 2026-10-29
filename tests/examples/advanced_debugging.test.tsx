@@ -71,15 +71,32 @@ test("advanced_debugging example 2", async () => {
   tree.computeLayout(root, { width: 100, height: 100 });
 
   // Visual debugger function
-  function debugDraw(node: bigint, parentX = 0, parentY = 0) {
+  function debugDraw(
+    node: bigint,
+    parentOrigin = { x: 0, y: 0 },
+    absoluteOrigin = parentOrigin,
+    rootOrigin = parentOrigin,
+  ) {
+    const style = tree.getStyle(node);
+    const position = style.position;
+    style.free();
+
+    const origin =
+      position === Position.Fixed
+        ? rootOrigin
+        : position === Position.Absolute
+          ? absoluteOrigin
+          : parentOrigin;
     const layout = tree.getLayout(node);
-    const x = parentX + layout.x;
-    const y = parentY + layout.y;
-    renderer.strokeRect(x, y, layout.width, layout.height, "red");
+    const point = { x: origin.x + layout.x, y: origin.y + layout.y };
+    renderer.strokeRect(point.x, point.y, layout.width, layout.height, "red");
     layout.free();
 
+    const childRootOrigin = node === root ? point : rootOrigin;
+    const childAbsoluteOrigin =
+      node === root || position !== Position.Static ? point : absoluteOrigin;
     for (const child of tree.children(node)) {
-      debugDraw(child, x, y);
+      debugDraw(child, point, childAbsoluteOrigin, childRootOrigin);
     }
   }
   debugDraw(root);

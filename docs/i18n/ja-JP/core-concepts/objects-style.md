@@ -9,7 +9,7 @@ sidebar_position: 1
 
 ## 主な役割
 
-- **レイアウトモードと配置**: `display` で Flexbox、Grid、Block などのアルゴリズムを選び、`position` で相対配置または絶対配置を指定します。
+- **レイアウトモードと配置**: `display` で Flexbox、Grid、Block、FlowRoot を選び、`position` で `Static`（デフォルト）、`Relative`、`Absolute`、`Fixed`、`Sticky` を指定します。包含ブロックと sticky オフセットの規則は[配置](../styling/position.md)を参照してください。
 - **寸法**: 幅、高さ、アスペクト比、および最小/最大制約を定義します。
 - **間隔**: マージン、パディング、ボーダー、およびギャップ（gap）を制御します。
 - **整列**: メイン軸およびクロス軸に沿って子ノードをどのように整列させるかを指定します。
@@ -27,7 +27,9 @@ const style = new Style({
 });
 ```
 
-`new Style()` の `display` は `Display.Flex` です。ノード作成時と `setStyle()` 呼び出し時にスタイルがコピーされるため、元のオブジェクトや `getStyle()` が返すコピーを変更した後は `tree.setStyle(node, style)` でノードへ反映します。
+`new Style()` のデフォルトは `Display.Flex`、`Position.Static`、`Direction.Ltr`、`Float.None`、`Clear.None` です。ノード作成時と `setStyle()` 呼び出し時にスタイルがコピーされるため、元のオブジェクトや `getStyle()` が返すコピーを変更した後は `tree.setStyle(node, style)` でノードへ反映します。
+
+`alignItems`、`justifyItems`、`alignContent`、`justifyContent` は Taffy の `normal` を `undefined` として公開します。`undefined` を代入するとその値に戻り、実際の整列動作はレイアウトモードによって決まります。`alignSelf` と `justifySelf` は `auto` にリセットされます。
 
 コピー後に元の `Style` が不要なら `.free()` で解放できます。`getStyle()` が返したコピーも呼び出し側が所有するので、使用後に解放してください。
 

@@ -868,7 +868,7 @@ describe("Content size extents", () => {
     },
     {
       name: "overflow before the scroll origin",
-      root: {},
+      root: { position: Position.Relative },
       child: {
         position: Position.Absolute,
         left: -30,
@@ -909,4 +909,154 @@ describe("Content size extents", () => {
       ).toEqual([expected.width, expected.height, expected]);
     },
   );
+});
+
+describe("Containing blocks", () => {
+  beforeAll(setupTaffy);
+
+  const layoutAbsoluteIn = (parentPosition: Position) => {
+    const tree = new TaffyTree();
+    const absolute = tree.newLeaf(
+      new Style({
+        position: Position.Absolute,
+        size: { width: 10, height: 10 },
+        inset: { left: 0, top: 0, right: "auto", bottom: "auto" },
+      }),
+    );
+    const parent = tree.newWithChildren(
+      new Style({
+        position: parentPosition,
+        size: { width: 50, height: 50 },
+        margin: { left: 20, top: 30, right: 0, bottom: 0 },
+      }),
+      [absolute],
+    );
+    const root = tree.newWithChildren(
+      new Style({
+        position: Position.Relative,
+        size: { width: 100, height: 100 },
+        border: { left: 5, top: 5, right: 5, bottom: 5 },
+      }),
+      [parent],
+    );
+    tree.computeLayout(root, { width: 100, height: 100 });
+    const layout = tree.getLayout(absolute);
+    const result = { x: layout.x, y: layout.y };
+    tree.free();
+    return result;
+  };
+
+  it("places absolute children of a positioned parent in that parent", () => {
+    expect(layoutAbsoluteIn(Position.Relative)).toEqual({ x: 0, y: 0 });
+    expect(layoutAbsoluteIn(Position.Sticky)).toEqual({ x: 0, y: 0 });
+  });
+
+  it("places absolute children of a static parent in the nearest positioned ancestor", () => {
+    // Positioned in the root's padding box, reported relative to its border box
+    expect(layoutAbsoluteIn(Position.Static)).toEqual({ x: 5, y: 5 });
+  });
+
+  it.each([
+    {
+      name: "absolute with no positioned ancestor",
+      position: Position.Absolute,
+      rootPosition: Position.Static,
+      availableSpace: { width: 300, height: 200 },
+      size: { width: 10, height: 10 },
+      expected: { x: 270, y: 160, width: 10, height: 10 },
+    },
+    {
+      name: "fixed inside a static root",
+      position: Position.Fixed,
+      rootPosition: Position.Static,
+      availableSpace: { width: 300, height: 200 },
+      size: { width: 10, height: 10 },
+      expected: { x: 270, y: 160, width: 10, height: 10 },
+    },
+    {
+      name: "fixed inside a positioned root",
+      position: Position.Fixed,
+      rootPosition: Position.Relative,
+      availableSpace: { width: 300, height: 200 },
+      size: { width: 10, height: 10 },
+      expected: { x: 270, y: 160, width: 10, height: 10 },
+    },
+    {
+      name: "percentage sizes use the initial containing block",
+      position: Position.Absolute,
+      rootPosition: Position.Static,
+      availableSpace: { width: 300, height: 200 },
+      size: { width: "50%", height: "50%" },
+      expected: { x: 130, y: 70, width: 150, height: 100 },
+    },
+    {
+      name: "indefinite space falls back to the root padding box",
+      position: Position.Fixed,
+      rootPosition: Position.Static,
+      availableSpace: { width: "max-content", height: "max-content" },
+      size: { width: 10, height: 10 },
+      expected: { x: 85, y: 85, width: 10, height: 10 },
+    },
+    {
+      name: "the fallback is applied per axis",
+      position: Position.Absolute,
+      rootPosition: Position.Static,
+      availableSpace: { width: 300, height: "max-content" },
+      size: { width: 10, height: 10 },
+      expected: { x: 270, y: 85, width: 10, height: 10 },
+    },
+  ] as const)(
+    "$name: reports initial-containing-block positions relative to the root",
+    ({ position, rootPosition, availableSpace, size, expected }) => {
+      const tree = new TaffyTree();
+      const childStyle = new Style({ position, size, right: 0, bottom: 0 });
+      const child = tree.newLeaf(childStyle);
+      childStyle.free();
+      const rootStyle = new Style({
+        position: rootPosition,
+        size: { width: 100, height: 100 },
+        margin: { left: 20, top: 30, right: 0, bottom: 0 },
+        border: { left: 5, top: 5, right: 5, bottom: 5 },
+      });
+      const root = tree.newWithChildren(rootStyle, [child]);
+      rootStyle.free();
+      tree.computeLayout(root, availableSpace);
+      const rootLayout = tree.getLayout(root);
+      const layout = tree.getLayout(child);
+      try {
+        expect(rootLayout.position).toEqual({ x: 20, y: 30 });
+        expect({
+          x: layout.x,
+          y: layout.y,
+          width: layout.width,
+          height: layout.height,
+        }).toEqual(expected);
+      } finally {
+        layout.free();
+        rootLayout.free();
+        tree.free();
+      }
+    },
+  );
+
+  it("ignores insets on static and sticky nodes", () => {
+    for (const position of [Position.Static, Position.Sticky]) {
+      const tree = new TaffyTree();
+      const child = tree.newLeaf(
+        new Style({
+          position,
+          size: { width: 10, height: 10 },
+          inset: { left: 15, top: 15, right: "auto", bottom: "auto" },
+        }),
+      );
+      const root = tree.newWithChildren(
+        new Style({ size: { width: 100, height: 100 } }),
+        [child],
+      );
+      tree.computeLayout(root, { width: 100, height: 100 });
+      const layout = tree.getLayout(child);
+      expect({ x: layout.x, y: layout.y }).toEqual({ x: 0, y: 0 });
+      tree.free();
+    }
+  });
 });

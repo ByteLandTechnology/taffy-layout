@@ -59,6 +59,7 @@ test("i18n_zh-CN_styling_inset example 1", async () => {
   const containerStyle = new Style({
     size: { width: 200, height: 100 },
     display: Display.Flex,
+    position: Position.Relative, // 绝对定位项的包含块
   });
 
   // 锚定到右下角的绝对定位元素

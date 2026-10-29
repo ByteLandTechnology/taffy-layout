@@ -59,6 +59,7 @@ test("styling_inset example 1", async () => {
   const containerStyle = new Style({
     size: { width: 200, height: 100 },
     display: Display.Flex,
+    position: Position.Relative, // containing block of the absolute item
   });
 
   // Absolute item anchored to bottom-right

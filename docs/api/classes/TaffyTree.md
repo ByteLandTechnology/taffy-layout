@@ -37,7 +37,7 @@ const tree: TaffyTree = new TaffyTree();
 ### \[dispose\]()
 
 ```ts
-dispose: void;
+[dispose](): void;
 ```
 
 #### Returns
@@ -235,7 +235,8 @@ The node ID must identify a live node in this tree.
 computeLayoutWithMeasure(
    node,
    availableSpace,
-   measureFunc): void;
+   measureFunc
+): void;
 ```
 
 Updates the stored layout of the provided node and its children
@@ -686,7 +687,8 @@ console.log("Flex grow:", style.flexGrow);
 insertChildAtIndex(
    parent,
    index,
-   child): void;
+   child
+): void;
 ```
 
 Inserts a child at a specific index
@@ -1101,7 +1103,8 @@ const removedId: bigint = tree.removeChildAtIndex(parentId, 0);
 removeChildrenRange(
    parent,
    startIndex,
-   endIndex): void;
+   endIndex
+): void;
 ```
 
 Removes a range of children
@@ -1149,7 +1152,8 @@ tree.removeChildrenRange(parentId, 1, 3); // Removes child1 and child2
 replaceChildAtIndex(
    parent,
    index,
-   newChild): bigint;
+   newChild
+): bigint;
 ```
 
 Replaces a child at a specific index

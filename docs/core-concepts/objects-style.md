@@ -9,14 +9,16 @@ The **`Style`** object defines the layout rules for a single node. It contains p
 
 ## Key Responsibilities
 
-- **Layout Mode**: Chooses Flexbox, Grid, Block, or FlowRoot; `position` independently controls relative or absolute positioning.
+- **Layout Mode and Positioning**: `display` chooses Flexbox, Grid, Block, or FlowRoot; `position` independently selects `Static` (default), `Relative`, `Absolute`, `Fixed`, or `Sticky`. See [Position](../styling/position.md) for containing blocks and sticky offsets.
 - **Dimensions**: Defines width, height, aspect ratio, and min/max constraints.
 - **Spacing**: Controls margins, paddings, borders, and gaps.
 - **Alignment**: Specifies how children are aligned along the main and cross axes.
 
 ## Usage
 
-Styles are typically created and passed to a node during creation. A new style uses `Display.Flex`, `Direction.Ltr`, `Float.None`, and `Clear.None`. See [Display](../styling/display.md) for block layout, floats, and writing direction.
+Styles are typically created and passed to a node during creation. A new style uses `Display.Flex`, `Position.Static`, `Direction.Ltr`, `Float.None`, and `Clear.None`. See [Display](../styling/display.md) for block layout, floats, and writing direction.
+
+`alignItems`, `justifyItems`, `alignContent`, and `justifyContent` expose Taffy's `normal` alignment as `undefined`; assigning `undefined` restores it. The resulting alignment depends on the layout mode. `alignSelf` and `justifySelf` instead reset to `auto`: their direct getters return `AlignSelf.Auto`, while `get()` returns `undefined` when unset or assigned `Auto`.
 
 ```typescript
 const style = new Style({

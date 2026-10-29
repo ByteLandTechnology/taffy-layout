@@ -41,7 +41,7 @@ operation validates IDs; an invalid ID can trap before an error is returned.
 ### \[dispose\]()
 
 ```ts
-dispose: void;
+[dispose](): void;
 ```
 
 #### Returns

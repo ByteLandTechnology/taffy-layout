@@ -12,6 +12,6 @@ Maps property keys to value types, preserving tuple or array structure.
 
 ## Type Parameters
 
-| Type Parameter                                         |
-| ------------------------------------------------------ |
-| `Keys` _extends_ [`StyleProperty`](StyleProperty.md)[] |
+| Type Parameter                                                                          |
+| --------------------------------------------------------------------------------------- |
+| <a id="type-parameter-keys"></a> `Keys` _extends_ [`StyleProperty`](StyleProperty.md)[] |

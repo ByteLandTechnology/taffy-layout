@@ -10,7 +10,7 @@ This class holds the supported layout properties for a node. Create an instance 
 A new style uses these layout defaults:
 
 - `display`: `Display.Flex`
-- `position`: `Position.Relative`
+- `position`: `Position.Static`
 - `direction`: `Direction.Ltr`; `float`: `Float.None`; `clear`: `Clear.None`
 - `boxSizing`: `BoxSizing.BorderBox`; both overflow axes: `Overflow.Visible`
 - `flexDirection`: `FlexDirection.Row`
@@ -148,7 +148,7 @@ const style2 = new Style({
 ### \[dispose\]()
 
 ```ts
-dispose: void;
+[dispose](): void;
 ```
 
 #### Returns
@@ -232,9 +232,9 @@ get<K>(...keys): StylePropertyValues[K];
 
 ##### Type Parameters
 
-| Type Parameter                                                    |
-| ----------------------------------------------------------------- |
-| `K` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| Type Parameter                                                                                  |
+| ----------------------------------------------------------------------------------------------- |
+| <a id="type-parameter-k"></a> `K` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
 
 ##### Parameters
 
@@ -254,10 +254,10 @@ get<K1, K2>(...keys): [StylePropertyValues[K1], StylePropertyValues[K2]];
 
 ##### Type Parameters
 
-| Type Parameter                                                     |
-| ------------------------------------------------------------------ |
-| `K1` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
-| `K2` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| Type Parameter                                                                                    |
+| ------------------------------------------------------------------------------------------------- |
+| <a id="type-parameter-k1"></a> `K1` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| <a id="type-parameter-k2"></a> `K2` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
 
 ##### Parameters
 
@@ -277,11 +277,11 @@ get<K1, K2, K3>(...keys): [StylePropertyValues[K1], StylePropertyValues[K2], Sty
 
 ##### Type Parameters
 
-| Type Parameter                                                     |
-| ------------------------------------------------------------------ |
-| `K1` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
-| `K2` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
-| `K3` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| Type Parameter                                                                                      |
+| --------------------------------------------------------------------------------------------------- |
+| <a id="type-parameter-k1-1"></a> `K1` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| <a id="type-parameter-k2-1"></a> `K2` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md) |
+| <a id="type-parameter-k3"></a> `K3` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md)   |
 
 ##### Parameters
 
@@ -301,9 +301,9 @@ get<Keys>(...keys): StylePropertyArrayValues<Keys>;
 
 ##### Type Parameters
 
-| Type Parameter                                                         |
-| ---------------------------------------------------------------------- |
-| `Keys` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md)[] |
+| Type Parameter                                                                                          |
+| ------------------------------------------------------------------------------------------------------- |
+| <a id="type-parameter-keys"></a> `Keys` _extends_ [`StyleProperty`](../type-aliases/StyleProperty.md)[] |
 
 ##### Parameters
 

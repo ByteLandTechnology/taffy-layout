@@ -59,6 +59,7 @@ test("i18n_ja-JP_styling_inset example 1", async () => {
   const containerStyle = new Style({
     size: { width: 200, height: 100 },
     display: Display.Flex,
+    position: Position.Relative, // 絶対配置アイテムの包含ブロック
   });
 
   // 右下隅に固定された絶対配置アイテム

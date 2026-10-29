@@ -265,6 +265,8 @@ absoluteStyle.inset = { left: 10, top: 10, right: "auto", bottom: "auto" };
 absoluteStyle.size = { width: 100, height: 50 };
 ```
 
+絶対配置のノードは、`Position.Static` ではない最も近い祖先が作る包含ブロックを使います。そのような祖先がなければ、利用可能なスペースに基づく初期包含ブロックを使います。デフォルトは `Position.Static` です。固定配置のノードも初期包含ブロックを使い、そのサイズはルートと異なる場合があります。特定の祖先を絶対配置の子孫の基準にするには、その祖先に `Position.Relative` を設定してください。サイズと返される座標の規則は[配置](./styling/position.md)を参照してください。
+
 ### パーセントサイズ
 
 ```typescript

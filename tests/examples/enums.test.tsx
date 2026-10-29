@@ -62,7 +62,8 @@ test("enums example 1", async () => {
 
 test("enums example 2", async () => {
   const style = new Style();
-  style.position = Position.Relative; // Normal document flow
+  style.position = Position.Static; // Normal document flow, insets ignored (default)
+  style.position = Position.Relative; // Normal document flow, offset by insets
   style.position = Position.Absolute; // Removed from flow, uses inset values
 });
 

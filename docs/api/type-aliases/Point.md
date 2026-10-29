@@ -29,9 +29,9 @@ style.overflow = overflow;
 
 ## Type Parameters
 
-| Type Parameter | Description                 |
-| -------------- | --------------------------- |
-| `T`            | The type of each coordinate |
+| Type Parameter                    | Description                 |
+| --------------------------------- | --------------------------- |
+| <a id="type-parameter-t"></a> `T` | The type of each coordinate |
 
 ## Properties
 

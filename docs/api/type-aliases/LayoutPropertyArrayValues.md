@@ -12,6 +12,6 @@ Helper type to convert an array of layout property keys to an array of their val
 
 ## Type Parameters
 
-| Type Parameter                                           |
-| -------------------------------------------------------- |
-| `Keys` _extends_ [`LayoutProperty`](LayoutProperty.md)[] |
+| Type Parameter                                                                            |
+| ----------------------------------------------------------------------------------------- |
+| <a id="type-parameter-keys"></a> `Keys` _extends_ [`LayoutProperty`](LayoutProperty.md)[] |

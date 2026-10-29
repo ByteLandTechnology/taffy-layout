@@ -239,6 +239,8 @@ absoluteStyle.inset = { left: 10, top: 10, right: "auto", bottom: "auto" };
 absoluteStyle.size = { width: 100, height: 50 };
 ```
 
+绝对定位节点使用最近的非 `Position.Static` 祖先建立的包含块；没有此类祖先时，使用由可用空间确定的初始包含块。`Position.Static` 是默认值，固定定位节点也使用初始包含块，其尺寸可能与根节点不同。需要某个祖先作为绝对定位后代的定位基准时，请将该祖先设为 `Position.Relative`。尺寸与返回坐标的完整规则见[定位](./styling/position.md)。
+
 ### 百分比尺寸
 
 ```typescript

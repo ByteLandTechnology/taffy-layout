@@ -15,6 +15,9 @@
 //! Each enum implements:
 //! - `From<JsEnum> for taffy::style::Enum` - Convert from JS to Taffy
 //! - `From<taffy::style::Enum> for JsEnum` - Convert from Taffy to JS
+//!
+//! Alignment enums implement `TryFrom<taffy::style::Enum>` instead, failing for the
+//! `normal` initial value, which is exposed to JavaScript as `undefined`.
 
 use wasm_bindgen::prelude::*;
 
@@ -89,16 +92,29 @@ impl From<taffy::style::Display> for JsDisplay {
 /// import { Style, Position } from 'taffy-layout';
 ///
 /// const style = new Style();
-/// style.position = Position.Relative;  // Normal document flow
+/// style.position = Position.Static;    // Normal document flow, insets ignored (default)
+/// style.position = Position.Relative;  // Normal document flow, offset by insets
 /// style.position = Position.Absolute;  // Removed from flow, uses inset values
 /// ```
 #[wasm_bindgen(js_name = Position)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum JsPosition {
-    /// Element participates in normal document flow
+    /// Element participates in normal document flow and is offset by its insets.
+    /// It is a containing block for absolutely positioned descendants.
     Relative = 0,
-    /// Element is removed from flow and positioned within its parent layout container
+    /// Element is removed from flow and positioned relative to its containing block:
+    /// the nearest ancestor that is not statically positioned, or the initial
+    /// containing block defined by the available space when there is no such ancestor
     Absolute = 1,
+    /// Element participates in normal document flow and ignores its insets (CSS default).
+    /// It is not a containing block for absolutely positioned descendants.
+    Static = 2,
+    /// Element is removed from flow and positioned in the initial containing block,
+    /// whose definite dimensions come from the available space, not the root's size
+    Fixed = 3,
+    /// Laid out like `Static`, but is a containing block for absolutely positioned
+    /// descendants. Applying sticky offsets is left to the caller.
+    Sticky = 4,
 }
 
 impl From<JsPosition> for taffy::style::Position {
@@ -106,6 +122,9 @@ impl From<JsPosition> for taffy::style::Position {
         match val {
             JsPosition::Relative => taffy::style::Position::Relative,
             JsPosition::Absolute => taffy::style::Position::Absolute,
+            JsPosition::Static => taffy::style::Position::Static,
+            JsPosition::Fixed => taffy::style::Position::Fixed,
+            JsPosition::Sticky => taffy::style::Position::Sticky,
         }
     }
 }
@@ -115,6 +134,9 @@ impl From<taffy::style::Position> for JsPosition {
         match val {
             taffy::style::Position::Relative => JsPosition::Relative,
             taffy::style::Position::Absolute => JsPosition::Absolute,
+            taffy::style::Position::Static => JsPosition::Static,
+            taffy::style::Position::Fixed => JsPosition::Fixed,
+            taffy::style::Position::Sticky => JsPosition::Sticky,
         }
     }
 }
@@ -400,18 +422,22 @@ impl From<JsAlignItems> for taffy::style::AlignItems {
     }
 }
 
-impl From<taffy::style::AlignItems> for JsAlignItems {
-    fn from(val: taffy::style::AlignItems) -> Self {
+impl TryFrom<taffy::style::AlignItems> for JsAlignItems {
+    type Error = ();
+
+    /// Fails for `normal`, the initial value, which is exposed as `undefined`
+    fn try_from(val: taffy::style::AlignItems) -> Result<Self, Self::Error> {
         use taffy::style::{AlignItemsKeyword as Keyword, AlignmentSafety as Safety};
 
-        match (val.keyword, val.safety) {
-            (Keyword::Start, Safety::Unsafe) => JsAlignItems::Start,
-            (Keyword::End, Safety::Unsafe) => JsAlignItems::End,
-            (Keyword::FlexStart, Safety::Unsafe) => JsAlignItems::FlexStart,
-            (Keyword::FlexEnd, Safety::Unsafe) => JsAlignItems::FlexEnd,
-            (Keyword::SelfStart, Safety::Unsafe) => JsAlignItems::SelfStart,
-            (Keyword::SelfEnd, Safety::Unsafe) => JsAlignItems::SelfEnd,
-            (Keyword::Center, Safety::Unsafe) => JsAlignItems::Center,
+        Ok(match (val.keyword, val.safety) {
+            (Keyword::Normal, _) => return Err(()),
+            (Keyword::Start, Safety::Default | Safety::Unsafe) => JsAlignItems::Start,
+            (Keyword::End, Safety::Default | Safety::Unsafe) => JsAlignItems::End,
+            (Keyword::FlexStart, Safety::Default | Safety::Unsafe) => JsAlignItems::FlexStart,
+            (Keyword::FlexEnd, Safety::Default | Safety::Unsafe) => JsAlignItems::FlexEnd,
+            (Keyword::SelfStart, Safety::Default | Safety::Unsafe) => JsAlignItems::SelfStart,
+            (Keyword::SelfEnd, Safety::Default | Safety::Unsafe) => JsAlignItems::SelfEnd,
+            (Keyword::Center, Safety::Default | Safety::Unsafe) => JsAlignItems::Center,
             (Keyword::Start, Safety::Safe) => JsAlignItems::SafeStart,
             (Keyword::End, Safety::Safe) => JsAlignItems::SafeEnd,
             (Keyword::FlexStart, Safety::Safe) => JsAlignItems::SafeFlexStart,
@@ -421,7 +447,7 @@ impl From<taffy::style::AlignItems> for JsAlignItems {
             (Keyword::Center, Safety::Safe) => JsAlignItems::SafeCenter,
             (Keyword::Baseline, _) => JsAlignItems::Baseline,
             (Keyword::Stretch, _) => JsAlignItems::Stretch,
-        }
+        })
     }
 }
 
@@ -505,18 +531,22 @@ impl From<JsAlignSelf> for taffy::style::AlignSelf {
     }
 }
 
-impl From<taffy::style::AlignSelf> for JsAlignSelf {
-    fn from(val: taffy::style::AlignSelf) -> Self {
+impl TryFrom<taffy::style::AlignSelf> for JsAlignSelf {
+    type Error = ();
+
+    /// Fails for `normal`, the initial value, which is exposed as `undefined`
+    fn try_from(val: taffy::style::AlignSelf) -> Result<Self, Self::Error> {
         use taffy::style::{AlignItemsKeyword as Keyword, AlignmentSafety as Safety};
 
-        match (val.keyword, val.safety) {
-            (Keyword::Start, Safety::Unsafe) => JsAlignSelf::Start,
-            (Keyword::End, Safety::Unsafe) => JsAlignSelf::End,
-            (Keyword::FlexStart, Safety::Unsafe) => JsAlignSelf::FlexStart,
-            (Keyword::FlexEnd, Safety::Unsafe) => JsAlignSelf::FlexEnd,
-            (Keyword::SelfStart, Safety::Unsafe) => JsAlignSelf::SelfStart,
-            (Keyword::SelfEnd, Safety::Unsafe) => JsAlignSelf::SelfEnd,
-            (Keyword::Center, Safety::Unsafe) => JsAlignSelf::Center,
+        Ok(match (val.keyword, val.safety) {
+            (Keyword::Normal, _) => return Err(()),
+            (Keyword::Start, Safety::Default | Safety::Unsafe) => JsAlignSelf::Start,
+            (Keyword::End, Safety::Default | Safety::Unsafe) => JsAlignSelf::End,
+            (Keyword::FlexStart, Safety::Default | Safety::Unsafe) => JsAlignSelf::FlexStart,
+            (Keyword::FlexEnd, Safety::Default | Safety::Unsafe) => JsAlignSelf::FlexEnd,
+            (Keyword::SelfStart, Safety::Default | Safety::Unsafe) => JsAlignSelf::SelfStart,
+            (Keyword::SelfEnd, Safety::Default | Safety::Unsafe) => JsAlignSelf::SelfEnd,
+            (Keyword::Center, Safety::Default | Safety::Unsafe) => JsAlignSelf::Center,
             (Keyword::Start, Safety::Safe) => JsAlignSelf::SafeStart,
             (Keyword::End, Safety::Safe) => JsAlignSelf::SafeEnd,
             (Keyword::FlexStart, Safety::Safe) => JsAlignSelf::SafeFlexStart,
@@ -526,7 +556,7 @@ impl From<taffy::style::AlignSelf> for JsAlignSelf {
             (Keyword::Center, Safety::Safe) => JsAlignSelf::SafeCenter,
             (Keyword::Baseline, _) => JsAlignSelf::Baseline,
             (Keyword::Stretch, _) => JsAlignSelf::Stretch,
-        }
+        })
     }
 }
 
@@ -604,16 +634,20 @@ impl From<JsAlignContent> for taffy::style::AlignContent {
     }
 }
 
-impl From<taffy::style::AlignContent> for JsAlignContent {
-    fn from(val: taffy::style::AlignContent) -> Self {
+impl TryFrom<taffy::style::AlignContent> for JsAlignContent {
+    type Error = ();
+
+    /// Fails for `normal`, the initial value, which is exposed as `undefined`
+    fn try_from(val: taffy::style::AlignContent) -> Result<Self, Self::Error> {
         use taffy::style::{AlignContentKeyword as Keyword, AlignmentSafety as Safety};
 
-        match (val.keyword, val.safety) {
-            (Keyword::Start, Safety::Unsafe) => JsAlignContent::Start,
-            (Keyword::End, Safety::Unsafe) => JsAlignContent::End,
-            (Keyword::FlexStart, Safety::Unsafe) => JsAlignContent::FlexStart,
-            (Keyword::FlexEnd, Safety::Unsafe) => JsAlignContent::FlexEnd,
-            (Keyword::Center, Safety::Unsafe) => JsAlignContent::Center,
+        Ok(match (val.keyword, val.safety) {
+            (Keyword::Normal, _) => return Err(()),
+            (Keyword::Start, Safety::Default | Safety::Unsafe) => JsAlignContent::Start,
+            (Keyword::End, Safety::Default | Safety::Unsafe) => JsAlignContent::End,
+            (Keyword::FlexStart, Safety::Default | Safety::Unsafe) => JsAlignContent::FlexStart,
+            (Keyword::FlexEnd, Safety::Default | Safety::Unsafe) => JsAlignContent::FlexEnd,
+            (Keyword::Center, Safety::Default | Safety::Unsafe) => JsAlignContent::Center,
             (Keyword::Start, Safety::Safe) => JsAlignContent::SafeStart,
             (Keyword::End, Safety::Safe) => JsAlignContent::SafeEnd,
             (Keyword::FlexStart, Safety::Safe) => JsAlignContent::SafeFlexStart,
@@ -623,7 +657,7 @@ impl From<taffy::style::AlignContent> for JsAlignContent {
             (Keyword::SpaceBetween, _) => JsAlignContent::SpaceBetween,
             (Keyword::SpaceAround, _) => JsAlignContent::SpaceAround,
             (Keyword::SpaceEvenly, _) => JsAlignContent::SpaceEvenly,
-        }
+        })
     }
 }
 
@@ -698,16 +732,20 @@ impl From<JsJustifyContent> for taffy::style::JustifyContent {
     }
 }
 
-impl From<taffy::style::JustifyContent> for JsJustifyContent {
-    fn from(val: taffy::style::JustifyContent) -> Self {
+impl TryFrom<taffy::style::JustifyContent> for JsJustifyContent {
+    type Error = ();
+
+    /// Fails for `normal`, the initial value, which is exposed as `undefined`
+    fn try_from(val: taffy::style::JustifyContent) -> Result<Self, Self::Error> {
         use taffy::style::{AlignContentKeyword as Keyword, AlignmentSafety as Safety};
 
-        match (val.keyword, val.safety) {
-            (Keyword::Start, Safety::Unsafe) => JsJustifyContent::Start,
-            (Keyword::End, Safety::Unsafe) => JsJustifyContent::End,
-            (Keyword::FlexStart, Safety::Unsafe) => JsJustifyContent::FlexStart,
-            (Keyword::FlexEnd, Safety::Unsafe) => JsJustifyContent::FlexEnd,
-            (Keyword::Center, Safety::Unsafe) => JsJustifyContent::Center,
+        Ok(match (val.keyword, val.safety) {
+            (Keyword::Normal, _) => return Err(()),
+            (Keyword::Start, Safety::Default | Safety::Unsafe) => JsJustifyContent::Start,
+            (Keyword::End, Safety::Default | Safety::Unsafe) => JsJustifyContent::End,
+            (Keyword::FlexStart, Safety::Default | Safety::Unsafe) => JsJustifyContent::FlexStart,
+            (Keyword::FlexEnd, Safety::Default | Safety::Unsafe) => JsJustifyContent::FlexEnd,
+            (Keyword::Center, Safety::Default | Safety::Unsafe) => JsJustifyContent::Center,
             (Keyword::Start, Safety::Safe) => JsJustifyContent::SafeStart,
             (Keyword::End, Safety::Safe) => JsJustifyContent::SafeEnd,
             (Keyword::FlexStart, Safety::Safe) => JsJustifyContent::SafeFlexStart,
@@ -717,7 +755,7 @@ impl From<taffy::style::JustifyContent> for JsJustifyContent {
             (Keyword::SpaceBetween, _) => JsJustifyContent::SpaceBetween,
             (Keyword::SpaceAround, _) => JsJustifyContent::SpaceAround,
             (Keyword::SpaceEvenly, _) => JsJustifyContent::SpaceEvenly,
-        }
+        })
     }
 }
 
@@ -946,7 +984,13 @@ impl_checked_js_enum!(JsDisplay {
     None,
     FlowRoot
 });
-impl_checked_js_enum!(JsPosition { Relative, Absolute });
+impl_checked_js_enum!(JsPosition {
+    Relative,
+    Absolute,
+    Static,
+    Fixed,
+    Sticky
+});
 impl_checked_js_enum!(JsDirection { Ltr, Rtl });
 impl_checked_js_enum!(JsFloat { Left, Right, None });
 impl_checked_js_enum!(JsClear {

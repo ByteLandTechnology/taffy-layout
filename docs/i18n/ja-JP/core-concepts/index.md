@@ -67,7 +67,7 @@ return <TaffyTreePreview tree={tree} root={root} />;
 
 ## レイアウトに含まれるもの
 
-- `x`, `y`: 親に対する相対位置
+- `x`, `y`: レイアウトの基準ノードに対する位置。通常フローでは親、絶対配置や固定配置ではより上位の祖先やルートを使う場合があります。[Layout オブジェクト](./objects-layout.md)を参照してください。
 - `width`, `height`: 計算されたサイズ
 - `margin`, `padding`, `border`: エッジサイズ
 

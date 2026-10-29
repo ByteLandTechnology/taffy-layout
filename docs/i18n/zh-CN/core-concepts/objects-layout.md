@@ -9,11 +9,11 @@ sidebar_position: 3
 
 ## 关键属性
 
-- **`position`**：节点相对于其父节点左上角的 `x` 和 `y` 坐标。
+- **`position`**：节点的 `x` 和 `y` 坐标，坐标基准见下文。
 - **`size`**：节点的计算 `width` 和 `height`（以像素为单位）。
 - **`margin` / `padding` / `border`**：解析后的边缘尺寸。
 
-LTR 根节点的坐标通常为 `(0, 0)`；RTL 根节点在可用宽度确定时，其 `x` 为可用宽度减去根节点宽度，`y` 仍为 `0`。子节点的 `x` / `y` 始终是相对于直接父节点的物理坐标，绘制嵌套树时需累加祖先偏移。
+流内节点以直接父节点的 border box 为坐标原点。绝对定位后代以最近的非静态祖先的 border box 为基准；没有此类祖先时以根节点的 border box 为基准。固定定位后代同样返回相对于根节点的坐标，但定位区域是由 `availableSpace` 确定的初始包含块。根节点自身返回画布坐标，包含 margin、方向及生效的 inset，不一定为 `(0, 0)`。绘制时应加上对应基准节点的画布坐标，而不是始终累加直接父节点偏移。详见[定位](../styling/position.md)及[绘制示例](../advanced/debugging.md)。
 
 `contentSize`（以及 `contentWidth` / `contentHeight`）表示从滚动原点开始可到达的内容范围，可能超出节点自身尺寸。它不是减去 padding 和 border 后的 CSS 内容框尺寸。LTR 的滚动原点位于 padding box 左上角，RTL 位于右上角；起始侧不可滚动到的负向溢出不计入这些值。
 

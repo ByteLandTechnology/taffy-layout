@@ -13,14 +13,14 @@ Taffy's styling API is modeled after CSS. Below are the main property groups; th
 
 Core properties that define how a node behaves.
 
-| Property                                                   | Description                                               |
-| :--------------------------------------------------------- | :-------------------------------------------------------- |
-| **[`display`](./display.md)**                              | `Flex` (default), `Grid`, `Block`, `FlowRoot`, or `None`. |
-| **[`direction`](./display.md#writing-direction)**          | `Ltr` (default) or `Rtl` logical layout direction.        |
-| **[`float` / `clear`](./display.md#floats-and-clearance)** | Float placement and clearance in block layout.            |
-| **[`position`](./position.md)**                            | `Relative` (flow) or `Absolute` (overlay).                |
-| **[`overflow`](./overflow.md)**                            | `Visible`, `Clip`, `Hidden`, or `Scroll`.                 |
-| **[`inset`](./inset.md)**                                  | `top`, `bottom`, `left`, `right` for positioning.         |
+| Property                                                   | Description                                                       |
+| :--------------------------------------------------------- | :---------------------------------------------------------------- |
+| **[`display`](./display.md)**                              | `Flex` (default), `Grid`, `Block`, `FlowRoot`, or `None`.         |
+| **[`direction`](./display.md#writing-direction)**          | `Ltr` (default) or `Rtl` logical layout direction.                |
+| **[`float` / `clear`](./display.md#floats-and-clearance)** | Float placement and clearance in block layout.                    |
+| **[`position`](./position.md)**                            | `Static` (default), `Relative`, `Absolute`, `Fixed`, or `Sticky`. |
+| **[`overflow`](./overflow.md)**                            | `Visible`, `Clip`, `Hidden`, or `Scroll`.                         |
+| **[`inset`](./inset.md)**                                  | `top`, `bottom`, `left`, `right` for positioning.                 |
 
 ## Sizing & Spacing
 

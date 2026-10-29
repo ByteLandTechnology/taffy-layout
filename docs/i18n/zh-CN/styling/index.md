@@ -13,14 +13,14 @@ Taffy 的样式 API 模仿 CSS 设计。以下按类别介绍常用属性。
 
 定义节点行为的核心属性。
 
-| 属性                                  | 描述                                                    |
-| :------------------------------------ | :------------------------------------------------------ |
-| **[`display`](./display.md)**         | `Flex`（默认）、`Grid`、`Block`、`FlowRoot` 或 `None`。 |
-| **[`direction`](./display.md)**       | `Direction.Ltr` / `Direction.Rtl`。                     |
-| **[`float` / `clear`](./display.md)** | 块布局中的浮动与清除。                                  |
-| **[`position`](./position.md)**       | `Relative`（流式）或 `Absolute`（覆盖）。               |
-| **[`overflow`](./overflow.md)**       | `Visible`、`Clip`、`Hidden` 或 `Scroll`。               |
-| **[`inset`](./inset.md)**             | 定位用的 `top`、`bottom`、`left`、`right`。             |
+| 属性                                  | 描述                                                            |
+| :------------------------------------ | :-------------------------------------------------------------- |
+| **[`display`](./display.md)**         | `Flex`（默认）、`Grid`、`Block`、`FlowRoot` 或 `None`。         |
+| **[`direction`](./display.md)**       | `Direction.Ltr` / `Direction.Rtl`。                             |
+| **[`float` / `clear`](./display.md)** | 块布局中的浮动与清除。                                          |
+| **[`position`](./position.md)**       | `Static`（默认）、`Relative`、`Absolute`、`Fixed` 或 `Sticky`。 |
+| **[`overflow`](./overflow.md)**       | `Visible`、`Clip`、`Hidden` 或 `Scroll`。                       |
+| **[`inset`](./inset.md)**             | 定位用的 `top`、`bottom`、`left`、`right`。                     |
 
 ## 尺寸与间距
 

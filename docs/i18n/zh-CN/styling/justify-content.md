@@ -13,14 +13,14 @@ sidebar_position: 13
 
 | 值                 | 描述                                                     |
 | :----------------- | :------------------------------------------------------- |
-| **`FlexStart`**    | **默认值**。子元素向行的起始端对齐。                     |
+| **`FlexStart`**    | 子元素向行的起始端对齐，是 Flex 布局的默认行为。         |
 | **`FlexEnd`**      | 子元素向行的末端对齐。                                   |
 | **`Center`**       | 子元素在行中居中对齐。                                   |
 | **`SpaceBetween`** | 子元素均匀分布。首元素在起始端，末元素在末端。           |
 | **`SpaceAround`**  | 子元素均匀分布，每个子元素周围的空间相等。               |
 | **`SpaceEvenly`**  | 子元素均匀分布，任意两个子元素（和边缘）之间的空间相等。 |
 
-Grid 中此属性控制列轨道的整体对齐。还支持 `Start`、`End`、`Stretch`，以及 `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`；安全值在内容无法容纳时回退到起始对齐。未设置时读回 `undefined`；表中的默认值描述 Flex 布局行为。
+Grid 中此属性控制列轨道的整体对齐。还支持 `Start`、`End`、`Stretch`，以及 `SafeStart`、`SafeEnd`、`SafeFlexStart`、`SafeFlexEnd`、`SafeCenter`；安全值在内容无法容纳时回退到起始对齐。初始值 `undefined` 表示 Taffy 的 `normal` 对齐，赋值 `undefined` 可恢复该值；Flex 布局默认采用 flex-start 对齐。
 
 ## 示例
 
