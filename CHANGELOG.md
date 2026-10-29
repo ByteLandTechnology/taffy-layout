@@ -1,3 +1,23 @@
+## [4.0.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v3.0.0...v4.0.0) (2026-10-29)
+
+### ⚠ BREAKING CHANGES
+
+- update Taffy to 0.15.1 (#1)
+- `Position.Static` is now the default `position`. Static nodes ignore
+  their insets and are not containing blocks for absolutely positioned descendants. Set
+  `Position.Relative` to keep the previous behaviour.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+### ✨ Features
+
+- update Taffy to 0.15.1 ([d3f2aa1](https://github.com/ByteLandTechnology/taffy-layout/commit/d3f2aa1af2ebd46f337e5f2af441b012adfe467e))
+- update Taffy to 0.15.1 ([#1](https://github.com/ByteLandTechnology/taffy-layout/issues/1)) ([deca475](https://github.com/ByteLandTechnology/taffy-layout/commit/deca47506b56f7bebaa9c958a5ae8e5e8da209f3))
+
+### 📚 Documentation
+
+- correct Taffy 0.15 positioning guides and examples ([11f1441](https://github.com/ByteLandTechnology/taffy-layout/commit/11f1441330101a192416311b23983f71fd5ba53d))
+
 ## [3.0.0](https://github.com/ByteLandTechnology/taffy-layout/compare/v2.0.3...v3.0.0) (2026-09-09)
 
 ### ⚠ BREAKING CHANGES
