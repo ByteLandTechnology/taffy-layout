@@ -579,10 +579,15 @@ export type TrackSizingFunction = {min: MinTrackSizingFunction; max: MaxTrackSiz
 
 /**
  * Grid track repetition definition.
+ *
+ * When `lineNames` is provided, its length must be `0` or `tracks.length + 1`
+ * (with `tracks.length` clamped to `65535`). Repetitions with any other
+ * `lineNames` length are ignored.
  */
 export type GridTemplateRepetition = {
   count: RepetitionCount;
   tracks: TrackSizingFunction[];
+  /** Line-name sets per boundary; must have length `0` or `tracks.length + 1` */
   lineNames?: string[][];
 };
 

@@ -568,6 +568,56 @@ mod tests {
         assert_eq!(point.x, taffy::style::Overflow::Hidden);
         assert_eq!(point.y, taffy::style::Overflow::Scroll);
     }
+
+    #[test]
+    fn test_grid_template_component_repeat_line_names_validation() {
+        let track = TrackSizingFunctionDto {
+            min: MinTrackSizingFunctionDto::Length(10.0),
+            max: MaxTrackSizingFunctionDto::Length(10.0),
+        };
+
+        // Empty line_names is valid
+        let empty_names = GridTemplateComponentDto::Repeat {
+            count: RepetitionCountDto::Count(2),
+            tracks: vec![track.clone()],
+            line_names: vec![],
+        };
+        assert!(GridTemplateComponent::<String>::try_from(empty_names).is_ok());
+
+        // tracks.len() + 1 line_names is valid
+        let valid_names = GridTemplateComponentDto::Repeat {
+            count: RepetitionCountDto::Count(2),
+            tracks: vec![track.clone()],
+            line_names: vec![vec!["a".to_string()], vec!["b".to_string()]],
+        };
+        assert!(GridTemplateComponent::<String>::try_from(valid_names).is_ok());
+
+        // Mismatched non-empty line_names are rejected
+        for bad_len in [1usize, 3usize] {
+            let invalid = GridTemplateComponentDto::Repeat {
+                count: RepetitionCountDto::Count(2),
+                tracks: vec![track.clone()],
+                line_names: vec![vec!["x".to_string()]; bad_len],
+            };
+            assert!(GridTemplateComponent::<String>::try_from(invalid).is_err());
+        }
+
+        // Clamp tracks.len() to u16::MAX when computing expected line_names length
+        let over_max_tracks = vec![track; u16::MAX as usize + 2];
+        let clamped_valid = GridTemplateComponentDto::Repeat {
+            count: RepetitionCountDto::Count(1),
+            tracks: over_max_tracks.clone(),
+            line_names: vec![Vec::new(); u16::MAX as usize + 1],
+        };
+        assert!(GridTemplateComponent::<String>::try_from(clamped_valid).is_ok());
+
+        let unclamped_invalid = GridTemplateComponentDto::Repeat {
+            count: RepetitionCountDto::Count(1),
+            tracks: over_max_tracks,
+            line_names: vec![Vec::new(); u16::MAX as usize + 3],
+        };
+        assert!(GridTemplateComponent::<String>::try_from(unclamped_invalid).is_err());
+    }
 }
 
 // =============================================================================
@@ -1462,18 +1512,25 @@ where
     }
 }
 
-impl<S: CheapCloneStr> From<GridTemplateComponentDto> for GridTemplateComponent<S>
+impl<S: CheapCloneStr> TryFrom<GridTemplateComponentDto> for GridTemplateComponent<S>
 where
     S: From<String>,
 {
-    fn from(val: GridTemplateComponentDto) -> Self {
+    type Error = ();
+
+    fn try_from(val: GridTemplateComponentDto) -> Result<Self, Self::Error> {
         match val {
-            GridTemplateComponentDto::Single(n) => GridTemplateComponent::Single(n.into()),
+            GridTemplateComponentDto::Single(n) => Ok(GridTemplateComponent::Single(n.into())),
             GridTemplateComponentDto::Repeat {
                 count,
                 tracks,
                 line_names,
             } => {
+                let expected_line_names_len = tracks.len().min(u16::MAX as usize) + 1;
+                if !line_names.is_empty() && line_names.len() != expected_line_names_len {
+                    return Err(());
+                }
+
                 let layout_tracks: Vec<TrackSizingFunction> =
                     tracks.into_iter().map(|t| t.into()).collect();
                 let layout_line_names: Vec<Vec<S>> = line_names
@@ -1481,11 +1538,11 @@ where
                     .map(|names| names.into_iter().map(|n| n.into()).collect())
                     .collect();
 
-                GridTemplateComponent::Repeat(GridTemplateRepetition {
+                Ok(GridTemplateComponent::Repeat(GridTemplateRepetition {
                     count: count.into(),
                     tracks: layout_tracks,
                     line_names: layout_line_names,
-                })
+                }))
             }
         }
     }
