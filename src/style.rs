@@ -253,7 +253,7 @@ impl JsStyle {
     /// });
     /// ```
     #[wasm_bindgen(constructor)]
-    pub fn new(props: Option<JsValue>) -> JsStyle {
+    pub fn new(props: Option<JsValue>) -> Result<JsStyle, JsValue> {
         let mut style = JsStyle {
             inner: TaffyStyle::Style::default(),
             explicit_grid_template_area_counts: GridTemplateAreaCounts::default(),
@@ -261,11 +261,11 @@ impl JsStyle {
 
         if let Some(props_value) = props {
             if props_value.is_object() {
-                style.set(props_value);
+                style.set(props_value)?;
             }
         }
 
-        style
+        Ok(style)
     }
 
     // =========================================================================
@@ -2399,25 +2399,28 @@ impl JsStyle {
     /// const [display, width, margin] = style.get("display", "width", "marginLeft");
     /// ```
     #[wasm_bindgen(variadic, skip_typescript)]
-    pub fn get(&self, keys: Vec<String>) -> JsValue {
+    pub fn get(&self, keys: Vec<String>) -> Result<JsValue, JsValue> {
         if keys.is_empty() {
-            return JsValue::UNDEFINED;
+            return Ok(JsValue::UNDEFINED);
         }
 
-        let results: Vec<JsValue> = keys.iter().map(|key| self.get_property(key)).collect();
+        let results: Vec<JsValue> = keys
+            .iter()
+            .map(|key| self.get_property(key))
+            .collect::<Result<Vec<JsValue>, JsValue>>()?;
 
         if results.len() == 1 {
-            results.into_iter().next().unwrap()
+            Ok(results.into_iter().next().unwrap())
         } else {
-            js_sys::Array::from_iter(results).into()
+            Ok(js_sys::Array::from_iter(results).into())
         }
     }
 
     /// Internal helper to get a property value by its key
     ///
     /// @throws Error if the key is unknown.
-    fn get_property(&self, path: &str) -> JsValue {
-        match path {
+    fn get_property(&self, path: &str) -> Result<JsValue, JsValue> {
+        let value = match path {
             // Layout Mode
             "display" => JsValue::from(JsDisplay::from(self.inner.display) as u8),
             "position" => JsValue::from(JsPosition::from(self.inner.position) as u8),
@@ -2773,9 +2776,11 @@ impl JsStyle {
 
             // Unknown property path
             _ => {
-                wasm_bindgen::throw_str(&format!("Unknown property path: {}", path));
+                return Err(js_sys::Error::new(&format!("Unknown property path: {}", path)).into());
             }
-        }
+        };
+
+        Ok(value)
     }
 
     // =========================================================================
@@ -2805,15 +2810,19 @@ impl JsStyle {
     /// });
     /// ```
     #[wasm_bindgen(skip_typescript)]
-    pub fn set(&mut self, props: JsValue) {
+    pub fn set(&mut self, props: JsValue) -> Result<(), JsValue> {
         if !props.is_object() {
             log("set() requires an object argument");
-            return;
+            return Ok(());
         }
 
         let obj = js_sys::Object::from(props);
         let entries = js_sys::Object::entries(&obj);
         let mut grid_template_area_counts = Vec::new();
+        let mut next = JsStyle {
+            inner: self.inner.clone(),
+            explicit_grid_template_area_counts: self.explicit_grid_template_area_counts,
+        };
 
         for i in 0..entries.length() {
             let entry = entries.get(i);
@@ -2828,7 +2837,7 @@ impl JsStyle {
                     ) {
                         grid_template_area_counts.push((key_str, value));
                     } else {
-                        self.set_property(&key_str, value);
+                        next.set_property(&key_str, value)?;
                     }
                 }
             }
@@ -2838,14 +2847,17 @@ impl JsStyle {
         // of JavaScript object key order. Setting gridTemplateAreas first infers
         // its minimum extent; these values may then preserve trailing `.` cells.
         for (key, value) in grid_template_area_counts {
-            self.set_property(&key, value);
+            next.set_property(&key, value)?;
         }
+
+        *self = next;
+        Ok(())
     }
 
     /// Internal helper to set a property value by its key
     ///
     /// @throws Error if the key is unknown.
-    fn set_property(&mut self, path: &str, value: JsValue) {
+    fn set_property(&mut self, path: &str, value: JsValue) -> Result<(), JsValue> {
         match path {
             // Layout Mode
             "display" => {
@@ -3293,8 +3305,14 @@ impl JsStyle {
 
             // Unknown property path
             _ => {
-                wasm_bindgen::throw_str(&format!("Unknown property path for set: {}", path));
+                return Err(js_sys::Error::new(&format!(
+                    "Unknown property path for set: {}",
+                    path
+                ))
+                .into());
             }
         }
+
+        Ok(())
     }
 }
