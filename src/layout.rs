@@ -551,25 +551,28 @@ impl JsLayout {
     /// tree.free();
     /// ```
     #[wasm_bindgen(variadic, skip_typescript)]
-    pub fn get(&self, keys: Vec<String>) -> JsValue {
+    pub fn get(&self, keys: Vec<String>) -> Result<JsValue, JsValue> {
         if keys.is_empty() {
-            return JsValue::UNDEFINED;
+            return Ok(JsValue::UNDEFINED);
         }
 
-        let results: Vec<JsValue> = keys.iter().map(|key| self.get_property(key)).collect();
+        let results: Vec<JsValue> = keys
+            .iter()
+            .map(|key| self.get_property(key))
+            .collect::<Result<Vec<JsValue>, JsValue>>()?;
 
         if results.len() == 1 {
-            results.into_iter().next().unwrap()
+            Ok(results.into_iter().next().unwrap())
         } else {
-            js_sys::Array::from_iter(results).into()
+            Ok(js_sys::Array::from_iter(results).into())
         }
     }
 
     /// Internal helper to get a property value by its key
     ///
     /// @throws Error if the key is unknown.
-    fn get_property(&self, path: &str) -> JsValue {
-        match path {
+    fn get_property(&self, path: &str) -> Result<JsValue, JsValue> {
+        let value = match path {
             // Rendering order
             "order" => JsValue::from(self.inner.order),
 
@@ -658,9 +661,11 @@ impl JsLayout {
 
             // Unknown property path
             _ => {
-                wasm_bindgen::throw_str(&format!("Unknown property path: {}", path));
+                return Err(js_sys::Error::new(&format!("Unknown property path: {}", path)).into());
             }
-        }
+        };
+
+        Ok(value)
     }
 }
 

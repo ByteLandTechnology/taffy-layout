@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { setupTaffy } from "./utils";
+import { setupTaffy, getTaffyWasm } from "./utils";
 import {
   Style,
   Display,
@@ -1082,6 +1082,31 @@ describe("Style Class Properties", () => {
       expect(() => style.get("unknownProperty")).toThrow(
         "Unknown property path: unknownProperty",
       );
+      style.free();
+    });
+
+    it("releases borrow and allows mutation and free() after unknown property error", () => {
+      const readableStyle = new Style({ width: 80 });
+      try {
+        // @ts-expect-error - testing invalid property key
+        readableStyle.get("unknownProp");
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        expect((err as Error).message).toBe(
+          "Unknown property path: unknownProp",
+        );
+      }
+
+      try {
+        // @ts-expect-error - testing valid + invalid property keys
+        readableStyle.get("width", "unknownProp");
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+      }
+
+      readableStyle.width = 90;
+      expect(readableStyle.width).toBe(90);
+      readableStyle.free();
     });
   });
 
@@ -1224,6 +1249,63 @@ describe("Style Class Properties", () => {
       expect(() => style.set({ unknownProperty: 1 })).toThrow(
         "Unknown property path for set: unknownProperty",
       );
+      style.free();
+    });
+
+    it("releases mutable borrow, avoids partial mutations, and frees externrefs on unknown keys", () => {
+      const sharedStyle = new Style({
+        width: 120,
+        gridTemplateAreaRowCount: 2,
+      });
+      try {
+        sharedStyle.set(
+          JSON.parse(
+            '{"width": 240, "gridTemplateAreaRowCount": 5, "unknownProp": 1}',
+          ),
+        );
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        expect((err as Error).message).toBe(
+          "Unknown property path for set: unknownProp",
+        );
+      }
+
+      expect(sharedStyle.width).toBe(120);
+      expect(sharedStyle.gridTemplateAreaRowCount).toBe(2);
+      sharedStyle.width = 160;
+      expect(sharedStyle.width).toBe(160);
+      sharedStyle.free();
+
+      const wasm = getTaffyWasm();
+      const tree = new TaffyTree();
+      const rootStyle = new Style({ width: 50, height: 50 });
+      const root = tree.newLeaf(rootStyle);
+      tree.computeLayout(root, { width: 100, height: 100 });
+
+      const extBefore = wasm.__wbindgen_externrefs.length;
+      for (let i = 0; i < 1000; i++) {
+        let caught = false;
+        try {
+          new Style({ unknownProp: "marker" });
+        } catch {
+          caught = true;
+        }
+        expect(caught).toBe(true);
+      }
+
+      expect(wasm.__wbindgen_externrefs.length - extBefore).toBeLessThanOrEqual(
+        64,
+      );
+      expect(() =>
+        tree.computeLayout(root, { width: 400, height: 300 }),
+      ).not.toThrow();
+      const layout = tree.getLayout(root);
+      expect(layout.width).toBe(50);
+      expect(layout.height).toBe(50);
+
+      layout.free();
+      rootStyle.free();
+      tree.free();
     });
   });
 

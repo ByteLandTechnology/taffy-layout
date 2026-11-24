@@ -702,18 +702,33 @@ describe("Layout.get() batch property retrieval", () => {
     childStyle.free();
   });
 
-  it("get() throws error for unknown property", () => {
+  it("get() throws error for unknown property and releases borrow for reuse and free()", () => {
     const tree = new TaffyTree();
-    const root = tree.newLeaf(new Style());
-    tree.computeLayout(root, { width: 800, height: 600 });
+    const rootStyle = new Style({ width: 50, height: 50 });
+    const root = tree.newLeaf(rootStyle);
+    tree.computeLayout(root, { width: 100, height: 100 });
 
     const layout = tree.getLayout(root);
 
     expect(() => {
       // @ts-expect-error - intentionally testing error case
-      layout.get("unknownProperty");
-    }).toThrow();
+      layout.get("unknownProp");
+    }).toThrow("Unknown property path: unknownProp");
 
+    expect(() => {
+      // @ts-expect-error - intentionally testing valid + unknown key case
+      layout.get("width", "unknownProp");
+    }).toThrow("Unknown property path: unknownProp");
+
+    expect(layout.width).toBe(50);
+    expect(layout.height).toBe(50);
+    layout.free();
+
+    expect(() =>
+      tree.computeLayout(root, { width: 400, height: 300 }),
+    ).not.toThrow();
+
+    rootStyle.free();
     tree.free();
   });
 });

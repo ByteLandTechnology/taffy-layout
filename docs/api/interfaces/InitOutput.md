@@ -25,7 +25,7 @@
 | <a id="layout_contentheight"></a> `layout_contentHeight`                                   | `readonly` | (`a`) => `number`                                        |
 | <a id="layout_contentsize"></a> `layout_contentSize`                                       | `readonly` | (`a`) => `any`                                           |
 | <a id="layout_contentwidth"></a> `layout_contentWidth`                                     | `readonly` | (`a`) => `number`                                        |
-| <a id="layout_get"></a> `layout_get`                                                       | `readonly` | (`a`, `b`, `c`) => `any`                                 |
+| <a id="layout_get"></a> `layout_get`                                                       | `readonly` | (`a`, `b`, `c`) => \[`number`, `number`, `number`\]      |
 | <a id="layout_height"></a> `layout_height`                                                 | `readonly` | (`a`) => `number`                                        |
 | <a id="layout_margin"></a> `layout_margin`                                                 | `readonly` | (`a`) => `any`                                           |
 | <a id="layout_marginbottom"></a> `layout_marginBottom`                                     | `readonly` | (`a`) => `number`                                        |
@@ -69,7 +69,7 @@
 | <a id="style_flexwrap"></a> `style_flexWrap`                                               | `readonly` | (`a`) => `number`                                        |
 | <a id="style_float"></a> `style_float`                                                     | `readonly` | (`a`) => `number`                                        |
 | <a id="style_gap"></a> `style_gap`                                                         | `readonly` | (`a`) => `any`                                           |
-| <a id="style_get"></a> `style_get`                                                         | `readonly` | (`a`, `b`, `c`) => `any`                                 |
+| <a id="style_get"></a> `style_get`                                                         | `readonly` | (`a`, `b`, `c`) => \[`number`, `number`, `number`\]      |
 | <a id="style_gridautocolumns"></a> `style_gridAutoColumns`                                 | `readonly` | (`a`) => `any`                                           |
 | <a id="style_gridautoflow"></a> `style_gridAutoFlow`                                       | `readonly` | (`a`) => `number`                                        |
 | <a id="style_gridautorows"></a> `style_gridAutoRows`                                       | `readonly` | (`a`) => `any`                                           |
@@ -105,7 +105,7 @@
 | <a id="style_minheight"></a> `style_minHeight`                                             | `readonly` | (`a`) => `any`                                           |
 | <a id="style_minsize"></a> `style_minSize`                                                 | `readonly` | (`a`) => `any`                                           |
 | <a id="style_minwidth"></a> `style_minWidth`                                               | `readonly` | (`a`) => `any`                                           |
-| <a id="style_new"></a> `style_new`                                                         | `readonly` | (`a`) => `number`                                        |
+| <a id="style_new"></a> `style_new`                                                         | `readonly` | (`a`) => \[`number`, `number`, `number`\]                |
 | <a id="style_overflow"></a> `style_overflow`                                               | `readonly` | (`a`) => `any`                                           |
 | <a id="style_overflowx"></a> `style_overflowX`                                             | `readonly` | (`a`) => `number`                                        |
 | <a id="style_overflowy"></a> `style_overflowY`                                             | `readonly` | (`a`) => `number`                                        |
@@ -118,7 +118,7 @@
 | <a id="style_right"></a> `style_right`                                                     | `readonly` | (`a`) => `any`                                           |
 | <a id="style_rowgap"></a> `style_rowGap`                                                   | `readonly` | (`a`) => `any`                                           |
 | <a id="style_scrollbarwidth"></a> `style_scrollbarWidth`                                   | `readonly` | (`a`) => `number`                                        |
-| <a id="style_set"></a> `style_set`                                                         | `readonly` | (`a`, `b`) => `void`                                     |
+| <a id="style_set"></a> `style_set`                                                         | `readonly` | (`a`, `b`) => \[`number`, `number`\]                     |
 | <a id="style_set_aligncontent"></a> `style_set_alignContent`                               | `readonly` | (`a`, `b`) => `void`                                     |
 | <a id="style_set_alignitems"></a> `style_set_alignItems`                                   | `readonly` | (`a`, `b`) => `void`                                     |
 | <a id="style_set_alignself"></a> `style_set_alignSelf`                                     | `readonly` | (`a`, `b`) => `void`                                     |
