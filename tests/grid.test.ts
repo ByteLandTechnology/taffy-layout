@@ -118,7 +118,10 @@ describe("Grid Style Properties", () => {
       style.gridTemplateColumns = [
         {
           count: 2,
-          tracks: [{ min: 10, max: 10 }],
+          tracks: [
+            { min: 10, max: 10 },
+            { min: 20, max: 20 },
+          ],
           lineNames: [["start"], ["middle"], ["end"]],
         },
       ] as any;
@@ -144,6 +147,122 @@ describe("Grid Style Properties", () => {
       ] as any;
 
       expect(style.gridTemplateColumns.length).toBe(1);
+    });
+
+    it("ignores invalid repetition lineNames lengths without corrupting prior state or trapping layout", () => {
+      const validCols = [
+        {
+          count: 2,
+          tracks: [{ min: 25, max: 25 }],
+          lineNames: [["col-start"], ["col-end"]],
+        },
+      ];
+      const validRows = [
+        {
+          count: 2,
+          tracks: [{ min: 30, max: 30 }],
+          lineNames: [],
+        },
+      ];
+
+      // Preserve prior valid state across setters and style.set() when Repeat has invalid lineNames
+      const preserved = new Style({
+        display: Display.Grid,
+        gridTemplateColumns: validCols,
+        gridTemplateRows: validRows,
+      });
+      expect(preserved.gridTemplateColumns).toEqual(validCols);
+      expect(preserved.gridTemplateRows).toEqual(validRows);
+
+      preserved.gridTemplateColumns = [
+        { min: 15, max: 15 },
+        {
+          count: 2,
+          tracks: [{ min: 10, max: 10 }],
+          lineNames: [["only-one"]],
+        },
+      ];
+      preserved.gridTemplateRows = [
+        {
+          count: 2,
+          tracks: [{ min: 10, max: 10 }],
+          lineNames: [["r1"], ["r2"], ["r3"]],
+        },
+      ];
+      expect(preserved.gridTemplateColumns).toEqual(validCols);
+      expect(preserved.gridTemplateRows).toEqual(validRows);
+
+      preserved.set({
+        gridTemplateColumns: [
+          {
+            count: 2,
+            tracks: [{ min: 10, max: 10 }],
+            lineNames: [["c1"], ["c2"], ["c3"]],
+          },
+        ],
+        gridTemplateRows: [
+          {
+            count: 2,
+            tracks: [{ min: 10, max: 10 }],
+            lineNames: [["only-one"]],
+          },
+        ],
+      });
+      expect(preserved.gridTemplateColumns).toEqual(validCols);
+      expect(preserved.gridTemplateRows).toEqual(validRows);
+
+      // Proof check across new Style(), setters, computeLayout, and computeLayoutWithMeasure
+      const tree = new TaffyTree();
+      const child = tree.newLeaf(new Style());
+      const rootStyle = new Style({
+        display: Display.Grid,
+        gridTemplateColumnNames: [[]],
+        gridTemplateColumns: [
+          {
+            count: 2,
+            tracks: [{ min: 10, max: 10 }],
+            lineNames: [["col-only-one-set"]],
+          },
+        ],
+      });
+      rootStyle.gridTemplateRowNames = [[]];
+      rootStyle.gridTemplateRows = [
+        {
+          count: 2,
+          tracks: [{ min: 10, max: 10 }],
+          lineNames: [["r1"], ["r2"], ["r3"]],
+        },
+      ];
+      expect(rootStyle.gridTemplateColumns).toEqual([]);
+      expect(rootStyle.gridTemplateRows).toEqual([]);
+
+      rootStyle.set({
+        gridTemplateColumns: [
+          {
+            count: 2,
+            tracks: [{ min: 10, max: 10 }],
+            lineNames: [["col-only-one-set"]],
+          },
+        ],
+        gridTemplateRows: [
+          {
+            count: 2,
+            tracks: [{ min: 10, max: 10 }],
+            lineNames: [["r1"], ["r2"], ["r3"]],
+          },
+        ],
+      });
+      expect(rootStyle.gridTemplateColumns).toEqual([]);
+      expect(rootStyle.gridTemplateRows).toEqual([]);
+
+      const root = tree.newWithChildren(rootStyle, [child]);
+      tree.computeLayout(root, { width: 200, height: 200 });
+      tree.computeLayoutWithMeasure(root, { width: 200, height: 200 }, () => ({
+        width: 10,
+        height: 10,
+      }));
+      tree.clear();
+      tree.free();
     });
   });
 

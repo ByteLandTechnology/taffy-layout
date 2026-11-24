@@ -132,6 +132,20 @@ where
     T::from_repr(number as u8)
 }
 
+fn grid_template_components_from_js<S>(
+    val: JsValue,
+) -> Option<Vec<TaffyStyle::GridTemplateComponent<S>>>
+where
+    S: TaffyStyle::CheapCloneStr + From<String>,
+{
+    let tracks = serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(val).ok()?;
+    tracks
+        .into_iter()
+        .map(|t| t.try_into())
+        .collect::<Result<Vec<_>, _>>()
+        .ok()
+}
+
 fn grid_template_area_dtos(style: &TaffyStyle::Style) -> Vec<GridTemplateAreaDto> {
     style
         .grid_template_areas
@@ -2107,8 +2121,8 @@ impl JsStyle {
     #[wasm_bindgen(setter, js_name = gridTemplateRows)]
     pub fn set_grid_template_rows(&mut self, val: JsGridTemplateComponents) {
         let val: JsValue = val.unchecked_into();
-        if let Ok(tracks) = serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(val) {
-            self.inner.grid_template_rows = tracks.into_iter().map(|t| t.into()).collect();
+        if let Some(tracks) = grid_template_components_from_js(val) {
+            self.inner.grid_template_rows = tracks;
         }
     }
 
@@ -2146,8 +2160,8 @@ impl JsStyle {
     #[wasm_bindgen(setter, js_name = gridTemplateColumns)]
     pub fn set_grid_template_columns(&mut self, val: JsGridTemplateComponents) {
         let val: JsValue = val.unchecked_into();
-        if let Ok(tracks) = serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(val) {
-            self.inner.grid_template_columns = tracks.into_iter().map(|t| t.into()).collect();
+        if let Some(tracks) = grid_template_components_from_js(val) {
+            self.inner.grid_template_columns = tracks;
         }
     }
 
@@ -3227,19 +3241,14 @@ impl JsStyle {
             }
 
             "gridTemplateRows" => {
-                if let Ok(tracks) =
-                    serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(value)
-                {
-                    self.inner.grid_template_rows = tracks.into_iter().map(|t| t.into()).collect();
+                if let Some(tracks) = grid_template_components_from_js(value) {
+                    self.inner.grid_template_rows = tracks;
                 }
             }
 
             "gridTemplateColumns" => {
-                if let Ok(tracks) =
-                    serde_wasm_bindgen::from_value::<Vec<GridTemplateComponentDto>>(value)
-                {
-                    self.inner.grid_template_columns =
-                        tracks.into_iter().map(|t| t.into()).collect();
+                if let Some(tracks) = grid_template_components_from_js(value) {
+                    self.inner.grid_template_columns = tracks;
                 }
             }
 
